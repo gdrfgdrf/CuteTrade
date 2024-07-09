@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package cutetrade.protobuf.storable;
+
+import "common.proto";
+
+option java_package = "cutetrade.protobuf";
+option java_outer_classname = "StorableProto";
+
+message PlayerStore {
+    map<string, common.Player> name_to_player = 1;
+}
+
+message TradeStore {
+    map<string, string> trade_id_to_player_name = 1;
+    map<string, common.Trade> trade_id_to_trade = 2;
+}

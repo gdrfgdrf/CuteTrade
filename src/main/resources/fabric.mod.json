@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "cutetrade",
+	"version": "${version}",
+	"name": "CuteTrade",
+	"description": "Let players trade items with each other!",
+	"authors": [
+		"gdrfgdrf"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "Apache License 2.0",
+	"icon": "assets/cutetrade/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "io.github.gdrfgdrf.cutetrade.CuteTrade",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "io.github.gdrfgdrf.cutetrade.CuteTradeClient",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+	],
+	"depends": {
+		"fabricloader": ">=0.15.9",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"accessWidener": "cutetrade.accesswidener"
+
+}
