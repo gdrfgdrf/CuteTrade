@@ -30,6 +30,7 @@ repositories {
 		name "luck-repo"
 		url "https://repo.lucko.me/"
 	}
+	maven { url 'https://maven.nucleoid.xyz' }
 	mavenCentral()
 }
 

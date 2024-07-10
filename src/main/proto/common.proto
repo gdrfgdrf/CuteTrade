@@ -25,16 +25,17 @@ message Trade {
 }
 
 message TradeItem {
-    string name = 1;
-    repeated string lores = 2;
-    int32 count = 3;
+    string item = 1;
+    string name = 2;
+    repeated string lores = 3;
+    int32 count = 4;
 
-    google.protobuf.Timestamp add_time = 4;
-    string add_by_name = 5;
+    google.protobuf.Timestamp add_time = 5;
+    string add_by_name = 6;
 }
 
 enum TradeResult {
-    TRADE_RESULT_SUCCESS = 0;
-    TRADE_RESULT_FAILURE = 1;
+    TRADE_RESULT_FINISHED = 0;
+    TRADE_RESULT_TERMINATED = 1;
     TRADE_RESULT_DEFAULT = 2;
 }

@@ -33,7 +33,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 
-
 object CuteTrade : ModInitializer {
 	val TRADE_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_trade_screen", ::TradeScreenHandler)
@@ -126,7 +125,9 @@ object CuteTrade : ModInitializer {
 			AcceptTradeResultCommand,
 			DeclineTradeResultCommand,
 			EndTradeCommand,
-			HelpCommand
+			HelpCommand,
+			TutorialCommand,
+//			DevCommand
 		)
 
 		CommandRegistrationCallback.EVENT.register { dispatcher, _, _ ->

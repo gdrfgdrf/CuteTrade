@@ -8,15 +8,19 @@ import net.minecraft.inventory.Inventory
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.Slot
+import net.minecraft.screen.slot.SlotActionType
 
 class TradeScreenHandler: ScreenHandler {
     val inventory: Inventory
+    val playerInventory: PlayerInventory
 
     constructor(
         syncId: Int,
         playerInventory: PlayerInventory,
     ) : super(CuteTrade.TRADE_SCREEN_HANDLER, syncId) {
         this.inventory = TradeInventory()
+        this.playerInventory = playerInventory
+
         checkSize(inventory, INVENTORY_SIZE)
         inventory.onOpen(playerInventory.player)
 
@@ -53,54 +57,62 @@ class TradeScreenHandler: ScreenHandler {
 
     }
 
-    override fun quickMove(player: PlayerEntity?, invSlot: Int): ItemStack {
-        return ItemStack.EMPTY
-
-//        var newStack = ItemStack.EMPTY
-//        val slot = slots[invSlot]
-//        if (slot.hasStack()) {
-//            val originalStack = slot.stack
-//            newStack = originalStack.copy()
-//
-//            if (invSlot < inventory.size()) {
-//                cursorStack = originalStack
-//
-//                val result = this.insertItem(
-//                    originalStack,
-//                    inventory.size(),
-//                    slots.size,
-//                    true
-//                )
-//
-//                cursorStack = ItemStack.EMPTY
-//
-//                if (!result) {
-//                    return ItemStack.EMPTY
+    override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
+        if (slotIndex in 9 .. 17) {
+            return
+        }
+//        if (slotIndex in 0 .. 8 && player is ServerPlayerEntity) {
+//            val currentTrade = player.currentTrade()
+//            if (currentTrade != null) {
+//                if (player.isRed()) {
+//                    currentTrade.redAddTradeItem()
 //                }
-//            } else {
-//                cursorStack = originalStack
-//
-//                val result = this.insertItem(originalStack, 0, inventory.size(), false)
-//
-//                cursorStack = ItemStack.EMPTY
-//
-//                if (!result) {
-//                    return ItemStack.EMPTY
-//                }
-//
-//            }
-//            if (originalStack.isEmpty) {
-//                slot.stack = ItemStack.EMPTY
-//            } else {
-//                slot.markDirty()
 //            }
 //        }
-//
-//        return newStack!!
+        super.onSlotClick(slotIndex, button, actionType, player)
+    }
+
+    override fun insertItem(stack: ItemStack?, startIndex: Int, endIndex: Int, fromLast: Boolean): Boolean {
+        if (startIndex in 9 .. 17) {
+            return false
+        }
+        if (endIndex in 9 .. 17) {
+            return false
+        }
+
+        return super.insertItem(stack, startIndex, endIndex, fromLast)
+    }
+
+    override fun quickMove(player: PlayerEntity?, slot: Int): ItemStack {
+        if (slot in 9 .. 17) {
+            return ItemStack.EMPTY
+        }
+
+        var itemStack = ItemStack.EMPTY
+        val slot2 = slots[slot]
+        if (slot2.hasStack()) {
+            val itemStack2 = slot2.stack
+            itemStack = itemStack2.copy()
+            if (slot < inventory.size()) {
+                if (!this.insertItem(itemStack2, inventory.size(), slots.size, true)) {
+                    return ItemStack.EMPTY
+                }
+            } else if (!this.insertItem(itemStack2, 0, 8, false)) {
+                return ItemStack.EMPTY
+            }
+
+            if (itemStack2.isEmpty) {
+                slot2.stack = ItemStack.EMPTY
+            } else {
+                slot2.markDirty()
+            }
+        }
+
+        return itemStack
     }
 
     override fun canUse(player: PlayerEntity): Boolean {
-        return true
+        return inventory.canPlayerUse(player)
     }
 
     companion object {

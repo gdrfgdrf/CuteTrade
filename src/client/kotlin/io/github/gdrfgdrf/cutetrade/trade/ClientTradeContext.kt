@@ -32,7 +32,9 @@ class ClientTradeContext private constructor(
         val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_UPDATE_TRADER_STATE)
         c2SOperationPacket.stringArgs = arrayOf(targetState.name)
 
-        Constants.C2S_OPERATION.sendPacket(c2SOperationPacket::write)
+        Constants.C2S_OPERATION.sendPacket {
+            c2SOperationPacket.write(it)
+        }
     }
 
     fun updateTraderStateFromServer(

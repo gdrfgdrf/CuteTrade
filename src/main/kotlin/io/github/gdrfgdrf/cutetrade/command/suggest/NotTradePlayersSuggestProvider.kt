@@ -16,7 +16,7 @@ object NotTradePlayersSuggestProvider : SuggestionProvider<ServerCommandSource> 
 
         val notTradePlayerList = context.source.server.playerManager.playerList.stream()
             .filter {
-                !it.isTrading() || it.name.string.equals(context.source.player?.name?.string)
+                !it.isTrading() && !it.name.string.equals(context.source.player?.name?.string)
             }
             .toList()
         notTradePlayerList.forEach {

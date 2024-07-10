@@ -1,6 +1,8 @@
 package io.github.gdrfgdrf.cutetrade.manager
 
+import cutetrade.protobuf.CommonProto.Trade
 import cutetrade.protobuf.StorableProto.TradeStore
+import io.github.gdrfgdrf.cutetrade.extension.toTimestamp
 import io.github.gdrfgdrf.cutetrade.trade.TradeContext
 import io.github.gdrfgdrf.cutetrade.utils.Protobuf
 import net.minecraft.server.network.ServerPlayerEntity
@@ -35,5 +37,27 @@ object TradeManager {
         val bluePlayer = tradeContext.bluePlayer
         trades.remove(redPlayer)
         trades.remove(bluePlayer)
+    }
+
+    fun recordRequest(
+
+    ) {
+
+    }
+
+    fun recordTrade(
+        tradeContext: TradeContext
+    ) {
+        val builder = Trade.newBuilder()
+            .setId(tradeContext.tradeId)
+
+        if (tradeContext.startTime != null) {
+            builder.setStartTime(tradeContext.startTime!!.toTimestamp())
+        }
+        if (tradeContext.endTime != null) {
+            builder.setEndTime(tradeContext.endTime!!.toTimestamp())
+        }
+
+
     }
 }

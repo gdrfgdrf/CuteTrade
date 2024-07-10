@@ -8,8 +8,8 @@
 		"gdrfgdrf"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/gdrfgdrf/CuteTrade",
+		"sources": "https://github.com/gdrfgdrf/CuteTrade"
 	},
 	"license": "Apache License 2.0",
 	"icon": "assets/cutetrade/icon.png",

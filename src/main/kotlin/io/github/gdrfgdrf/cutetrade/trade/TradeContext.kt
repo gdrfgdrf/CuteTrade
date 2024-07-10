@@ -4,6 +4,7 @@ import cutetrade.protobuf.CommonProto.TradeResult
 import io.github.gdrfgdrf.cutetrade.common.TradeStatus
 import io.github.gdrfgdrf.cutetrade.common.TraderState
 import io.github.gdrfgdrf.cutetrade.extension.generateTradeId
+import io.github.gdrfgdrf.cutetrade.extension.removeAllTags
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.screen.TradeScreenContext
 import net.minecraft.item.ItemStack
@@ -18,7 +19,8 @@ class TradeContext private constructor(
 
     lateinit var tradeId: String
 
-    private lateinit var time: Instant
+    var startTime: Instant? = null
+    var endTime: Instant? = null
     private lateinit var result: TradeResult
     private lateinit var status: TradeStatus
 
@@ -34,10 +36,14 @@ class TradeContext private constructor(
     private var redAddTradeItem = false
     private var blueAddTradeItem = false
 
+    var muteAddItemMessageTime: Long = -1
+
+    private val tradeItemHistory = ArrayList<TradeItemStack.TradeItem>()
+
     fun initialize() {
         tradeId = generateTradeId()
 
-        time = Instant.now()
+        startTime = Instant.now()
         result = TradeResult.TRADE_RESULT_DEFAULT
 
         tradeScreenContext = TradeScreenContext.create(
@@ -61,6 +67,9 @@ class TradeContext private constructor(
         if (!initialized) {
             throw IllegalStateException("Trade is not initialized")
         }
+
+        redPlayer.inventory.removeAllTags("cutetrade-add-by")
+        bluePlayer.inventory.removeAllTags("cutetrade-add-by")
 
         presenter.start()
         TradeManager.tradeStart(this)
@@ -143,11 +152,12 @@ class TradeContext private constructor(
         broadcastMessage: Boolean = true,
         bypass: Boolean = false
     ) {
-        if (!bypass && redAddTradeItem) {
-            redAddTradeItem = false
-            return
-        }
+//        if (!bypass && redAddTradeItem) {
+//            redAddTradeItem = false
+//            return
+//        }
 
+//        tradeItemHistory.add(TradeItemStack.TradeItem(itemStack.copy()))
         redTradeItemStack.setTradeItem(index, itemStack)
         tradeScreenContext.syncTradeInventory()
         if (playSound) {
@@ -161,7 +171,13 @@ class TradeContext private constructor(
             presenter.broadcastRedAddItemMessage(itemStack)
         }
 
-        redAddTradeItem = true
+//        redAddTradeItem = true
+    }
+
+    fun muteRedAddTradeItem(
+        time: Long
+    ) {
+        presenter.muteRedAddTradeItemMessage(time)
     }
 
     fun blueAddTradeItem(
@@ -172,11 +188,12 @@ class TradeContext private constructor(
         broadcastMessage: Boolean = true,
         bypass: Boolean = false
     ) {
-        if (!bypass && blueAddTradeItem) {
-            blueAddTradeItem = false
-            return
-        }
+//        if (!bypass && blueAddTradeItem) {
+//            blueAddTradeItem = false
+//            return
+//        }
 
+//        tradeItemHistory.add(TradeItemStack.TradeItem(itemStack.copy()))
         blueTradeItemStack.setTradeItem(index, itemStack)
         tradeScreenContext.syncTradeInventory()
         if (playSound) {
@@ -190,7 +207,13 @@ class TradeContext private constructor(
             presenter.broadcastBlueAddItem(itemStack)
         }
 
-        blueAddTradeItem = true
+//        blueAddTradeItem = true
+    }
+
+    fun muteBlueAddTradeItem(
+        time: Long
+    ) {
+        presenter.muteBlueAddTradeItemMessage(time)
     }
 
     fun redRemoveTradeItem(
@@ -226,12 +249,14 @@ class TradeContext private constructor(
     }
 
     fun terminate() {
+        status = TradeStatus.TERMINATED
         end(false)
         presenter.playTerminateSound()
         presenter.broadcastTerminateMessage()
     }
 
     fun finish() {
+        status = TradeStatus.FINISHED
         end(true)
 
         presenter.playFinishSound()
@@ -244,6 +269,7 @@ class TradeContext private constructor(
         if (!initialized) {
             throw IllegalStateException("Trade is not initialized")
         }
+        endTime = Instant.now()
         tradeScreenContext.end()
 
         if (!normal) {
@@ -256,10 +282,12 @@ class TradeContext private constructor(
         redTradeItemStack.removeAll()
         blueTradeItemStack.removeAll()
 
+        redPlayer.inventory.removeAllTags("cutetrade-add-by")
+        bluePlayer.inventory.removeAllTags("cutetrade-add-by")
+
         presenter.end()
 
         TradeManager.tradeEnd(this)
-        status = TradeStatus.ENDED
     }
 
     companion object {

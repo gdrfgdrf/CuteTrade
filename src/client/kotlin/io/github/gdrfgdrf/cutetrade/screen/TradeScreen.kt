@@ -2,6 +2,7 @@ package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
 import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext
@@ -17,6 +18,8 @@ import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandler
+import net.minecraft.screen.slot.Slot
+import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.joml.Matrix4f
@@ -86,6 +89,15 @@ class TradeScreen(
         textWidget.setTextColor(0x555555)
         textWidget.setPosition((width - textWidget.width) / 2, height - textWidget.height)
         addDrawable(textWidget)
+    }
+
+    override fun onMouseClick(slot: Slot?, slotId: Int, button: Int, actionType: SlotActionType?) {
+//        slot?: return
+//        val index = slot.index
+//        if (index in 9..17) {
+//            return
+//        }
+        super.onMouseClick(slot, slotId, button, actionType)
     }
 
 //    override fun onMouseClick(slot: Slot?, slotId: Int, button: Int, actionType: SlotActionType) {

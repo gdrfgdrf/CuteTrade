@@ -1,5 +1,6 @@
 package io.github.gdrfgdrf.cutetrade.trade
 
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.extension.send
 import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
 import net.minecraft.item.ItemStack
@@ -27,13 +28,18 @@ class TradeItemStack private constructor(private val playerEntity: ServerPlayerE
             return
         }
 
+//        "set trade item $itemStack to index $index".logInfo()
         itemArray[index] = TradeItem(itemStack)
     }
 
     fun removeTradeItem(
         index: Int
     ) {
-        itemArray[index] = null
+        val tradeItem = itemArray[index]
+        if (tradeItem != null) {
+//            "remove trade item ${tradeItem.itemStack} from index $index".logInfo()
+            tradeItem.itemStack = ItemStack.EMPTY
+        }
     }
 
     fun removeAll() {
@@ -43,20 +49,23 @@ class TradeItemStack private constructor(private val playerEntity: ServerPlayerE
     fun returnAll() {
         itemArray.forEach {
             it?.let {
+                it.itemStack.getOrCreateNbt().remove("cutetrade-add-by")
                 playerEntity.inventory.offerOrDrop(it.itemStack)
             }
         }
     }
 
     fun moveTo(serverPlayerEntity: ServerPlayerEntity) {
-        itemArray.forEach {
+        itemArray.forEachIndexed { index, it ->
             it?.let {
+//                "offer ${it.itemStack}(index $index) to ${serverPlayerEntity.name.string}".logInfo()
+                it.itemStack.getOrCreateNbt().remove("cutetrade-add-by")
                 serverPlayerEntity.inventory.offerOrDrop(it.itemStack)
             }
         }
     }
 
-    class TradeItem(val itemStack: ItemStack) {
+    class TradeItem(var itemStack: ItemStack) {
     }
 
 

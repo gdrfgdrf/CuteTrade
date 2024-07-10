@@ -1,6 +1,8 @@
 package io.github.gdrfgdrf.cutetrade.screen.handler
 
 import io.github.gdrfgdrf.cutetrade.CuteTrade
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
+import io.github.gdrfgdrf.cutetrade.trade.TradeInventory
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.Inventory
@@ -8,6 +10,7 @@ import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.Slot
+import net.minecraft.screen.slot.SlotActionType
 
 class DevScreenHandler(
     syncId: Int,
@@ -16,7 +19,7 @@ class DevScreenHandler(
     private val inventory: Inventory
 
     init {
-        this.inventory = SimpleInventory(18)
+        this.inventory = TradeInventory()
         checkSize(inventory, INVENTORY_SIZE)
         inventory.onOpen(playerInventory.player)
 
@@ -52,24 +55,70 @@ class DevScreenHandler(
         }
     }
 
+    override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
+//        "onSlotClick $slotIndex | $button | $actionType | $player".logInfo()
+        if (slotIndex in 9 .. 17) {
+            return
+        }
+//        if (slotIndex in 0 .. 8 && player is ServerPlayerEntity) {
+//            val currentTrade = player.currentTrade()
+//            if (currentTrade != null) {
+//                if (player.isRed()) {
+//                    currentTrade.redAddTradeItem()
+//                }
+//            }
+//        }
+        super.onSlotClick(slotIndex, button, actionType, player)
+    }
+
+    override fun insertItem(stack: ItemStack?, startIndex: Int, endIndex: Int, fromLast: Boolean): Boolean {
+        "insertItem $stack | $startIndex | $endIndex | $fromLast".logInfo()
+        if (startIndex in 9 .. 17) {
+            return false
+        }
+        if (endIndex in 9 .. 17) {
+            return false
+        }
+
+        return super.insertItem(stack, startIndex, endIndex, fromLast)
+    }
+
     override fun quickMove(player: PlayerEntity?, invSlot: Int): ItemStack {
+//        return ItemStack.EMPTY
+
         var newStack = ItemStack.EMPTY
         val slot = slots[invSlot]
         if (slot.hasStack()) {
             val originalStack = slot.stack
             newStack = originalStack.copy()
+
             if (invSlot < inventory.size()) {
-                if (!this.insertItem(
-                        originalStack,
-                        inventory.size(), slots.size, true
-                    )
-                ) {
+                cursorStack = originalStack
+
+                val result = this.insertItem(
+                    originalStack,
+                    inventory.size(),
+                    slots.size,
+                    true
+                )
+
+                cursorStack = ItemStack.EMPTY
+
+                if (!result) {
                     return ItemStack.EMPTY
                 }
-            } else if (!this.insertItem(originalStack, 0, inventory.size(), false)) {
-                return ItemStack.EMPTY
-            }
+            } else {
+                cursorStack = originalStack
 
+                val result = this.insertItem(originalStack, 0, inventory.size(), false)
+
+                cursorStack = ItemStack.EMPTY
+
+                if (!result) {
+                    return ItemStack.EMPTY
+                }
+
+            }
             if (originalStack.isEmpty) {
                 slot.stack = ItemStack.EMPTY
             } else {

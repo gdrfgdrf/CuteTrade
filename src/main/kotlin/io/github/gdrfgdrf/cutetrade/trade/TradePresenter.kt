@@ -8,10 +8,16 @@ import net.minecraft.item.ItemStack
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
+import java.time.Instant
 
 class TradePresenter private constructor(
     private val tradeContext: TradeContext
 ) {
+    var muteRedAddItemMessageStartTime: Long = -1
+    var muteRedAddItemMessageTime: Long = -1
+
+    var muteBlueAddItemMessageStartTime: Long = -1
+    var muteBlueAddItemMessageTime: Long = -1
 
     fun initialize() {
         val s2COperationPacket = S2COperationPacket(Operators.CLIENT_INITIALIZE_TRADE)
@@ -26,8 +32,8 @@ class TradePresenter private constructor(
     fun start() {
         val s2COperationPacket = S2COperationPacket(Operators.CLIENT_TRADE_START)
         broadcastOperation(s2COperationPacket)
-        broadcastMessage("trade_start".toTradeMessage())
-        broadcastMessage("notice".toTradeMessage())
+        broadcastMessage("trade_start".toCommandMessage())
+//        broadcastMessage("notice".toTradeMessage())
     }
 
     fun updateState(
@@ -108,6 +114,17 @@ class TradePresenter private constructor(
     fun broadcastRedAddItemMessage(
         itemStack: ItemStack
     ) {
+        if (muteRedAddItemMessageStartTime != -1L && muteRedAddItemMessageTime != -1L) {
+            val now = Instant.now().epochSecond
+
+            if (now - muteRedAddItemMessageStartTime <= muteRedAddItemMessageTime) {
+                return
+            } else {
+                muteRedAddItemMessageStartTime = -1
+                muteRedAddItemMessageTime = -1
+            }
+        }
+
         val prefix = "presenter_prefix".toTradeMessage()
         "add_item_oneself".toTradeMessage()
             .format(itemStack.name.string, itemStack.count)
@@ -115,6 +132,13 @@ class TradePresenter private constructor(
         "add_item_other".toTradeMessage()
             .format(tradeContext.redPlayer.name.string, itemStack.name.string, itemStack.count)
             .send(prefix, tradeContext.bluePlayer)
+    }
+
+    fun muteRedAddTradeItemMessage(
+        time: Long
+    ) {
+        muteRedAddItemMessageStartTime = Instant.now().epochSecond
+        muteRedAddItemMessageTime = time
     }
 
     fun broadcastRedRemoveItemMessage(
@@ -125,7 +149,7 @@ class TradePresenter private constructor(
             .format(itemStack.name.string, itemStack.count)
             .send(prefix, tradeContext.redPlayer)
         "remove_item_other".toTradeMessage()
-//            .format(tradeContext.redPlayer.name.string, itemStack.name.string, itemStack.count)
+            .format(tradeContext.redPlayer.name.string)
             .send(prefix, tradeContext.bluePlayer)
     }
 
@@ -138,6 +162,17 @@ class TradePresenter private constructor(
     fun broadcastBlueAddItem(
         itemStack: ItemStack
     ) {
+        if (muteBlueAddItemMessageStartTime != -1L && muteBlueAddItemMessageTime != -1L) {
+            val now = Instant.now().epochSecond
+
+            if (now - muteBlueAddItemMessageStartTime <= muteBlueAddItemMessageTime) {
+                return
+            } else {
+                muteBlueAddItemMessageStartTime = -1
+                muteBlueAddItemMessageTime = -1
+            }
+        }
+
         val prefix = "presenter_prefix".toTradeMessage()
         "add_item_oneself".toTradeMessage()
             .format(itemStack.name.string, itemStack.count)
@@ -145,6 +180,13 @@ class TradePresenter private constructor(
         "add_item_other".toTradeMessage()
             .format(tradeContext.bluePlayer.name.string, itemStack.name.string, itemStack.count)
             .send(prefix, tradeContext.redPlayer)
+    }
+
+    fun muteBlueAddTradeItemMessage(
+        time: Long
+    ) {
+        muteBlueAddItemMessageStartTime = Instant.now().epochSecond
+        muteBlueAddItemMessageTime = time
     }
 
     fun broadcastBlueRemoveItemMessage(
@@ -155,7 +197,7 @@ class TradePresenter private constructor(
             .format(itemStack.name.string, itemStack.count)
             .send(prefix, tradeContext.bluePlayer)
         "remove_item_other".toTradeMessage()
-//            .format(tradeContext.bluePlayer.name.string, itemStack.name.string, itemStack.count)
+            .format(tradeContext.bluePlayer.name.string)
             .send(prefix, tradeContext.redPlayer)
     }
 
@@ -178,11 +220,11 @@ class TradePresenter private constructor(
     }
 
     fun broadcastFinishMessage() {
-        broadcastMessage("trade_end".toTradeMessage())
+        broadcastMessage("trade_end".toCommandMessage())
     }
 
     fun broadcastTerminateMessage() {
-        broadcastMessage("trade_terminate".toTradeMessage())
+        broadcastMessage("trade_terminate".toCommandMessage())
     }
 
     fun end() {

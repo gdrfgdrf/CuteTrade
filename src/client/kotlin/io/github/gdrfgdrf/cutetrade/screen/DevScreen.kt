@@ -38,18 +38,13 @@ class DevScreen(
     }
 
     override fun onMouseClick(slot: Slot?, slotId: Int, button: Int, actionType: SlotActionType?) {
-        "${slot?.id} | $slotId | $actionType".logInfo()
+        "onMouseClick ${slot?.index} | $slotId | $button | $actionType".logInfo()
         super.onMouseClick(slot, slotId, button, actionType)
     }
 
     override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-        "$button".logInfo()
+        "mouseClicked $mouseX | $mouseY | $button".logInfo()
         return super.mouseClicked(mouseX, mouseY, button)
-    }
-
-    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
-        "$keyCode".logInfo()
-        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
@@ -166,6 +161,10 @@ class DevScreen(
         entityRenderDispatcher.setRenderShadows(true)
         context.matrices.pop()
         DiffuseLighting.enableGuiDepthLighting()
+    }
+
+    override fun isClickOutsideBounds(mouseX: Double, mouseY: Double, left: Int, top: Int, button: Int): Boolean {
+        return false
     }
 
     companion object {

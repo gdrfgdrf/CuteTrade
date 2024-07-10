@@ -1,5 +1,6 @@
 package io.github.gdrfgdrf.cutetrade.screen
 
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.extension.sendOperationPacket
 import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
 import io.github.gdrfgdrf.cutetrade.screen.factory.TradeScreenHandlerFactory
@@ -29,68 +30,14 @@ class TradeScreenPresenter private constructor(
 
         redScreenHandler!!.addListener(object : ScreenHandlerListener {
             override fun onSlotUpdate(handler: ScreenHandler?, slotId: Int, stack: ItemStack?) {
+                if (slotId !in 0 .. 8) {
+                    return
+                }
                 val slot = handler?.getSlot(slotId) ?: return
-                if (slotId in 9..17) {
-                    if (slot.hasStack()) {
-                        val itemStack = slot.stack
-                        val addBy = itemStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-
-                        if ("server" == addBy) {
-                            val cursorStack = handler.cursorStack
-                            val cursorStackAddBy = cursorStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-                            if (cursorStackAddBy == "server") {
-                                itemStack.increment(cursorStack.count)
-
-                                tradeScreenContext.context.blueAddTradeItem(
-                                    slotId - 9,
-                                    itemStack,
-                                    playSound = false,
-                                    updateState = false,
-                                    broadcastMessage = false,
-                                    bypass = true
-                                )
-                                handler.cursorStack = ItemStack.EMPTY
-                            }
-                            return
-                        }
-                    } else {
-                        val cursorStack = handler.cursorStack
-                        val cursorStackAddBy = cursorStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-                        if (cursorStackAddBy == "server") {
-                            tradeScreenContext.context.blueAddTradeItem(
-                                slotId - 9,
-                                cursorStack.copy(),
-                                playSound = false,
-                                updateState = false,
-                                broadcastMessage = false,
-                                bypass = true
-                            )
-                            handler.cursorStack = ItemStack.EMPTY
-                            return
-                        }
-                    }
-
-                    val count = slot.stack?.count ?: return
-                    val itemStack = (slot.inventory as TradeInventory).forceRemoveStack(slot.index, count)
-                    redPlayer.inventory.offerOrDrop(itemStack)
-                    return
-                }
-                if (slotId in 0 .. 8) {
-                    val cursorStack = handler.cursorStack
-                    cursorStack.getOrCreateNbt().remove("cutetrade-add-by")
-
-                    if (slot.hasStack()) {
-                        slot.stack.getOrCreateNbt().put("cutetrade-add-by", NbtString.of("server"))
-                        tradeScreenContext.context.redAddTradeItem(slotId, slot.stack.copy())
-                    } else {
-                        tradeScreenContext.context.redRemoveTradeItem(slotId)
-                    }
-                    return
-                }
-                if (slotId in 15 .. 53) {
-                    if (slot.hasStack()) {
-                        slot.stack.getOrCreateNbt().remove("cutetrade-add-by")
-                    }
+                if (slot.hasStack()) {
+                    tradeScreenContext.context.redAddTradeItem(slotId, slot.stack.copy())
+                } else {
+                    tradeScreenContext.context.redRemoveTradeItem(slotId)
                 }
             }
 
@@ -99,68 +46,14 @@ class TradeScreenPresenter private constructor(
         })
         blueScreenHandler!!.addListener(object : ScreenHandlerListener {
             override fun onSlotUpdate(handler: ScreenHandler?, slotId: Int, stack: ItemStack?) {
+                if (slotId !in 0 .. 8) {
+                    return
+                }
                 val slot = handler?.getSlot(slotId) ?: return
-                if (slotId in 9..17) {
-                    if (slot.hasStack()) {
-                        val itemStack = slot.stack
-                        val addBy = itemStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-
-                        if ("server" == addBy) {
-                            val cursorStack = handler.cursorStack
-                            val cursorStackAddBy = cursorStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-                            if (cursorStackAddBy == "server") {
-                                itemStack.increment(cursorStack.count)
-
-                                tradeScreenContext.context.redAddTradeItem(
-                                    slotId - 9,
-                                    itemStack,
-                                    playSound = false,
-                                    updateState = false,
-                                    broadcastMessage = false,
-                                    bypass = true
-                                )
-                                handler.cursorStack = ItemStack.EMPTY
-                            }
-                            return
-                        }
-                    } else {
-                        val cursorStack = handler.cursorStack
-                        val cursorStackAddBy = cursorStack.getOrCreateNbt().get("cutetrade-add-by")?.asString()
-                        if (cursorStackAddBy == "server") {
-                            tradeScreenContext.context.redAddTradeItem(
-                                slotId - 9,
-                                cursorStack.copy(),
-                                playSound = false,
-                                updateState = false,
-                                broadcastMessage = false,
-                                bypass = true
-                            )
-                            handler.cursorStack = ItemStack.EMPTY
-                            return
-                        }
-                    }
-
-                    val count = slot.stack?.count ?: return
-                    val itemStack = (slot.inventory as TradeInventory).forceRemoveStack(slot.index, count)
-                    bluePlayer.inventory.offerOrDrop(itemStack)
-                    return
-                }
-                if (slotId in 0 .. 8) {
-                    val cursorStack = handler.cursorStack
-                    cursorStack.getOrCreateNbt().remove("cutetrade-add-by")
-
-                    if (slot.hasStack()) {
-                        slot.stack.getOrCreateNbt().put("cutetrade-add-by", NbtString.of("server"))
-                        tradeScreenContext.context.blueAddTradeItem(slotId, slot.stack.copy())
-                    } else {
-                        tradeScreenContext.context.blueRemoveTradeItem(slotId)
-                    }
-                    return
-                }
-                if (slotId in 15 .. 53) {
-                    if (slot.hasStack()) {
-                        slot.stack.getOrCreateNbt().remove("cutetrade-add-by")
-                    }
+                if (slot.hasStack()) {
+                    tradeScreenContext.context.blueAddTradeItem(slotId, slot.stack.copy())
+                } else {
+                    tradeScreenContext.context.blueRemoveTradeItem(slotId)
                 }
             }
 
