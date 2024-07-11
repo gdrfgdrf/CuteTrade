@@ -2,11 +2,13 @@ package io.github.gdrfgdrf.cutetrade.extension
 
 import cutetrade.protobuf.CommonProto.Player
 import io.github.gdrfgdrf.cutetrade.common.TradeRequest
+import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeRequestManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.trade.TradeContext
 import io.github.gdrfgdrf.cutetrade.trade.TradeItemStack
+import net.minecraft.item.SkullItem
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayerEntity
 
@@ -16,6 +18,10 @@ fun Player.findServerEntity(server: MinecraftServer): ServerPlayerEntity? {
 
 fun String.findServerEntity(context: PacketContext<*>): ServerPlayerEntity? {
     return context.sender?.server?.playerManager?.getPlayer(this)
+}
+
+fun ServerPlayerEntity.findProtobufPlayer(): Player? {
+    return PlayerManager.findPlayer(this.name.string)
 }
 
 fun ServerPlayerEntity.getTradeRequest(redPlayerEntity: ServerPlayerEntity): TradeRequest? {

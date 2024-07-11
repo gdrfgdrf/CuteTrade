@@ -13,9 +13,11 @@ import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
 import io.github.gdrfgdrf.cutetrade.operation.server.UpdateTraderStateOperator
+import io.github.gdrfgdrf.cutetrade.page.PageableRegistry
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
 import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
 import io.github.gdrfgdrf.cutetrade.utils.Protobuf
+import io.github.gdrfgdrf.cutetrade.utils.task.TaskManager
 import io.github.gdrfgdrf.cutetrade.utils.thread.ThreadPoolService
 import io.github.gdrfgdrf.cutetrade.worker.CountdownWorker
 import net.fabricmc.api.EnvType
@@ -39,6 +41,9 @@ object CuteTrade : ModInitializer {
 	val DEV_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
 
+	init {
+		PageableRegistry
+	}
 
 	val log: Logger = LoggerFactory.getLogger("CuteTrade")
 
@@ -112,10 +117,12 @@ object CuteTrade : ModInitializer {
 
 		ServerLifecycleEvents.SERVER_STARTING.register { _ ->
 			CountdownWorker.start()
+			TaskManager.start()
 		}
 		ServerLifecycleEvents.SERVER_STOPPING.register { _ ->
 			ThreadPoolService.terminate()
 			CountdownWorker.reset()
+			TaskManager.terminate()
 		}
 	}
 
@@ -127,6 +134,7 @@ object CuteTrade : ModInitializer {
 			EndTradeCommand,
 			HelpCommand,
 			TutorialCommand,
+			HistoryCommand
 //			DevCommand
 		)
 

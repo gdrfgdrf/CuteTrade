@@ -18,10 +18,10 @@ object CountdownWorker {
     }
 
     fun reset() {
-        "Resetting countdown worker".logInfo()
-
         stop = true
         tasks.clear()
+
+        "Reset countdown worker".logInfo()
     }
 
     fun add(task: CountdownTask) {

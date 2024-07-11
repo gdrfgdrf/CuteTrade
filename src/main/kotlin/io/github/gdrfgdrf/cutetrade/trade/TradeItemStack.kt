@@ -6,7 +6,7 @@ import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 
-class TradeItemStack private constructor(private val playerEntity: ServerPlayerEntity) {
+class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
     var itemArray = arrayOfNulls<TradeItem>(9)
 
     fun size(): Int = itemArray.size
@@ -63,6 +63,18 @@ class TradeItemStack private constructor(private val playerEntity: ServerPlayerE
                 serverPlayerEntity.inventory.offerOrDrop(it.itemStack)
             }
         }
+    }
+
+    fun copy(): TradeItemStack {
+        val tradeItemStack = TradeItemStack(playerEntity)
+        itemArray.forEachIndexed { index, it ->
+            it?.let {
+                if (!it.itemStack.isEmpty) {
+                    tradeItemStack.setTradeItem(index, it.itemStack.copy())
+                }
+            }
+        }
+        return tradeItemStack
     }
 
     class TradeItem(var itemStack: ItemStack) {

@@ -5,6 +5,7 @@ import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.*
+import io.github.gdrfgdrf.cutetrade.page.PageableClientRegistry
 import io.github.gdrfgdrf.cutetrade.screen.DevScreen
 import io.github.gdrfgdrf.cutetrade.screen.TradeScreen
 import net.fabricmc.api.ClientModInitializer
@@ -24,6 +25,7 @@ object CuteTradeClient : ClientModInitializer {
 
 		HandledScreens.register(CuteTrade.TRADE_SCREEN_HANDLER, ::TradeScreen)
 		HandledScreens.register(CuteTrade.DEV_SCREEN_HANDLER, ::DevScreen)
+		PageableClientRegistry.register()
 	}
 
 	private fun prepareEventListeners() {

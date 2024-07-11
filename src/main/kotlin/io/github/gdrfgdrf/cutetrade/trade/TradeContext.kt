@@ -22,7 +22,7 @@ class TradeContext private constructor(
     var startTime: Instant? = null
     var endTime: Instant? = null
     private lateinit var result: TradeResult
-    private lateinit var status: TradeStatus
+    lateinit var status: TradeStatus
 
     private lateinit var tradeScreenContext: TradeScreenContext
 
@@ -32,13 +32,6 @@ class TradeContext private constructor(
     var blueState: TraderState = TraderState.UNCHECKED
     lateinit var redTradeItemStack: TradeItemStack
     lateinit var blueTradeItemStack: TradeItemStack
-
-    private var redAddTradeItem = false
-    private var blueAddTradeItem = false
-
-    var muteAddItemMessageTime: Long = -1
-
-    private val tradeItemHistory = ArrayList<TradeItemStack.TradeItem>()
 
     fun initialize() {
         tradeId = generateTradeId()
@@ -149,15 +142,8 @@ class TradeContext private constructor(
         itemStack: ItemStack,
         playSound: Boolean = true,
         updateState: Boolean = true,
-        broadcastMessage: Boolean = true,
-        bypass: Boolean = false
+        broadcastMessage: Boolean = true
     ) {
-//        if (!bypass && redAddTradeItem) {
-//            redAddTradeItem = false
-//            return
-//        }
-
-//        tradeItemHistory.add(TradeItemStack.TradeItem(itemStack.copy()))
         redTradeItemStack.setTradeItem(index, itemStack)
         tradeScreenContext.syncTradeInventory()
         if (playSound) {
@@ -170,14 +156,6 @@ class TradeContext private constructor(
         if (broadcastMessage) {
             presenter.broadcastRedAddItemMessage(itemStack)
         }
-
-//        redAddTradeItem = true
-    }
-
-    fun muteRedAddTradeItem(
-        time: Long
-    ) {
-        presenter.muteRedAddTradeItemMessage(time)
     }
 
     fun blueAddTradeItem(
@@ -185,15 +163,8 @@ class TradeContext private constructor(
         itemStack: ItemStack,
         playSound: Boolean = true,
         updateState: Boolean = true,
-        broadcastMessage: Boolean = true,
-        bypass: Boolean = false
+        broadcastMessage: Boolean = true
     ) {
-//        if (!bypass && blueAddTradeItem) {
-//            blueAddTradeItem = false
-//            return
-//        }
-
-//        tradeItemHistory.add(TradeItemStack.TradeItem(itemStack.copy()))
         blueTradeItemStack.setTradeItem(index, itemStack)
         tradeScreenContext.syncTradeInventory()
         if (playSound) {
@@ -206,14 +177,6 @@ class TradeContext private constructor(
         if (broadcastMessage) {
             presenter.broadcastBlueAddItem(itemStack)
         }
-
-//        blueAddTradeItem = true
-    }
-
-    fun muteBlueAddTradeItem(
-        time: Long
-    ) {
-        presenter.muteBlueAddTradeItemMessage(time)
     }
 
     fun redRemoveTradeItem(
@@ -276,11 +239,15 @@ class TradeContext private constructor(
             redTradeItemStack.returnAll()
             blueTradeItemStack.returnAll()
         } else {
-            redTradeItemStack.moveTo(bluePlayer)
-            blueTradeItemStack.moveTo(redPlayer)
+            val redTradeItemStackCopied = redTradeItemStack.copy()
+            val blueTradeItemStackCopied = blueTradeItemStack.copy()
+
+            redTradeItemStackCopied.moveTo(bluePlayer)
+            blueTradeItemStackCopied.moveTo(redPlayer)
+
+            redTradeItemStackCopied.removeAll()
+            blueTradeItemStackCopied.removeAll()
         }
-        redTradeItemStack.removeAll()
-        blueTradeItemStack.removeAll()
 
         redPlayer.inventory.removeAllTags("cutetrade-add-by")
         bluePlayer.inventory.removeAllTags("cutetrade-add-by")
@@ -288,6 +255,7 @@ class TradeContext private constructor(
         presenter.end()
 
         TradeManager.tradeEnd(this)
+        TradeManager.recordTrade(this)
     }
 
     companion object {

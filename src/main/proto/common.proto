@@ -22,16 +22,16 @@ message Trade {
 
     repeated TradeItem content_history = 6;
     TradeResult trade_result = 7;
+
+    repeated TradeItem red_item_result = 8;
+    repeated TradeItem blue_item_result = 9;
 }
 
 message TradeItem {
-    string item = 1;
-    string name = 2;
-    repeated string lores = 3;
-    int32 count = 4;
+    string nbt = 1;
 
-    google.protobuf.Timestamp add_time = 5;
-    string add_by_name = 6;
+//    google.protobuf.Timestamp add_time = 5;
+    string add_by_name = 2;
 }
 
 enum TradeResult {

@@ -31,8 +31,7 @@ class TradeScreen(
     screenHandler: ScreenHandler,
     playerInventory: PlayerInventory,
     title: Text
-) :
-    HandledScreen<ScreenHandler>(
+): HandledScreen<ScreenHandler>(
         screenHandler,
         playerInventory,
         title

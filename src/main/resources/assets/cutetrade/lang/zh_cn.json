@@ -22,6 +22,7 @@
   "command.cutetrade.decline_request_for_red": "&c玩家 %s 拒绝了您的交易请求",
   "command.cutetrade.decline_request_for_blue": "&c您拒绝了来自玩家 %s 的交易请求",
 
+  "command.cutetrade.no_transaction_history": "&c没有找到您的交易记录",
   "command.cutetrade.no_transaction_in_progress": "&c当前没有交易进行中",
   "command.cutetrade.trade_start": "&a&l交易开始",
   "command.cutetrade.trade_terminate": "&c&l终止交易",
@@ -45,6 +46,11 @@
   "screen.cutetrade.trade_inventory_empty": "&c当前没有要交易的物品",
   "screen.cutetrade.trade_item_limited": "&c一次性只能交易 9 个物品",
   "screen.cutetrade.click_slot_out_of_limit": "&c超出范围",
+
+  "screen.cutetrade.history_title": "玩家 %s 的交易记录",
+  "screen.cutetrade.previous_page": "上一页",
+  "screen.cutetrade.next_page": "下一页",
+  "screen.cutetrade.click_view": "&a点击查看",
 
   "command.cutetrade.top": "&l&3=========== &l&6&k| &r&6&lCuteTrade &l&6&k| &r&l&3===========",
   "command.cutetrade.bottom": "&l&3=========== &l&6&k| &r&6&lCuteTrade &l&6&k| &r&l&3===========",

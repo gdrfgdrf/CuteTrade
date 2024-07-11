@@ -1,7 +1,13 @@
 package io.github.gdrfgdrf.cutetrade.manager
 
+import cutetrade.protobuf.CommonProto
 import cutetrade.protobuf.CommonProto.Trade
+import cutetrade.protobuf.CommonProto.TradeResult
 import cutetrade.protobuf.StorableProto.TradeStore
+import io.github.gdrfgdrf.cutetrade.common.TradeStatus
+import io.github.gdrfgdrf.cutetrade.extension.findProtobufPlayer
+import io.github.gdrfgdrf.cutetrade.extension.runSyncTask
+import io.github.gdrfgdrf.cutetrade.extension.toProtobufTradeItem
 import io.github.gdrfgdrf.cutetrade.extension.toTimestamp
 import io.github.gdrfgdrf.cutetrade.trade.TradeContext
 import io.github.gdrfgdrf.cutetrade.utils.Protobuf
@@ -39,16 +45,12 @@ object TradeManager {
         trades.remove(bluePlayer)
     }
 
-    fun recordRequest(
-
-    ) {
-
-    }
-
     fun recordTrade(
         tradeContext: TradeContext
-    ) {
+    ) = runSyncTask(tradeProtobuf!!) {
         val builder = Trade.newBuilder()
+            .setRedName(tradeContext.redPlayer.name.string)
+            .setBlueName(tradeContext.bluePlayer.name.string)
             .setId(tradeContext.tradeId)
 
         if (tradeContext.startTime != null) {
@@ -57,7 +59,60 @@ object TradeManager {
         if (tradeContext.endTime != null) {
             builder.setEndTime(tradeContext.endTime!!.toTimestamp())
         }
+        if (tradeContext.status != TradeStatus.FINISHED) {
+            builder.setTradeResult(TradeResult.TRADE_RESULT_TERMINATED)
+        } else {
+            builder.setTradeResult(TradeResult.TRADE_RESULT_FINISHED)
+        }
 
+        if (tradeContext.status == TradeStatus.FINISHED) {
+            val redAddBy = tradeContext.redTradeItemStack.playerEntity
+            val blueAddBy = tradeContext.blueTradeItemStack.playerEntity
 
+            tradeContext.redTradeItemStack.itemArray.forEach { tradeItem ->
+                tradeItem?.let {
+                    if (!it.itemStack.isEmpty) {
+                        val protobufTradeItem = it.itemStack.toProtobufTradeItem(redAddBy.name.string)
+                        builder.addRedItemResult(protobufTradeItem)
+                    }
+                }
+            }
+            tradeContext.blueTradeItemStack.itemArray.forEach { tradeItem ->
+                tradeItem?.let {
+                    if (!it.itemStack.isEmpty) {
+                        val protobufTradeItem = it.itemStack.toProtobufTradeItem(blueAddBy.name.string)
+                        builder.addBlueItemResult(protobufTradeItem)
+                    }
+                }
+            }
+        }
+
+        val redProtobufPlayer = tradeContext.redPlayer.findProtobufPlayer()
+        val blueProtobufPlayer = tradeContext.bluePlayer.findProtobufPlayer()
+        if (redProtobufPlayer != null) {
+            PlayerManager.recordTrade(redProtobufPlayer, tradeContext.tradeId)
+        }
+        if (blueProtobufPlayer != null) {
+            PlayerManager.recordTrade(blueProtobufPlayer, tradeContext.tradeId)
+        }
+
+        tradeProtobuf!!.rebuild { tradeStore ->
+            val tradeStoreBuilder = tradeStore!!.toBuilder()
+                .putTradeIdToTrade(tradeContext.tradeId, builder.build())
+            if (redProtobufPlayer != null) {
+                tradeStoreBuilder.putTradeIdToPlayerName(
+                    tradeContext.tradeId,
+                    redProtobufPlayer.name
+                )
+            }
+            if (blueProtobufPlayer != null) {
+                tradeStoreBuilder.putTradeIdToPlayerName(
+                    tradeContext.tradeId,
+                    blueProtobufPlayer.name
+                )
+            }
+            tradeStoreBuilder.build()
+        }
+        tradeProtobuf!!.save()
     }
 }
