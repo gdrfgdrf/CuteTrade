@@ -2,23 +2,48 @@ package io.github.gdrfgdrf.cutetrade.extension
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
+import cutetrade.protobuf.CommonProto.Player
+import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.utils.text.CuteTranslatableTextContent
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.MutableText
 import net.minecraft.text.Text
-import java.util.UUID
+import net.minecraft.text.TranslatableTextContent
+import java.util.*
 
 fun String.toCommandMessage(): String {
-    return Text.translatable("command.cutetrade.$this").string
+    return MutableText.of(CuteTranslatableTextContent(
+        "command.cutetrade.$this",
+        null,
+        TranslatableTextContent.EMPTY_ARGUMENTS
+    )).string
 }
 
 fun String.toScreenMessage(): String {
-    return Text.translatable("screen.cutetrade.$this").string
+    return MutableText.of(CuteTranslatableTextContent(
+        "screen.cutetrade.$this",
+        null,
+        TranslatableTextContent.EMPTY_ARGUMENTS
+    )).string
 }
 
 fun String.toTradeMessage(): String {
-    return Text.translatable("trade.cutetrade.$this").string
+    return MutableText.of(CuteTranslatableTextContent(
+        "trade.cutetrade.$this",
+        null,
+        TranslatableTextContent.EMPTY_ARGUMENTS
+    )).string
+}
+
+fun String.toInformationMessage(): String {
+    return MutableText.of(CuteTranslatableTextContent(
+        "information.cutetrade.$this",
+        null,
+        TranslatableTextContent.EMPTY_ARGUMENTS
+    )).string
 }
 
 
@@ -48,6 +73,10 @@ fun String.toFriendlyText(): FriendlyText {
 
 fun String.getContent(commandContext: CommandContext<ServerCommandSource>): String {
     return StringArgumentType.getString(commandContext, this)
+}
+
+fun String.findProtobufPlayer(): Player? {
+    return PlayerManager.findPlayer(this)
 }
 
 fun length(string: String?): Int {

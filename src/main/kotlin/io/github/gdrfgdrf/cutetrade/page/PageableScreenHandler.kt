@@ -17,6 +17,7 @@ class PageableScreenHandler(
         PageableRegistry.PAGEABLE_SCREEN_HANDLER,
         syncId
     ) {
+    var onItemClick: ((Int) -> Unit)? = null
     var inventory: PageableInventory? = null
 
     init {
@@ -44,12 +45,18 @@ class PageableScreenHandler(
     }
 
     override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
+        if (player !is ServerPlayerEntity) {
+            return
+        }
         if (slotIndex != 45 && slotIndex != 49 && slotIndex != 53) {
+            if (onItemClick != null) {
+                onItemClick!!(slotIndex)
+            }
             return
         }
         when (slotIndex) {
             45 -> inventory?.navigator?.previous()
-            49 -> (player as ServerPlayerEntity).closeHandledScreen()
+            49 -> player.closeHandledScreen()
             53 -> inventory?.navigator?.next()
         }
     }

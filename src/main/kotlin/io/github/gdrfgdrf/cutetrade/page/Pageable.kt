@@ -1,14 +1,11 @@
 package io.github.gdrfgdrf.cutetrade.page
 
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import net.minecraft.item.ItemStack
-import net.minecraft.screen.ScreenHandler
-import net.minecraft.screen.ScreenHandlerListener
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
 class Pageable {
-    private var pageableScreenHandler: PageableScreenHandler? = null
+    var pageableScreenHandler: PageableScreenHandler? = null
 
     var inventory: PageableInventory? = null
     private var latestPageIndex: Int = 0

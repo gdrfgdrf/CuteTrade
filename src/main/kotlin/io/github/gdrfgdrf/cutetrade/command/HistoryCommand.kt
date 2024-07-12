@@ -14,24 +14,31 @@ object HistoryCommand : AbstractCommand(
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
-            HistoryCommand.print(it.source)
+            HistoryCommand.print(it.source, it.source.player!!.name.string)
             0
         }
     }
 ) {
 
-    private fun print(source: ServerCommandSource) {
+     fun print(source: ServerCommandSource, playerName: String) {
         val commandInvoker = CommandInvoker.of(source)
 
-        val protobufPlayer = source.player?.findProtobufPlayer()
+        val protobufPlayer = playerName.findProtobufPlayer()
         if (protobufPlayer == null) {
             "not_found_player".toCommandMessage()
-                .format(source.player?.name?.string)
+                .format(playerName)
                 .send(commandInvoker)
             return
         }
         val tradeIdsList = protobufPlayer.tradeIdsList
         if (tradeIdsList == null || (tradeIdsList as List<String>).isEmpty()) {
+            if (protobufPlayer.name != source.player!!.name.string) {
+                "no_transaction_history_other".toCommandMessage()
+                    .format(playerName)
+                    .send(commandInvoker)
+                return
+            }
+
             "no_transaction_history".toCommandMessage()
                 .send(commandInvoker)
             return
@@ -39,7 +46,7 @@ object HistoryCommand : AbstractCommand(
 
         val pageable = Pageable()
         pageable.openScreen("history_title".toScreenMessage()
-            .format(source.player!!.name.string)
+            .format(playerName)
             .toFriendlyText().toText(""), source.player!!)
 
         val tradeMap = TradeManager.tradeProtobuf?.message?.tradeIdToTradeMap
@@ -52,6 +59,17 @@ object HistoryCommand : AbstractCommand(
         pageable.inventory!!.fullNavigationBar()
 
         pageable.inventory!!.navigator?.show(0)
+
+        pageable.pageableScreenHandler?.onItemClick = onItemClick@ { index ->
+            if (index >= tradeIdsList.size || index < 0) {
+                return@onItemClick
+            }
+            val tradeId = tradeIdsList[index]
+            val trade = tradeMap!![tradeId] ?: return@onItemClick
+
+            trade.printInformation(source.player!!)
+        }
+
 
     }
 

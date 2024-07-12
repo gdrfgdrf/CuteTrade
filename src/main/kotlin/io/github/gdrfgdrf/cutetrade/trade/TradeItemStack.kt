@@ -35,11 +35,12 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
     fun removeTradeItem(
         index: Int
     ) {
-        val tradeItem = itemArray[index]
-        if (tradeItem != null) {
-//            "remove trade item ${tradeItem.itemStack} from index $index".logInfo()
-            tradeItem.itemStack = ItemStack.EMPTY
-        }
+        itemArray[index] = null
+//        val tradeItem = itemArray[index]
+//        if (tradeItem != null) {
+////            "remove trade item ${tradeItem.itemStack} from index $index".logInfo()
+//            tradeItem.itemStack = ItemStack.EMPTY
+//        }
     }
 
     fun removeAll() {

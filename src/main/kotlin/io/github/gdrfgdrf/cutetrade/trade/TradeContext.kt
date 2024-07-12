@@ -137,7 +137,7 @@ class TradeContext private constructor(
         }
     }
 
-    fun redAddTradeItem(
+    fun redSetTradeItem(
         index: Int,
         itemStack: ItemStack,
         playSound: Boolean = true,
@@ -158,7 +158,7 @@ class TradeContext private constructor(
         }
     }
 
-    fun blueAddTradeItem(
+    fun blueSetTradeItem(
         index: Int,
         itemStack: ItemStack,
         playSound: Boolean = true,

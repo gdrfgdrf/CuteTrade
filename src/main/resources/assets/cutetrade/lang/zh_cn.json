@@ -23,14 +23,17 @@
   "command.cutetrade.decline_request_for_blue": "&c您拒绝了来自玩家 %s 的交易请求",
 
   "command.cutetrade.no_transaction_history": "&c没有找到您的交易记录",
+  "command.cutetrade.no_transaction_history_other": "&c没有找到玩家 %s 的交易记录",
   "command.cutetrade.no_transaction_in_progress": "&c当前没有交易进行中",
-  "command.cutetrade.trade_start": "&a&l交易开始",
-  "command.cutetrade.trade_terminate": "&c&l终止交易",
-  "command.cutetrade.trade_end": "&a&l交易已结束",
 
   "command.cutetrade.player_offline": "&c玩家 %s 目前属于离线状态",
   "command.cutetrade.trade_with_oneself": "&c您不能和自己交易",
+
+  "trade.cutetrade.trade_start": "&a&l交易开始",
+  "trade.cutetrade.trade_terminate": "&c&l终止交易",
+  "trade.cutetrade.trade_end": "&a&l交易已结束",
   "trade.cutetrade.presenter_prefix": "&c▌ &a&l主持人 &8>> ",
+
   "trade.cutetrade.state_checked_oneself": "&a您确认了交易内容",
   "trade.cutetrade.state_checked_other": "&a玩家 %s 确认了交易内容",
   "trade.cutetrade.state_unchecked_oneself": "&c您取消确认了交易内容",
@@ -48,14 +51,30 @@
   "screen.cutetrade.click_slot_out_of_limit": "&c超出范围",
 
   "screen.cutetrade.history_title": "玩家 %s 的交易记录",
-  "screen.cutetrade.previous_page": "上一页",
-  "screen.cutetrade.next_page": "下一页",
-  "screen.cutetrade.click_view": "&a点击查看",
+  "screen.cutetrade.previous_page": "§a上一页",
+  "screen.cutetrade.next_page": "§a下一页",
+  "screen.cutetrade.close": "§c点击关闭",
+  "screen.cutetrade.click_view": "§a点击查看",
 
   "command.cutetrade.top": "&l&3=========== &l&6&k| &r&6&lCuteTrade &l&6&k| &r&l&3===========",
   "command.cutetrade.bottom": "&l&3=========== &l&6&k| &r&6&lCuteTrade &l&6&k| &r&l&3===========",
-  "command.cutetrade.help": "&8- &a/trade-public request &e<玩家名> &9向某玩家发起交易请求\n&8- &a/trade-public accept &e<玩家名> &9同意某个玩家的交易请求\n&8- &a/trade-public decline &e<玩家名> &9拒绝某个玩家的交易请求\n&8- &a/trade-public end-trade &9结束当前交易\n&8- &a/trade-public help &9显示帮助\n&8- &a/trade-public tutorial &9显示教程",
-  "command.cutetrade.tutorial": "&81. &e当交易请求被接受时，交易将会开始\n&82. &e之后将开启交易的 GUI 界面，界面左侧的九宫格为己方的出价，界面右侧九宫格为对方的出价\n&83. &e在己方九宫格的左侧的按钮，为确认按钮，\"√\" 为确认，\"⨉\" 为不确认，点击切换是否确认，对方的九宫格旁，为对方的确认状态\n&84. &e若按钮为确认状态，交易双方对当前己方九宫格内的交易物品的任何操作，都会重置确认状态为不确认，点击确认按钮前请仔细确认己方和对方的出价\n&85. &e若双方都确认了交易，交易将会完成，双方交换交易物品\n&86. &e若不想将交易继续往下进行，请直接按 ESC 退出交易界面或使用 /trade-public end-trade 来结束交易"
+  "command.cutetrade.help": "&8- &a/trade-public request &e<玩家名> &9向某玩家发起交易请求\n&8- &a/trade-public accept &e<玩家名> &9同意某个玩家的交易请求\n&8- &a/trade-public decline &e<玩家名> &9拒绝某个玩家的交易请求\n&8- &a/trade-public end-trade &9结束当前交易\n&8- &a/trade-public history &9查看交易历史记录\n&8- &a/trade-public help &9查看帮助\n&8- &a/trade-public tutorial &9显示教程",
+  "command.cutetrade.tutorial": "&81. &e当交易请求被接受时，交易将会开始\n&82. &e之后将开启交易的 GUI 界面，界面左侧的九宫格为己方的出价，界面右侧九宫格为对方的出价\n&83. &e在己方九宫格的左侧的按钮，为确认按钮，\"√\" 为确认，\"⨉\" 为不确认，点击切换是否确认，对方的九宫格旁，为对方的确认状态\n&84. &e若按钮为确认状态，交易双方对当前己方九宫格内的交易物品的任何操作，都会重置确认状态为不确认，点击确认按钮前请仔细确认己方和对方的出价\n&85. &e若双方都确认了交易，交易将会完成，双方交换交易物品\n&86. &e若不想将交易继续往下进行，请直接按 ESC 退出交易界面或使用 /trade-public end-trade 来结束交易",
+  "command.cutetrade.admin_help": "&8- &a/trade-admin history &e<玩家名> &9查看某个玩家的交易历史记录\n&8- &a/trade-admin help &9查看管理员帮助",
+
+
+  "trade.cutetrade.finished_result": "&6&l完成",
+  "trade.cutetrade.terminated_result": "&c&l终止",
+
+  "information.cutetrade.red_player_is": "&a交易发起者：&d%s",
+  "information.cutetrade.blue_player_is": "&a交易接收者：&d%s",
+  "information.cutetrade.trade_result": "&a交易结果：%s",
+  "information.cutetrade.red_player_final_trade_item": "&a%s 的最终出价：",
+  "information.cutetrade.blue_player_final_trade_item": "&a%s 的最终出价",
+  "information.cutetrade.final_trade_item": "&8- &a[%s] x%d",
+  "information.cutetrade.nothing": "&8- &c无",
+  "information.cutetrade.trade_id": "&8交易 id：%s",
+  "information.cutetrade.divider": "&8-------------------------"
 
 
 }

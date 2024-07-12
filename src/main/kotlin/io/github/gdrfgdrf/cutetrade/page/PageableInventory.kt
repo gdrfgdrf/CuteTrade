@@ -51,8 +51,14 @@ class PageableInventory(val rows: Int) : SimpleInventory(rows * 9) {
         whilePane.setCustomName(Text.of(""))
 
         if (!left && !right) {
-            for (i in 0 until 9) {
+            for (i in 0 until 4) {
                 page.slots[45 + i] = whilePane
+            }
+
+            page.slots[49] = redPane
+
+            for (i in 0 until 4) {
+                page.slots[49 + 1 + i] = whilePane
             }
             return
         }

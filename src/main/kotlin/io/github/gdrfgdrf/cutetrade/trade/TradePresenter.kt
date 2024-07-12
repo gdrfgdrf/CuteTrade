@@ -32,7 +32,7 @@ class TradePresenter private constructor(
     fun start() {
         val s2COperationPacket = S2COperationPacket(Operators.CLIENT_TRADE_START)
         broadcastOperation(s2COperationPacket)
-        broadcastMessage("trade_start".toCommandMessage())
+        broadcastMessage("trade_start".toTradeMessage())
 //        broadcastMessage("notice".toTradeMessage())
     }
 
@@ -220,11 +220,11 @@ class TradePresenter private constructor(
     }
 
     fun broadcastFinishMessage() {
-        broadcastMessage("trade_end".toCommandMessage())
+        broadcastMessage("trade_end".toTradeMessage())
     }
 
     fun broadcastTerminateMessage() {
-        broadcastMessage("trade_terminate".toCommandMessage())
+        broadcastMessage("trade_terminate".toTradeMessage())
     }
 
     fun end() {

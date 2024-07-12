@@ -1,6 +1,7 @@
 package io.github.gdrfgdrf.cutetrade.screen.handler
 
 import io.github.gdrfgdrf.cutetrade.CuteTrade
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.trade.TradeInventory
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
@@ -93,6 +94,7 @@ class TradeScreenHandler: ScreenHandler {
         if (slot2.hasStack()) {
             val itemStack2 = slot2.stack
             itemStack = itemStack2.copy()
+
             if (slot < inventory.size()) {
                 if (!this.insertItem(itemStack2, inventory.size(), slots.size, true)) {
                     return ItemStack.EMPTY

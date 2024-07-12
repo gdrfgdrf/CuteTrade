@@ -4,9 +4,7 @@ import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.extension.sendOperationPacket
 import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
 import io.github.gdrfgdrf.cutetrade.screen.factory.TradeScreenHandlerFactory
-import io.github.gdrfgdrf.cutetrade.trade.TradeInventory
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtString
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.ScreenHandlerListener
 import net.minecraft.server.network.ServerPlayerEntity
@@ -35,7 +33,7 @@ class TradeScreenPresenter private constructor(
                 }
                 val slot = handler?.getSlot(slotId) ?: return
                 if (slot.hasStack()) {
-                    tradeScreenContext.context.redAddTradeItem(slotId, slot.stack.copy())
+                    tradeScreenContext.context.redSetTradeItem(slotId, slot.stack)
                 } else {
                     tradeScreenContext.context.redRemoveTradeItem(slotId)
                 }
@@ -51,7 +49,7 @@ class TradeScreenPresenter private constructor(
                 }
                 val slot = handler?.getSlot(slotId) ?: return
                 if (slot.hasStack()) {
-                    tradeScreenContext.context.blueAddTradeItem(slotId, slot.stack.copy())
+                    tradeScreenContext.context.blueSetTradeItem(slotId, slot.stack)
                 } else {
                     tradeScreenContext.context.blueRemoveTradeItem(slotId)
                 }
