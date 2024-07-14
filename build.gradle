@@ -68,11 +68,6 @@ dependencies {
 
 	implementation 'org.xerial.snappy:snappy-java:1.1.10.5'
 	compileJar 'org.xerial.snappy:snappy-java:1.1.10.5'
-
-	compileOnly 'org.projectlombok:lombok:1.18.32'
-	annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-	modImplementation "xyz.nucleoid:server-translations-api:2.0.0+1.20"
 }
 
 processResources {
