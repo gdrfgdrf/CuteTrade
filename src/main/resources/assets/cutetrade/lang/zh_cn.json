@@ -34,7 +34,7 @@
   "trade.cutetrade.trade_start": "&a&l交易开始",
   "trade.cutetrade.trade_terminate": "&c&l终止交易",
   "trade.cutetrade.trade_end": "&a&l交易已结束",
-  "trade.cutetrade.presenter_prefix": "&c▌ &a&l主持人 &8>> ",
+  "trade.cutetrade.presenter_prefix": "&c▌ &a&l主持人 &8>> %s",
 
   "trade.cutetrade.state_checked_oneself": "&a您确认了交易内容",
   "trade.cutetrade.state_checked_other": "&a玩家 %s 确认了交易内容",

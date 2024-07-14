@@ -34,7 +34,7 @@
   "trade.cutetrade.trade_start": "&a&lStart trading",
   "trade.cutetrade.trade_terminate": "&c&lTerminated transaction",
   "trade.cutetrade.trade_end": "&a&lTransaction completed",
-  "trade.cutetrade.presenter_prefix": "&c▌ &a&lPresenter &8>> ",
+  "trade.cutetrade.presenter_prefix": "&c▌ &a&lPresenter &8>> %s",
 
   "trade.cutetrade.state_checked_oneself": "&aYou confirm the transaction",
   "trade.cutetrade.state_checked_other": "&aPlayer %s confirmed the transaction",
