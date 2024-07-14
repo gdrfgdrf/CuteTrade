@@ -27,6 +27,19 @@ CuteTrade
 | /trade-admin history <玩家名> | 查看某个玩家的交易历史记录 | 仅管理员      |
 | /trade-admin help          | 打印管理员帮助       | 仅管理员      |
 
+
+依赖
+------------------------
+运行时您需要添加将 [Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin) 作为 mod 添加
+
+以下为项目所使用的依赖
+
+| 依赖                                                              | 用途           |
+|-----------------------------------------------------------------|--------------|
+| [Protocol Buffers](https://github.com/protocolbuffers/protobuf) | 对玩家和交易数据进行存储 |
+| [Snappy](https://github.com/google/snappy)                      | 对玩家和交易数据进行压缩 |
+
+
 协议
 ------------------------
 该项目使用 Apache-2.0 License 
