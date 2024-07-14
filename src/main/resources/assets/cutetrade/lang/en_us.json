@@ -1,5 +1,5 @@
 {
-  "command.cutetrade.prefix": "&9▌ &6CuteTrade &8>> ",
+  "command.cutetrade.prefix": "&9▌ &6CuteTrade &8>> %s",
 
   "command.cutetrade.only_player": "&cOnly the player can execute",
   "command.cutetrade.no_permission": "&cYou do not have permission to execute this command",
@@ -13,6 +13,8 @@
   "command.cutetrade.request_exist": "&cThe trade request between you and player %s already exists",
   "command.cutetrade.player_is_trading": "&cPlayer %s is trading and cannot complete the operation",
   "command.cutetrade.player_is_trading_oneself": "&cYou are trading and cannot complete the operation",
+  "command.cutetrade.click_to_accept": "&a&l[Accept]",
+  "command.cutetrade.click_to_decline": "&c&l[Decline]",
 
   "command.cutetrade.not_found_request": "&cThere is no trade request between you and player %s",
   "command.cutetrade.accept_request_from_oneself": "&cYou can't accept your own trade request",

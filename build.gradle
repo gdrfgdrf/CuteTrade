@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
 	id 'fabric-loom' version '1.7-SNAPSHOT'
 	id 'maven-publish'
@@ -69,6 +71,8 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok:1.18.32'
 	annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+	modImplementation "xyz.nucleoid:server-translations-api:2.0.0+1.20"
 }
 
 processResources {
@@ -83,7 +87,7 @@ tasks.withType(JavaCompile).configureEach {
 	it.options.release = 17
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+tasks.withType(KotlinCompile).configureEach {
 	kotlinOptions {
 		jvmTarget = 17
 	}
@@ -107,7 +111,7 @@ jar {
 	from { configurations.compileJar.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
-tasks.withType(Copy).all {
+tasks.withType(Copy).configureEach {
 	duplicatesStrategy 'exclude'
 }
 

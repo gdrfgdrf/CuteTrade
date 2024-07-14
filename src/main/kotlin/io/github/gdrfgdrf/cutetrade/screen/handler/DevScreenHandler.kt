@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024 CuteTrade's contributors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package io.github.gdrfgdrf.cutetrade.screen.handler
 
 import io.github.gdrfgdrf.cutetrade.CuteTrade
@@ -6,7 +22,6 @@ import io.github.gdrfgdrf.cutetrade.trade.TradeInventory
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.inventory.Inventory
-import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.Slot
@@ -16,10 +31,9 @@ class DevScreenHandler(
     syncId: Int,
     playerInventory: PlayerInventory
 ) : ScreenHandler(CuteTrade.DEV_SCREEN_HANDLER, syncId) {
-    private val inventory: Inventory
+    private val inventory: Inventory = TradeInventory()
 
     init {
-        this.inventory = TradeInventory()
         checkSize(inventory, INVENTORY_SIZE)
         inventory.onOpen(playerInventory.player)
 

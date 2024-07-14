@@ -1,8 +1,23 @@
+/*
+ * Copyright 2024 CuteTrade's contributors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.gdrfgdrf.cutetrade.common.TraderState
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
 import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext
@@ -18,8 +33,6 @@ import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandler
-import net.minecraft.screen.slot.Slot
-import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import org.joml.Matrix4f
@@ -42,9 +55,6 @@ class TradeScreen(
     private var tradeContext: ClientTradeContext? = null
     private var own: AbstractClientPlayerEntity? = null
     private var other: AbstractClientPlayerEntity? = null
-
-    private val TRADE_PNG = Identifier("cutetrade", "textures/trade_3d.png")
-    private val TEXTURE: Identifier = Identifier("cutetrade", "textures/trade_inventory.png")
 
     private var mouseX = 0f
     private var mouseY = 0f
@@ -77,9 +87,9 @@ class TradeScreen(
             return@filter otherSideName == it.name.string
         }.findAny().orElse(null)
 
-        this.x = (this.width - TradeScreen.backgroundWidth) / 2
-        this.y = ((this.height - TradeScreen.backgroundHeight) / 2)
-        titleX = ((TradeScreen.backgroundHeight - textRenderer.getWidth(title)) / 2);
+        this.x = (this.width - BACKGROUND_WIDTH) / 2
+        this.y = ((this.height - BACKGROUND_HEIGHT) / 2)
+        titleX = ((BACKGROUND_HEIGHT - textRenderer.getWidth(title)) / 2)
 
         ownState!!.setPosition((width - ownState.width) / 2 - 74, (height - ownState.height) / 2 - 39)
         addDrawableChild(ownState)
@@ -89,82 +99,6 @@ class TradeScreen(
         textWidget.setPosition((width - textWidget.width) / 2, height - textWidget.height)
         addDrawable(textWidget)
     }
-
-    override fun onMouseClick(slot: Slot?, slotId: Int, button: Int, actionType: SlotActionType?) {
-//        slot?: return
-//        val index = slot.index
-//        if (index in 9..17) {
-//            return
-//        }
-        super.onMouseClick(slot, slotId, button, actionType)
-    }
-
-//    override fun onMouseClick(slot: Slot?, slotId: Int, button: Int, actionType: SlotActionType) {
-//        if (slot?.inventory != tradeScreenHandler.inventory) {
-//            val index = slot?.index
-//            if (index == null || index < 0) {
-//                return
-//            }
-//
-//            tradeContext?.addTradeItem(index)
-//        } else {
-//            val index = slot.index
-//            if (index < 0) {
-//                return
-//            }
-//
-//            tradeContext?.removeTradeItem(index)
-//        }
-//    }
-
-//    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
-//        if (button == 1) {
-//            return true
-//        }
-//        return super.mouseClicked(mouseX, mouseY, button)
-//    }
-//
-//    override fun mouseDragged(
-//        mouseX: Double,
-//        mouseY: Double,
-//        button: Int,
-//        deltaX: Double,
-//        deltaY: Double
-//    ): Boolean = true
-//
-//    override fun mouseReleased(
-//        mouseX: Double,
-//        mouseY: Double,
-//        button: Int
-//    ): Boolean = true
-//
-//    override fun mouseScrolled(
-//        mouseX: Double,
-//        mouseY: Double,
-//        amount: Double
-//    ): Boolean = true
-//
-//    override fun keyPressed(
-//        keyCode: Int,
-//        scanCode: Int,
-//        modifiers: Int
-//    ): Boolean {
-//        if (keyCode != GLFW.GLFW_KEY_ESCAPE) {
-//            return true
-//        }
-//        return super.keyPressed(keyCode, scanCode, modifiers)
-//    }
-//
-//    override fun keyReleased(
-//        keyCode: Int,
-//        scanCode: Int,
-//        modifiers: Int
-//    ): Boolean  {
-//        if (keyCode != GLFW.GLFW_KEY_ESCAPE) {
-//            return true
-//        }
-//        return super.keyReleased(keyCode, scanCode, modifiers)
-//    }
 
     override fun render(
         context: DrawContext?,
@@ -233,16 +167,15 @@ class TradeScreen(
             y,
             0F,
             0F,
-            TradeScreen.backgroundWidth,
-            TradeScreen.backgroundHeight,
-            TradeScreen.backgroundWidth,
-            TradeScreen.backgroundHeight
+            BACKGROUND_WIDTH,
+            BACKGROUND_HEIGHT,
+            BACKGROUND_WIDTH,
+            BACKGROUND_HEIGHT
         )
         drawEntity(
             context,
             this.x + 32,
             this.y + 110,
-            30,
             (this.x + 32).toFloat() - this.mouseX,
             (this.y + 110 - 50).toFloat() - this.mouseY,
             client!!.player!!
@@ -252,7 +185,6 @@ class TradeScreen(
                 context,
                 this.x + 32 + 225,
                 this.y + 110,
-                30,
                 (this.x + 257).toFloat() - this.mouseX,
                 (this.y + 110 - 50).toFloat() - this.mouseY,
                 other!!
@@ -260,11 +192,11 @@ class TradeScreen(
         }
     }
 
-    fun drawEntity(
+    // Copy from net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity(net.minecraft.client.gui.DrawContext, int, int, int, float, float, net.minecraft.entity.LivingEntity)
+    private fun drawEntity(
         context: DrawContext,
         x: Int,
         y: Int,
-        size: Int,
         mouseX: Float,
         mouseY: Float,
         entity: LivingEntity
@@ -284,7 +216,7 @@ class TradeScreen(
         entity.pitch = -g * 20.0f
         entity.headYaw = entity.yaw
         entity.prevHeadYaw = entity.yaw
-        drawEntity(context, x, y, size, quaternionf, quaternionf2, entity)
+        drawEntity(context, x, y, quaternionf, quaternionf2, entity)
         entity.bodyYaw = h
         entity.yaw = i
         entity.pitch = j
@@ -292,11 +224,12 @@ class TradeScreen(
         entity.headYaw = l
     }
 
-    fun drawEntity(
+    // Copy from net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity(net.minecraft.client.gui.DrawContext, int, int, int, org.joml.Quaternionf, org.joml.Quaternionf, net.minecraft.entity.LivingEntity)
+    @Suppress("DEPRECATION")
+    private fun drawEntity(
         context: DrawContext,
         x: Int,
         y: Int,
-        size: Int,
         quaternionf: Quaternionf?,
         quaternionf2: Quaternionf?,
         entity: LivingEntity
@@ -304,9 +237,9 @@ class TradeScreen(
         context.matrices.push()
         context.matrices.translate(x.toDouble(), y.toDouble(), 50.0)
         context.matrices.multiplyPositionMatrix(Matrix4f().scaling(
-            size.toFloat(),
-            size.toFloat(),
-            (-size).toFloat()
+            30F,
+            30F,
+            -30F
         ))
         context.matrices.multiply(quaternionf)
         DiffuseLighting.method_34742()
@@ -349,8 +282,11 @@ class TradeScreen(
     }
 
     companion object {
-        private val backgroundWidth = 290
-        private val backgroundHeight = 166
+        private const val BACKGROUND_WIDTH = 290
+        private const val BACKGROUND_HEIGHT = 166
+
+        val TRADE_PNG = Identifier("cutetrade", "textures/trade_3d.png")
+        val TEXTURE: Identifier = Identifier("cutetrade", "textures/trade_inventory.png")
     }
 
 }

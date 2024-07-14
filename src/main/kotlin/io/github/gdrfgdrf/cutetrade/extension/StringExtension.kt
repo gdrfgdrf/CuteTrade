@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024 CuteTrade's contributors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package io.github.gdrfgdrf.cutetrade.extension
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -6,46 +22,30 @@ import cutetrade.protobuf.CommonProto.Player
 import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
-import io.github.gdrfgdrf.cutetrade.utils.text.CuteTranslatableTextContent
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.MutableText
 import net.minecraft.text.Text
-import net.minecraft.text.TranslatableTextContent
 import java.util.*
 
+fun String.toText(): Text {
+    return Text.of(this)
+}
+
 fun String.toCommandMessage(): String {
-    return MutableText.of(CuteTranslatableTextContent(
-        "command.cutetrade.$this",
-        null,
-        TranslatableTextContent.EMPTY_ARGUMENTS
-    )).string
+    return Text.translatable("command.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toScreenMessage(): String {
-    return MutableText.of(CuteTranslatableTextContent(
-        "screen.cutetrade.$this",
-        null,
-        TranslatableTextContent.EMPTY_ARGUMENTS
-    )).string
+    return Text.translatable("screen.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toTradeMessage(): String {
-    return MutableText.of(CuteTranslatableTextContent(
-        "trade.cutetrade.$this",
-        null,
-        TranslatableTextContent.EMPTY_ARGUMENTS
-    )).string
+    return Text.translatable("trade.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toInformationMessage(): String {
-    return MutableText.of(CuteTranslatableTextContent(
-        "information.cutetrade.$this",
-        null,
-        TranslatableTextContent.EMPTY_ARGUMENTS
-    )).string
+    return Text.translatable("information.cutetrade.$this").string.replace("&", "§")
 }
-
 
 fun String.send(prefix: String, serverPlayerEntity: ServerPlayerEntity) {
     if (!serverPlayerEntity.isDisconnected) {
@@ -60,7 +60,11 @@ fun String.send(serverPlayerEntity: ServerPlayerEntity) {
 }
 
 fun String.send(prefix: String, commandInvoker: CommandInvoker) {
-    toFriendlyText().send(prefix, commandInvoker)
+    if (notBlank(prefix)) {
+        toFriendlyText().send(prefix, commandInvoker)
+        return
+    }
+    toFriendlyText().send("$prefix%s", commandInvoker)
 }
 
 fun String.send(commandInvoker: CommandInvoker) {

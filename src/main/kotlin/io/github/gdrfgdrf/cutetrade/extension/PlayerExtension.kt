@@ -1,3 +1,19 @@
+/*
+ * Copyright 2024 CuteTrade's contributors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package io.github.gdrfgdrf.cutetrade.extension
 
 import cutetrade.protobuf.CommonProto.Player
@@ -5,19 +21,12 @@ import io.github.gdrfgdrf.cutetrade.common.TradeRequest
 import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeRequestManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.trade.TradeContext
-import io.github.gdrfgdrf.cutetrade.trade.TradeItemStack
-import net.minecraft.item.SkullItem
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayerEntity
 
 fun Player.findServerEntity(server: MinecraftServer): ServerPlayerEntity? {
     return server.playerManager.getPlayer(this.name)
-}
-
-fun String.findServerEntity(context: PacketContext<*>): ServerPlayerEntity? {
-    return context.sender?.server?.playerManager?.getPlayer(this)
 }
 
 fun ServerPlayerEntity.findProtobufPlayer(): Player? {
@@ -41,21 +50,12 @@ fun ServerPlayerEntity.removeTradeRequest(redPlayerEntity: ServerPlayerEntity) {
     }
 }
 
-fun ServerPlayerEntity.currentTradeInventory(): TradeItemStack? {
-    val currentTrade = currentTrade() ?: return null
-    return if (isRed()) {
-        currentTrade.redTradeItemStack
-    } else {
-        currentTrade.blueTradeItemStack
-    }
-}
-
 fun ServerPlayerEntity.isTrading(): Boolean {
     return TradeManager.trades.contains(this)
 }
 
 fun ServerPlayerEntity.currentTrade(): TradeContext? {
-    return TradeManager.trades[this];
+    return TradeManager.trades[this]
 }
 
 fun ServerPlayerEntity.checkInTrade(): Boolean {
@@ -66,10 +66,6 @@ fun ServerPlayerEntity.checkInTrade(): Boolean {
         return false
     }
     return true
-}
-
-fun ServerPlayerEntity.hasTradeRequestWith(redPlayerEntity: ServerPlayerEntity): Boolean {
-    return getTradeRequest(redPlayerEntity) != null
 }
 
 fun ServerPlayerEntity.isRed(): Boolean {

@@ -1,7 +1,22 @@
+/*
+ * Copyright 2024 CuteTrade's contributors
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
 package io.github.gdrfgdrf.cutetrade.screen.handler
 
 import io.github.gdrfgdrf.cutetrade.CuteTrade
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.trade.TradeInventory
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.entity.player.PlayerInventory
@@ -11,21 +26,15 @@ import net.minecraft.screen.ScreenHandler
 import net.minecraft.screen.slot.Slot
 import net.minecraft.screen.slot.SlotActionType
 
-class TradeScreenHandler: ScreenHandler {
-    val inventory: Inventory
-    val playerInventory: PlayerInventory
+class TradeScreenHandler(
+    syncId: Int,
+    playerInventory: PlayerInventory,
+) : ScreenHandler(CuteTrade.TRADE_SCREEN_HANDLER, syncId) {
+    val inventory: Inventory = TradeInventory()
 
-    constructor(
-        syncId: Int,
-        playerInventory: PlayerInventory,
-    ) : super(CuteTrade.TRADE_SCREEN_HANDLER, syncId) {
-        this.inventory = TradeInventory()
-        this.playerInventory = playerInventory
-
+    init {
         checkSize(inventory, INVENTORY_SIZE)
         inventory.onOpen(playerInventory.player)
-
-        // left side 0 - 8 (9)
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val index = j + (i * 3)
@@ -33,8 +42,6 @@ class TradeScreenHandler: ScreenHandler {
                 this.addSlot(slot)
             }
         }
-
-        // right side 9 - 17 (9)
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 val index = j + (i * 3) + 9
@@ -42,34 +49,21 @@ class TradeScreenHandler: ScreenHandler {
                 this.addSlot(slot)
             }
         }
-
-        // Player inventory 9 - 35 (27)
         for (i in 0 until 3) {
             for (j in 0 until 9) {
                 val index = j + i * 9 + 9
                 this.addSlot(Slot(playerInventory, index, 65 + j * 18, 84 + i * 18))
             }
         }
-
-        // Player hotbar 0 - 8 (9)
         for (i in 0 until 9) {
             this.addSlot(Slot(playerInventory, i, 65 + i * 18, 142))
         }
-
     }
 
     override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
         if (slotIndex in 9 .. 17) {
             return
         }
-//        if (slotIndex in 0 .. 8 && player is ServerPlayerEntity) {
-//            val currentTrade = player.currentTrade()
-//            if (currentTrade != null) {
-//                if (player.isRed()) {
-//                    currentTrade.redAddTradeItem()
-//                }
-//            }
-//        }
         super.onSlotClick(slotIndex, button, actionType, player)
     }
 
@@ -118,8 +112,6 @@ class TradeScreenHandler: ScreenHandler {
     }
 
     companion object {
-        val INVENTORY_SIZE = 18 // 3 * 6
-        val INVENTORY_LEFT_SIZE = 9 // 3 * 3
-        val INVENTORY_RIGHT_SIZE = 9 // 3 * 3
+        const val INVENTORY_SIZE = 18 // 3 * 6
     }
 }
