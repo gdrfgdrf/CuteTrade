@@ -48,9 +48,11 @@ fun String.toInformationMessage(): String {
 }
 
 fun String.send(prefix: String, serverPlayerEntity: ServerPlayerEntity) {
-    if (!serverPlayerEntity.isDisconnected) {
+    if (notBlank(prefix)) {
         toFriendlyText().send(prefix, serverPlayerEntity)
+        return
     }
+    toFriendlyText().send("$prefix%s", serverPlayerEntity)
 }
 
 fun String.send(serverPlayerEntity: ServerPlayerEntity) {
