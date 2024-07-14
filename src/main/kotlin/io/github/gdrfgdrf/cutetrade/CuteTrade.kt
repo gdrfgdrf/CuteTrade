@@ -16,7 +16,6 @@
 
 package io.github.gdrfgdrf.cutetrade
 
-import com.google.common.collect.ImmutableMap
 import com.google.protobuf.Message
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import cutetrade.protobuf.StorableProto.PlayerStore
@@ -52,20 +51,16 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.text.*
 import net.minecraft.util.Identifier
-import net.minecraft.util.Language
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.*
 
 object CuteTrade : ModInitializer {
 	val TRADE_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_trade_screen", ::TradeScreenHandler)
 	val DEV_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
-	var LANGUAGE: Language? = null
 
 	init {
 		PageableRegistry
@@ -106,8 +101,6 @@ object CuteTrade : ModInitializer {
 			operators.forEach {
 				OperationDispatcher.add(it)
 			}
-
-			LANGUAGE = prepareLanguage()
 		}.onFailure {
 			"Unable to initialize CuteTrade".logError(it)
 			throw IllegalStateException(it)
@@ -194,47 +187,6 @@ object CuteTrade : ModInitializer {
 			dispatcher.register(
 				admin
 			)
-		}
-	}
-
-	private fun prepareLanguage(): Language? {
-		val inputStream = CuteTrade::class.java.getResourceAsStream("/assets/cutetrade/lang/zh_cn.json") ?: return null
-
-		val builder = ImmutableMap.builder<String, String>()
-		val consumer: (String, String) -> Unit = { s1, s2 ->
-			builder.put(s1, s2)
-		}
-
-		Language.load(inputStream, consumer)
-		val map = builder.build()
-		return object : Language() {
-			override fun get(key: String?, fallback: String?): String {
-				return map.getOrDefault(key, fallback) as String
-			}
-
-			override fun hasTranslation(key: String?): Boolean {
-				return map.containsKey(key)
-			}
-
-			override fun isRightToLeft(): Boolean {
-				return false
-			}
-
-			override fun reorder(text: StringVisitable?): OrderedText {
-				return OrderedText { visitor: CharacterVisitor? ->
-					text!!.visit(
-						{ style: Style?, string: String? ->
-							if (TextVisitFactory.visitFormatted(
-									string,
-									style,
-									visitor
-								)
-							) Optional.empty() else StringVisitable.TERMINATE_VISIT
-						}, Style.EMPTY
-					)
-						.isPresent
-				}
-			}
 		}
 	}
 
