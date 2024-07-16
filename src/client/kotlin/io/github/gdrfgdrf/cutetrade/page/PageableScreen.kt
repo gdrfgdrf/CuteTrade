@@ -16,13 +16,13 @@
 
 package io.github.gdrfgdrf.cutetrade.page
 
+import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
-import net.minecraft.util.Identifier
 
 @Environment(EnvType.CLIENT)
 class PageableScreen(
@@ -67,6 +67,6 @@ class PageableScreen(
     }
 
     companion object {
-        val TEXTURE = Identifier("textures/gui/container/generic_54.png")
+        val TEXTURE = createIdentifier("textures/gui/container/generic_54.png")
     }
 }

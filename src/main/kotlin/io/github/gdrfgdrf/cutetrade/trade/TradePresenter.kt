@@ -23,7 +23,6 @@ import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
 import net.minecraft.item.ItemStack
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
-import net.minecraft.util.Identifier
 import java.time.Instant
 
 class TradePresenter private constructor(
@@ -122,19 +121,19 @@ class TradePresenter private constructor(
     }
 
     fun playStartSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:entity.experience_orb.pickup"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:entity.experience_orb.pickup"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
 
     fun playStatePositiveSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:block.note_block.harp"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:block.note_block.harp"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
 
     fun playStateNegativeSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:block.note_block.bass"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:block.note_block.bass"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
@@ -175,7 +174,7 @@ class TradePresenter private constructor(
     }
 
     fun playAddItemSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:block.note_block.bell"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:block.note_block.bell"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
@@ -216,13 +215,13 @@ class TradePresenter private constructor(
     }
 
     fun playRemoveItemSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:block.note_block.didgeridoo"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:block.note_block.didgeridoo"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
 
     fun playTerminateSound() {
-        val soundEvent = SoundEvent.of(Identifier("minecraft:block.anvil.land"))
+        val soundEvent = SoundEvent.of(createIdentifier("minecraft:block.anvil.land"))
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }

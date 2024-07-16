@@ -18,6 +18,7 @@ package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
 import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext
@@ -34,7 +35,6 @@ import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.text.Text
-import net.minecraft.util.Identifier
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import kotlin.math.atan
@@ -285,8 +285,8 @@ class TradeScreen(
         private const val BACKGROUND_WIDTH = 290
         private const val BACKGROUND_HEIGHT = 166
 
-        val TRADE_PNG = Identifier("cutetrade", "textures/trade_3d.png")
-        val TEXTURE: Identifier = Identifier("cutetrade", "textures/trade_inventory.png")
+        val TRADE_PNG = createIdentifier("cutetrade", "textures/trade_3d.png")
+        val TEXTURE = createIdentifier("cutetrade", "textures/trade_inventory.png")
     }
 
 }

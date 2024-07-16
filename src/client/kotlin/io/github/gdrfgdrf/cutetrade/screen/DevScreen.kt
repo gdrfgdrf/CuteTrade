@@ -17,6 +17,7 @@
 package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
+import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
@@ -43,7 +44,7 @@ class DevScreen(
     inventory,
     title
 ) {
-    private val TEXTURE: Identifier = Identifier("cutetrade", "textures/trade_inventory.png")
+    private val TEXTURE: Identifier = createIdentifier("cutetrade", "textures/trade_inventory.png")!!
     private var mouseX = 0f
     private var mouseY = 0f
 
