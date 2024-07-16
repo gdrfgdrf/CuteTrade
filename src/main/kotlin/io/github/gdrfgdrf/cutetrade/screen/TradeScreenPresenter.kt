@@ -82,7 +82,7 @@ class TradeScreenPresenter private constructor(
         val redTradeInventory = tradeScreenContext.context.redTradeItemStack
         val blueTradeInventory = tradeScreenContext.context.blueTradeItemStack
 
-        redTradeInventory.itemArray.forEachIndexed { index, tradeItem ->
+        redTradeInventory?.itemArray?.forEachIndexed { index, tradeItem ->
             tradeItem?.let {
                 val redRevision = redScreenHandler!!.nextRevision()
                 redScreenHandler!!.setStackInSlot(index, redRevision, tradeItem.itemStack)
@@ -91,7 +91,7 @@ class TradeScreenPresenter private constructor(
                 blueScreenHandler!!.setStackInSlot(index + 9, blueRevision, tradeItem.itemStack)
             }
         }
-        blueTradeInventory.itemArray.forEachIndexed { index, tradeItem ->
+        blueTradeInventory?.itemArray?.forEachIndexed { index, tradeItem ->
             tradeItem?.let {
                 val redRevision = redScreenHandler!!.nextRevision()
                 redScreenHandler!!.setStackInSlot(index + 9, redRevision, tradeItem.itemStack)

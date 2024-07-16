@@ -40,6 +40,9 @@ class ClientTradeContext private constructor(
         clientTradeScreenContext.initialize()
 
         initialized = true
+
+        val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_CLIENT_INITIALIZED)
+        Constants.C2S_OPERATION.sendPacket(c2SOperationPacket::write)
     }
 
     fun sendTraderStateToServer(
