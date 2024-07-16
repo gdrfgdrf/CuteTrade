@@ -86,7 +86,7 @@ class TradeContext private constructor(
 
         redPlayerInitialized = true
         presenter!!.broadcastRedInitialized()
-        if (bluePlayerInitialized && status != TradeStatus.STARTED) {
+        if (bluePlayerInitialized) {
             start()
         }
     }
@@ -96,7 +96,7 @@ class TradeContext private constructor(
 
         bluePlayerInitialized = true
         presenter!!.broadcastBlueInitialized()
-        if (redPlayerInitialized && status != TradeStatus.STARTED) {
+        if (redPlayerInitialized) {
             start()
         }
     }
@@ -104,6 +104,9 @@ class TradeContext private constructor(
     @Synchronized
     fun start() {
         check()
+        if (status == TradeStatus.STARTED) {
+            return
+        }
 
         presenter!!.start()
         tradeScreenContext!!.start()
