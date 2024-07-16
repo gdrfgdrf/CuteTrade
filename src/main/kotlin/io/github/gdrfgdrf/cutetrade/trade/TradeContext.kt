@@ -56,6 +56,12 @@ class TradeContext private constructor(
         }
     }
 
+    private fun checkStart() {
+        if (status != TradeStatus.STARTED) {
+            throw IllegalStateException("Trade is not started")
+        }
+    }
+
     fun initialize() {
         tradeId = generateTradeId()
 
@@ -131,7 +137,7 @@ class TradeContext private constructor(
         playSound: Boolean = true,
         sendMessage: Boolean = true
     ) {
-        check()
+        checkStart()
 
         if (redState == this.redState) {
             return
@@ -157,7 +163,7 @@ class TradeContext private constructor(
         playSound: Boolean = true,
         sendMessage: Boolean = true
     ) {
-        check()
+        checkStart()
 
         if (blueState == this.blueState) {
             return
@@ -179,7 +185,7 @@ class TradeContext private constructor(
     }
 
     fun checkState() {
-        check()
+        checkStart()
 
         if (redState == TraderState.CHECKED && blueState == TraderState.CHECKED) {
             finish()
@@ -193,7 +199,7 @@ class TradeContext private constructor(
         updateState: Boolean = true,
         broadcastMessage: Boolean = true
     ) {
-        check()
+        checkStart()
 
         redTradeItemStack?.setTradeItem(index, itemStack)
         tradeScreenContext!!.syncTradeInventory()
@@ -216,7 +222,7 @@ class TradeContext private constructor(
         updateState: Boolean = true,
         broadcastMessage: Boolean = true
     ) {
-        check()
+        checkStart()
 
         blueTradeItemStack?.setTradeItem(index, itemStack)
         tradeScreenContext!!.syncTradeInventory()
@@ -235,7 +241,7 @@ class TradeContext private constructor(
     fun redRemoveTradeItem(
         index: Int
     ) {
-        check()
+        checkStart()
 
         val itemStack = redTradeItemStack?.get(index)
         itemStack?.let {
@@ -253,7 +259,7 @@ class TradeContext private constructor(
     fun blueRemoveTradeItem(
         index: Int
     ) {
-        check()
+        checkStart()
 
         val itemStack = blueTradeItemStack?.get(index)
         itemStack?.let {
@@ -279,6 +285,7 @@ class TradeContext private constructor(
 
     fun finish() {
         check()
+        checkStart()
 
         status = TradeStatus.FINISHED
         end(true)
