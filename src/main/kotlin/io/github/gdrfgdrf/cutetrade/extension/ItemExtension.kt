@@ -17,18 +17,22 @@
 package io.github.gdrfgdrf.cutetrade.extension
 
 import cutetrade.protobuf.CommonProto.TradeItem
+import net.minecraft.component.DataComponentTypes
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.StringNbtReader
+import net.minecraft.text.Text
 
 fun ItemStack.toProtobufTradeItem(addByName: String): TradeItem {
-    val nbtCompound = NbtCompound()
-    this.writeNbt(nbtCompound)
+    val nbtCompound = this.encode(registryManager())
 
     return TradeItem.newBuilder()
         .setNbt(nbtCompound.asString())
         .setAddByName(addByName)
         .build()
+}
+
+fun ItemStack.setCustomName(name: Text) {
+    this.set(DataComponentTypes.CUSTOM_NAME, name)
 }
 
 fun TradeItem.toItemStack(): ItemStack {
@@ -37,5 +41,5 @@ fun TradeItem.toItemStack(): ItemStack {
     }
 
     val nbtCompound = StringNbtReader.parse(this.nbt)
-    return ItemStack.fromNbt(nbtCompound)
+    return ItemStack.fromNbtOrEmpty(registryManager(), nbtCompound)
 }

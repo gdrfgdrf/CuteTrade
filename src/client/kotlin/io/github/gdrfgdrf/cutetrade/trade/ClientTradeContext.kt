@@ -16,7 +16,6 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import io.github.gdrfgdrf.cutetrade.common.Constants
 import io.github.gdrfgdrf.cutetrade.common.Operators
 import io.github.gdrfgdrf.cutetrade.common.TraderState
 import io.github.gdrfgdrf.cutetrade.extension.sendPacket
@@ -40,6 +39,9 @@ class ClientTradeContext private constructor(
         clientTradeScreenContext.initialize()
 
         initialized = true
+
+        val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_CLIENT_INITIALIZED)
+        sendPacket(c2SOperationPacket)
     }
 
     fun sendTraderStateToServer(
@@ -48,9 +50,7 @@ class ClientTradeContext private constructor(
         val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_UPDATE_TRADER_STATE)
         c2SOperationPacket.stringArgs = arrayOf(targetState.name)
 
-        Constants.C2S_OPERATION.sendPacket {
-            c2SOperationPacket.write(it)
-        }
+        sendPacket(c2SOperationPacket)
     }
 
     fun updateTraderStateFromServer(

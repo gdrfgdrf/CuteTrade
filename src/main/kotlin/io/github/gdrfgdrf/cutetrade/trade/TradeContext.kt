@@ -20,7 +20,6 @@ import cutetrade.protobuf.CommonProto.TradeResult
 import io.github.gdrfgdrf.cutetrade.common.TradeStatus
 import io.github.gdrfgdrf.cutetrade.common.TraderState
 import io.github.gdrfgdrf.cutetrade.extension.generateTradeId
-import io.github.gdrfgdrf.cutetrade.extension.removeAllTags
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.screen.TradeScreenContext
 import net.minecraft.item.ItemStack
@@ -31,23 +30,31 @@ class TradeContext private constructor(
     val redPlayer: ServerPlayerEntity,
     val bluePlayer: ServerPlayerEntity
 ) {
-    private var initialized = false
+    var initialized = false
+    var redPlayerInitialized = false
+    var bluePlayerInitialized = false
 
     lateinit var tradeId: String
 
     var startTime: Instant? = null
     var endTime: Instant? = null
-    private lateinit var result: TradeResult
+    private var result: TradeResult? = TradeResult.TRADE_RESULT_DEFAULT
     lateinit var status: TradeStatus
 
-    private lateinit var tradeScreenContext: TradeScreenContext
+    private var tradeScreenContext: TradeScreenContext? = null
 
-    private lateinit var presenter: TradePresenter
+    private var presenter: TradePresenter? = null
 
-    var redState: TraderState = TraderState.UNCHECKED
-    var blueState: TraderState = TraderState.UNCHECKED
-    lateinit var redTradeItemStack: TradeItemStack
-    lateinit var blueTradeItemStack: TradeItemStack
+    private var redState: TraderState = TraderState.UNCHECKED
+    private var blueState: TraderState = TraderState.UNCHECKED
+    var redTradeItemStack: TradeItemStack? = null
+    var blueTradeItemStack: TradeItemStack? = null
+
+    private fun check() {
+        if (!initialized) {
+            throw IllegalStateException("Trade is not initialized")
+        }
+    }
 
     fun initialize() {
         tradeId = generateTradeId()
@@ -60,29 +67,46 @@ class TradeContext private constructor(
             redPlayer,
             bluePlayer
         )
-        tradeScreenContext.initialize()
+        tradeScreenContext!!.initialize()
 
         presenter = TradePresenter.create(this)
-        presenter.initialize()
+        presenter!!.initialize()
 
         redTradeItemStack = TradeItemStack.create(redPlayer)
         blueTradeItemStack = TradeItemStack.create(bluePlayer)
 
         initialized = true
         status = TradeStatus.INITIALIZED
+
+        TradeManager.tradeInitialized(this)
     }
 
-    fun start() {
-        if (!initialized) {
-            throw IllegalStateException("Trade is not initialized")
+    fun redPlayerInitialized() {
+        check()
+
+        redPlayerInitialized = true
+        presenter!!.broadcastRedInitialized()
+        if (bluePlayerInitialized && status != TradeStatus.STARTED) {
+            start()
         }
+    }
 
-        redPlayer.inventory.removeAllTags("cutetrade-add-by")
-        bluePlayer.inventory.removeAllTags("cutetrade-add-by")
+    fun bluePlayerInitialized() {
+        check()
 
-        presenter.start()
-        TradeManager.tradeStart(this)
-        tradeScreenContext.start()
+        bluePlayerInitialized = true
+        presenter!!.broadcastBlueInitialized()
+        if (redPlayerInitialized && status != TradeStatus.STARTED) {
+            start()
+        }
+    }
+
+    @Synchronized
+    fun start() {
+        check()
+
+        presenter!!.start()
+        tradeScreenContext!!.start()
 
         status = TradeStatus.STARTED
 
@@ -96,7 +120,7 @@ class TradeContext private constructor(
             playSound = false,
             sendMessage = false
         )
-        presenter.playStartSound()
+        presenter!!.playStartSound()
     }
 
     fun updateRedState(
@@ -104,21 +128,23 @@ class TradeContext private constructor(
         playSound: Boolean = true,
         sendMessage: Boolean = true
     ) {
+        check()
+
         if (redState == this.redState) {
             return
         }
 
         this.redState = redState
-        presenter.updateState(redState, blueState)
+        presenter!!.updateState(redState, blueState)
         if (playSound) {
             if (redState == TraderState.CHECKED) {
-                presenter.playStatePositiveSound()
+                presenter!!.playStatePositiveSound()
             } else {
-                presenter.playStateNegativeSound()
+                presenter!!.playStateNegativeSound()
             }
         }
         if (sendMessage) {
-            presenter.broadcastRedStateChange(redState)
+            presenter!!.broadcastRedStateChange(redState)
         }
         checkState()
     }
@@ -128,26 +154,30 @@ class TradeContext private constructor(
         playSound: Boolean = true,
         sendMessage: Boolean = true
     ) {
+        check()
+
         if (blueState == this.blueState) {
             return
         }
 
         this.blueState = blueState
-        presenter.updateState(redState, blueState)
+        presenter!!.updateState(redState, blueState)
         if (playSound) {
             if (blueState == TraderState.CHECKED) {
-                presenter.playStatePositiveSound()
+                presenter!!.playStatePositiveSound()
             } else {
-                presenter.playStateNegativeSound()
+                presenter!!.playStateNegativeSound()
             }
         }
         if (sendMessage) {
-            presenter.broadcastBlueStateChange(blueState)
+            presenter!!.broadcastBlueStateChange(blueState)
         }
         checkState()
     }
 
     fun checkState() {
+        check()
+
         if (redState == TraderState.CHECKED && blueState == TraderState.CHECKED) {
             finish()
         }
@@ -160,17 +190,19 @@ class TradeContext private constructor(
         updateState: Boolean = true,
         broadcastMessage: Boolean = true
     ) {
-        redTradeItemStack.setTradeItem(index, itemStack)
-        tradeScreenContext.syncTradeInventory()
+        check()
+
+        redTradeItemStack?.setTradeItem(index, itemStack)
+        tradeScreenContext!!.syncTradeInventory()
         if (playSound) {
-            presenter.playAddItemSound()
+            presenter!!.playAddItemSound()
         }
         if (updateState) {
             updateRedState(TraderState.UNCHECKED)
             updateBlueState(TraderState.UNCHECKED)
         }
         if (broadcastMessage) {
-            presenter.broadcastRedAddItemMessage(itemStack)
+            presenter!!.broadcastRedAddItemMessage(itemStack)
         }
     }
 
@@ -181,31 +213,35 @@ class TradeContext private constructor(
         updateState: Boolean = true,
         broadcastMessage: Boolean = true
     ) {
-        blueTradeItemStack.setTradeItem(index, itemStack)
-        tradeScreenContext.syncTradeInventory()
+        check()
+
+        blueTradeItemStack?.setTradeItem(index, itemStack)
+        tradeScreenContext!!.syncTradeInventory()
         if (playSound) {
-            presenter.playAddItemSound()
+            presenter!!.playAddItemSound()
         }
         if (updateState) {
             updateRedState(TraderState.UNCHECKED)
             updateBlueState(TraderState.UNCHECKED)
         }
         if (broadcastMessage) {
-            presenter.broadcastBlueAddItem(itemStack)
+            presenter!!.broadcastBlueAddItem(itemStack)
         }
     }
 
     fun redRemoveTradeItem(
         index: Int
     ) {
-        val itemStack = redTradeItemStack.get(index)
+        check()
+
+        val itemStack = redTradeItemStack?.get(index)
         itemStack?.let {
-            presenter.broadcastRedRemoveItemMessage(it.itemStack)
+            presenter!!.broadcastRedRemoveItemMessage(it.itemStack)
         }
 
-        redTradeItemStack.removeTradeItem(index)
-        tradeScreenContext.syncTradeInventory()
-        presenter.playRemoveItemSound()
+        redTradeItemStack?.removeTradeItem(index)
+        tradeScreenContext!!.syncTradeInventory()
+        presenter!!.playRemoveItemSound()
 
         updateRedState(TraderState.UNCHECKED)
         updateBlueState(TraderState.UNCHECKED)
@@ -214,61 +250,62 @@ class TradeContext private constructor(
     fun blueRemoveTradeItem(
         index: Int
     ) {
-        val itemStack = blueTradeItemStack.get(index)
+        check()
+
+        val itemStack = blueTradeItemStack?.get(index)
         itemStack?.let {
-            presenter.broadcastBlueRemoveItemMessage(it.itemStack)
+            presenter!!.broadcastBlueRemoveItemMessage(it.itemStack)
         }
 
-        blueTradeItemStack.removeTradeItem(index)
-        tradeScreenContext.syncTradeInventory()
-        presenter.playRemoveItemSound()
+        blueTradeItemStack?.removeTradeItem(index)
+        tradeScreenContext!!.syncTradeInventory()
+        presenter!!.playRemoveItemSound()
 
         updateRedState(TraderState.UNCHECKED)
         updateBlueState(TraderState.UNCHECKED)
     }
 
     fun terminate() {
+        check()
+
         status = TradeStatus.TERMINATED
         end(false)
-        presenter.playTerminateSound()
-        presenter.broadcastTerminateMessage()
+        presenter!!.playTerminateSound()
+        presenter!!.broadcastTerminateMessage()
     }
 
     fun finish() {
+        check()
+
         status = TradeStatus.FINISHED
         end(true)
 
-        presenter.playFinishSound()
-        presenter.broadcastFinishMessage()
+        presenter!!.playFinishSound()
+        presenter!!.broadcastFinishMessage()
     }
 
     fun end(
         normal: Boolean
     ) {
-        if (!initialized) {
-            throw IllegalStateException("Trade is not initialized")
-        }
+        check()
         endTime = Instant.now()
-        tradeScreenContext.end()
+        tradeScreenContext!!.end()
 
         if (!normal) {
-            redTradeItemStack.returnAll()
-            blueTradeItemStack.returnAll()
+            redTradeItemStack?.returnAll()
+            blueTradeItemStack?.returnAll()
         } else {
-            val redTradeItemStackCopied = redTradeItemStack.copy()
-            val blueTradeItemStackCopied = blueTradeItemStack.copy()
+            val redTradeItemStackCopied = redTradeItemStack?.copy()
+            val blueTradeItemStackCopied = blueTradeItemStack?.copy()
 
-            redTradeItemStackCopied.moveTo(bluePlayer)
-            blueTradeItemStackCopied.moveTo(redPlayer)
+            redTradeItemStackCopied?.moveTo(bluePlayer)
+            blueTradeItemStackCopied?.moveTo(redPlayer)
 
-            redTradeItemStackCopied.removeAll()
-            blueTradeItemStackCopied.removeAll()
+            redTradeItemStackCopied?.removeAll()
+            blueTradeItemStackCopied?.removeAll()
         }
 
-        redPlayer.inventory.removeAllTags("cutetrade-add-by")
-        bluePlayer.inventory.removeAllTags("cutetrade-add-by")
-
-        presenter.end()
+        presenter!!.end()
 
         TradeManager.tradeEnd(this)
         TradeManager.recordTrade(this)

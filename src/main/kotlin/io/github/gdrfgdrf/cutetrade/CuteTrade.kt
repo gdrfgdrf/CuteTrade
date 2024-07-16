@@ -32,7 +32,9 @@ import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.network.packet.C2SOperationPacket
 import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
+import io.github.gdrfgdrf.cutetrade.operation.server.ClientInitializedOperator
 import io.github.gdrfgdrf.cutetrade.operation.server.UpdateTraderStateOperator
 import io.github.gdrfgdrf.cutetrade.page.PageableRegistry
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
@@ -48,10 +50,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.network.PacketByteBuf
 import net.minecraft.screen.ScreenHandlerType
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.util.Identifier
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -61,6 +62,7 @@ object CuteTrade : ModInitializer {
 		ScreenHandlerType.register("cutetrade:cutetrade_trade_screen", ::TradeScreenHandler)
 	val DEV_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
+	var SERVER: MinecraftServer? = null
 
 	init {
 		PageableRegistry
@@ -96,6 +98,7 @@ object CuteTrade : ModInitializer {
 			FriendlyText.prefix = "prefix".toCommandMessage()
 
 			val operators = arrayOf(
+				ClientInitializedOperator,
 				UpdateTraderStateOperator
 			)
 			operators.forEach {
@@ -110,22 +113,17 @@ object CuteTrade : ModInitializer {
 	private fun preparePacketReceiver() {
 		"Registering network channel".logInfo()
 
-		NetworkManager.initialize(object : NetworkManager.RegisterPacketInterface {
-			override fun <T> register(
-				packetIdentifier: Identifier,
-				messageType: Class<T>,
-				encoder: (T, PacketByteBuf) -> Unit,
-				decoder: (PacketByteBuf) -> T,
-				handler: (PacketContext<T>) -> Unit,
-			) {
-				ServerPlayNetworking.registerGlobalReceiver(packetIdentifier) { server, player, _, buf, _ ->
-					val message: T = decoder(buf)
-					server.execute {
-						handler(PacketContext(player, message))
-					}
-				}
+		NetworkManager.initialize()
+		ServerPlayNetworking.registerGlobalReceiver(C2SOperationPacket.ID) { payload, context ->
+			val player = context.player()
+			val server = player.server
+			server.execute {
+				val packetContext = PacketContext(payload)
+				packetContext.sender = player
+
+				C2SOperationPacket.handle(packetContext)
 			}
-		})
+		}
 	}
 
 	private fun prepareEventListener() {
@@ -136,7 +134,8 @@ object CuteTrade : ModInitializer {
 			handler.player.currentTrade()?.terminate()
 		}
 
-		ServerLifecycleEvents.SERVER_STARTING.register { _ ->
+		ServerLifecycleEvents.SERVER_STARTING.register { server ->
+			SERVER = server
 			CountdownWorker.start()
 			TaskManager.start()
 		}

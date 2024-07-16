@@ -20,6 +20,7 @@ import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
 import io.github.gdrfgdrf.cutetrade.operation.*
 import io.github.gdrfgdrf.cutetrade.page.PageableClientRegistry
 import io.github.gdrfgdrf.cutetrade.screen.DevScreen
@@ -28,8 +29,6 @@ import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.gui.screen.ingame.HandledScreens
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.util.Identifier
 
 object CuteTradeClient : ClientModInitializer {
 	override fun onInitializeClient() {
@@ -53,22 +52,13 @@ object CuteTradeClient : ClientModInitializer {
 	private fun preparePacketReceiver() {
 		"Registering network channel for client".logInfo()
 
-		NetworkManager.initialize(object : NetworkManager.RegisterPacketInterface {
-			override fun <T> register(
-				packetIdentifier: Identifier,
-				messageType: Class<T>,
-				encoder: (T, PacketByteBuf) -> Unit,
-				decoder: (PacketByteBuf) -> T,
-				handler: (PacketContext<T>) -> Unit
-			) {
-				ClientPlayNetworking.registerGlobalReceiver(packetIdentifier) { client, _, buf, _ ->
-					val message: T = decoder(buf)
-					client.execute {
-						handler(PacketContext(message))
-					}
-				}
+		NetworkManager.initialize()
+		ClientPlayNetworking.registerGlobalReceiver(S2COperationPacket.ID) { payload, context ->
+			val client = context.client()
+			client.execute {
+				S2COperationPacket.handle(PacketContext(payload))
 			}
-		})
+		}
 	}
 
 	private fun prepareOperators() {

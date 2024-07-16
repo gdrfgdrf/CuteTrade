@@ -65,7 +65,6 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
     fun returnAll() {
         itemArray.forEach {
             it?.let {
-                it.itemStack.getOrCreateNbt().remove("cutetrade-add-by")
                 playerEntity.inventory.offerOrDrop(it.itemStack)
             }
         }
@@ -74,8 +73,6 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
     fun moveTo(serverPlayerEntity: ServerPlayerEntity) {
         itemArray.forEachIndexed { index, it ->
             it?.let {
-//                "offer ${it.itemStack}(index $index) to ${serverPlayerEntity.name.string}".logInfo()
-                it.itemStack.getOrCreateNbt().remove("cutetrade-add-by")
                 serverPlayerEntity.inventory.offerOrDrop(it.itemStack)
             }
         }

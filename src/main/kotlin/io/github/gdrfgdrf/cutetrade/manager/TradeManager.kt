@@ -39,10 +39,9 @@ object TradeManager {
     ) {
         val tradeContext = TradeContext.create(redPlayerEntity, bluePlayerEntity)
         tradeContext.initialize()
-        tradeContext.start()
     }
 
-    fun tradeStart(
+    fun tradeInitialized(
         tradeContext: TradeContext
     ) {
         val redPlayer = tradeContext.redPlayer
@@ -81,10 +80,10 @@ object TradeManager {
         }
 
         if (tradeContext.status == TradeStatus.FINISHED) {
-            val redAddBy = tradeContext.redTradeItemStack.playerEntity
-            val blueAddBy = tradeContext.blueTradeItemStack.playerEntity
+            val redAddBy = tradeContext.redTradeItemStack!!.playerEntity
+            val blueAddBy = tradeContext.blueTradeItemStack!!.playerEntity
 
-            tradeContext.redTradeItemStack.itemArray.forEach { tradeItem ->
+            tradeContext.redTradeItemStack!!.itemArray.forEach { tradeItem ->
                 tradeItem?.let {
                     if (!it.itemStack.isEmpty) {
                         val protobufTradeItem = it.itemStack.toProtobufTradeItem(redAddBy.name.string)
@@ -92,7 +91,7 @@ object TradeManager {
                     }
                 }
             }
-            tradeContext.blueTradeItemStack.itemArray.forEach { tradeItem ->
+            tradeContext.blueTradeItemStack!!.itemArray.forEach { tradeItem ->
                 tradeItem?.let {
                     if (!it.itemStack.isEmpty) {
                         val protobufTradeItem = it.itemStack.toProtobufTradeItem(blueAddBy.name.string)

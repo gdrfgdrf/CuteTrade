@@ -18,6 +18,6 @@ package io.github.gdrfgdrf.cutetrade.network
 
 import net.minecraft.entity.player.PlayerEntity
 
-class PacketContext<T>(val sender: PlayerEntity?, val message: T) {
+class PacketContext<T>(var sender: PlayerEntity?, val message: T) {
     constructor(message: T): this(null, message)
 }

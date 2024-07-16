@@ -16,8 +16,11 @@
 
 package io.github.gdrfgdrf.cutetrade.operation
 
+import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.base.Operator
+import net.fabricmc.api.EnvType
+import net.fabricmc.loader.api.FabricLoader
 import java.util.concurrent.ConcurrentHashMap
 
 object OperationDispatcher {
@@ -29,6 +32,10 @@ object OperationDispatcher {
 
     fun dispatch(name: String, context: PacketContext<*>, args: Array<*>?) {
         val aOperator = map[name] ?: return
+        if (FabricLoader.getInstance().environmentType == EnvType.CLIENT) {
+            "Running operation $name".logInfo()
+        }
+
         aOperator.run(context, args)
     }
 

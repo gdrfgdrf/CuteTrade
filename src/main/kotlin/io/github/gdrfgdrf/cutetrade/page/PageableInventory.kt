@@ -16,6 +16,7 @@
 
 package io.github.gdrfgdrf.cutetrade.page
 
+import io.github.gdrfgdrf.cutetrade.extension.setCustomName
 import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack

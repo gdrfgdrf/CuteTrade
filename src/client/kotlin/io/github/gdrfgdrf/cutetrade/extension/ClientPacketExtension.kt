@@ -17,14 +17,10 @@
 package io.github.gdrfgdrf.cutetrade.extension
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.util.Identifier
+import net.minecraft.network.packet.CustomPayload
 
-fun Identifier.sendPacket(
-    writer: (PacketByteBuf) -> Unit
+fun sendPacket(
+    payload: CustomPayload
 ) {
-    val byteBuf = PacketByteBufs.create()
-    writer(byteBuf)
-    ClientPlayNetworking.send(this, byteBuf)
+    ClientPlayNetworking.send(payload)
 }

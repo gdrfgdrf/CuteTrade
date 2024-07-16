@@ -16,14 +16,17 @@
 
 package io.github.gdrfgdrf.cutetrade.network.packet
 
+import io.github.gdrfgdrf.cutetrade.common.Constants
+import io.github.gdrfgdrf.cutetrade.extension.registryManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
+import net.minecraft.network.packet.CustomPayload
 
-class C2SOperationPacket {
+class C2SOperationPacket : CustomPayload {
     val operatorName: String
     var stringArgsLength: Int = -1
     var stringArgs: Array<String?>? = null
@@ -71,7 +74,8 @@ class C2SOperationPacket {
         if (itemStackArgsLength > 0) {
             itemStackArgs = arrayOfNulls(itemStackArgsLength)
             for (i in 0 until itemStackArgsLength) {
-                itemStackArgs!![i] = byteBuf.readItemStack()
+                val nbtCompound = byteBuf.readNbt()
+                itemStackArgs!![i] = ItemStack.fromNbtOrEmpty(registryManager(), nbtCompound)
             }
         }
     }
@@ -96,13 +100,19 @@ class C2SOperationPacket {
         }
         if (itemStackArgsLength > 0) {
             itemStackArgs!!.forEach {
-                byteBuf.writeItemStack(it)
+                val nbtCompound = it?.encode(registryManager())
+                byteBuf.writeNbt(nbtCompound)
             }
         }
     }
 
+    override fun getId(): CustomPayload.Id<out CustomPayload> {
+        return ID
+    }
+
     companion object {
-        fun read(byteBuf: PacketByteBuf): C2SOperationPacket = C2SOperationPacket(byteBuf)
+        val CODEC = CustomPayload.codecOf(C2SOperationPacket::write, ::C2SOperationPacket)
+        val ID = CustomPayload.Id<C2SOperationPacket>(Constants.C2S_OPERATION)
 
         @Environment(EnvType.SERVER)
         fun handle(context: PacketContext<C2SOperationPacket>) {
