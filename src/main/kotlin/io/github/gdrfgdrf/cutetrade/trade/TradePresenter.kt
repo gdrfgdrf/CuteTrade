@@ -45,6 +45,18 @@ class TradePresenter private constructor(
         broadcastOperation(s2COperationPacket)
     }
 
+    fun broadcastRedInitialized() {
+        val message = "player_trade_initialized".toTradeMessage()
+            .format(tradeContext.redPlayer.name.string)
+        broadcastMessage(message)
+    }
+
+    fun broadcastBlueInitialized() {
+        val message = "player_trade_initialized".toTradeMessage()
+            .format(tradeContext.bluePlayer.name.string)
+        broadcastMessage(message)
+    }
+
     fun start() {
         val s2COperationPacket = S2COperationPacket(Operators.CLIENT_TRADE_START)
         broadcastOperation(s2COperationPacket)

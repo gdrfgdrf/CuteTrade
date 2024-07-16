@@ -33,6 +33,7 @@ import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
+import io.github.gdrfgdrf.cutetrade.operation.server.ClientInitializedOperator
 import io.github.gdrfgdrf.cutetrade.operation.server.UpdateTraderStateOperator
 import io.github.gdrfgdrf.cutetrade.page.PageableRegistry
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
@@ -96,6 +97,7 @@ object CuteTrade : ModInitializer {
 			FriendlyText.prefix = "prefix".toCommandMessage()
 
 			val operators = arrayOf(
+				ClientInitializedOperator,
 				UpdateTraderStateOperator
 			)
 			operators.forEach {

@@ -28,4 +28,5 @@ object Operators {
     const val CLIENT_DEV = "client_dev"
 
     const val SERVER_UPDATE_TRADER_STATE = "server_update_trader_state"
+    const val SERVER_CLIENT_INITIALIZED = "server_client_initialized"
 }

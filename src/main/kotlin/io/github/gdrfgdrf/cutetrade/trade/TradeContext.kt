@@ -32,6 +32,8 @@ class TradeContext private constructor(
     val bluePlayer: ServerPlayerEntity
 ) {
     private var initialized = false
+    private var redPlayerInitialized = false
+    private var bluePlayerInitialized = false
 
     lateinit var tradeId: String
 
@@ -48,6 +50,12 @@ class TradeContext private constructor(
     var blueState: TraderState = TraderState.UNCHECKED
     lateinit var redTradeItemStack: TradeItemStack
     lateinit var blueTradeItemStack: TradeItemStack
+
+    fun check() {
+        if (!initialized) {
+            throw IllegalStateException("Trade is not initialized")
+        }
+    }
 
     fun initialize() {
         tradeId = generateTradeId()
@@ -70,18 +78,39 @@ class TradeContext private constructor(
 
         initialized = true
         status = TradeStatus.INITIALIZED
+
+        TradeManager.tradeInitialized(this)
     }
 
+    fun redPlayerInitialized() {
+        check()
+        redPlayerInitialized = true
+        presenter.broadcastRedInitialized()
+        if (bluePlayerInitialized) {
+            start()
+        }
+    }
+
+    fun bluePlayerInitialized() {
+        check()
+        bluePlayerInitialized = true
+        presenter.broadcastBlueInitialized()
+        if (redPlayerInitialized) {
+            start()
+        }
+    }
+
+    @Synchronized
     fun start() {
-        if (!initialized) {
-            throw IllegalStateException("Trade is not initialized")
+        check()
+        if (status == TradeStatus.STARTED) {
+            return
         }
 
         redPlayer.inventory.removeAllTags("cutetrade-add-by")
         bluePlayer.inventory.removeAllTags("cutetrade-add-by")
 
         presenter.start()
-        TradeManager.tradeStart(this)
         tradeScreenContext.start()
 
         status = TradeStatus.STARTED

@@ -39,10 +39,9 @@ object TradeManager {
     ) {
         val tradeContext = TradeContext.create(redPlayerEntity, bluePlayerEntity)
         tradeContext.initialize()
-        tradeContext.start()
     }
 
-    fun tradeStart(
+    fun tradeInitialized(
         tradeContext: TradeContext
     ) {
         val redPlayer = tradeContext.redPlayer
