@@ -31,6 +31,7 @@
   "command.cutetrade.player_offline": "&cPlayer %s is currently offline",
   "command.cutetrade.trade_with_oneself": "&cYou can't trade with yourself",
 
+  "trade.cutetrade.player_trade_initialized": "&aThe transaction initialization for player %s has been completed",
   "trade.cutetrade.trade_start": "&a&lStart trading",
   "trade.cutetrade.trade_terminate": "&c&lTerminated transaction",
   "trade.cutetrade.trade_end": "&a&lTransaction completed",

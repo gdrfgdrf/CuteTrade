@@ -31,6 +31,7 @@
   "command.cutetrade.player_offline": "&c玩家 %s 目前属于离线状态",
   "command.cutetrade.trade_with_oneself": "&c您不能和自己交易",
 
+  "trade.cutetrade.player_trade_initialized": "&a玩家 %s 的交易初始化已完成",
   "trade.cutetrade.trade_start": "&a&l交易开始",
   "trade.cutetrade.trade_terminate": "&c&l终止交易",
   "trade.cutetrade.trade_end": "&a&l交易已结束",
