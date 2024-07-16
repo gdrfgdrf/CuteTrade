@@ -46,13 +46,13 @@ class TradePresenter private constructor(
     }
 
     fun broadcastRedInitialized() {
-        val message = "player_trade_initialized".toCommandMessage()
+        val message = "player_trade_initialized".toTradeMessage()
             .format(tradeContext.redPlayer.name.string)
         broadcastMessage(message)
     }
 
     fun broadcastBlueInitialized() {
-        val message = "player_trade_initialized".toCommandMessage()
+        val message = "player_trade_initialized".toTradeMessage()
             .format(tradeContext.bluePlayer.name.string)
         broadcastMessage(message)
     }
