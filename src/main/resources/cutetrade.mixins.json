@@ -1,8 +1,0 @@
-{
-  "required": true,
-  "package": "io.github.gdrfgdrf.cutetrade.mixin",
-  "compatibilityLevel": "JAVA_17",
-  "mixins": [
-    "LanguageMixin"
-  ]
-}
