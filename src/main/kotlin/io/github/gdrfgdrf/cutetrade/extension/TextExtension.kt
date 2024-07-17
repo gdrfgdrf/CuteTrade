@@ -16,10 +16,15 @@
 
 package io.github.gdrfgdrf.cutetrade.extension
 
+import io.github.gdrfgdrf.cutetrade.FixedTranslatableTextContent
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
+
+fun fixedTranslatable(key: String): Text {
+    return MutableText.of(FixedTranslatableTextContent(key, FixedTranslatableTextContent.EMPTY_ARGUMENTS))
+}
 
 fun Text.clickEvent(clickEvent: ClickEvent): Text {
     (this as MutableText).styled {

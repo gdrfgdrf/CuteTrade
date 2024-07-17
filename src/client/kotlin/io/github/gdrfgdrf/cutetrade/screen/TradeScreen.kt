@@ -24,31 +24,33 @@ import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.DrawableHelper
 import net.minecraft.client.gui.screen.ingame.HandledScreen
 import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.gui.widget.TextWidget
 import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.DiffuseLighting
+import net.minecraft.client.render.GameRenderer
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import org.joml.Matrix4f
-import org.joml.Quaternionf
+import net.minecraft.util.math.Vec3f
 import kotlin.math.atan
 
 @Environment(EnvType.CLIENT)
 class TradeScreen(
     screenHandler: ScreenHandler,
     playerInventory: PlayerInventory,
-    title: Text
+    title: Text,
 ): HandledScreen<ScreenHandler>(
         screenHandler,
         playerInventory,
         title
     ) {
+
+    private var titleWidth: Int = 0
 
     private lateinit var tradeScreenHandler: TradeScreenHandler
 
@@ -59,13 +61,13 @@ class TradeScreen(
     private var mouseX = 0f
     private var mouseY = 0f
 
-    private val ownState: ButtonWidget? = ButtonWidget.builder(Text.of("⨉")) {
+    private val ownState: ButtonWidget = ButtonWidget(0, 0, 16, 16, Text.of("⨉")) {
         if (it.message.string == "√") {
             tradeContext?.sendTraderStateToServer(TraderState.UNCHECKED)
         } else {
             tradeContext?.sendTraderStateToServer(TraderState.CHECKED)
         }
-    }.size(16, 16).build()
+    }
 
     override fun init() {
         tradeScreenHandler = this.screenHandler as TradeScreenHandler
@@ -91,20 +93,18 @@ class TradeScreen(
         this.y = ((this.height - BACKGROUND_HEIGHT) / 2)
         titleX = ((BACKGROUND_HEIGHT - textRenderer.getWidth(title)) / 2)
 
-        ownState!!.setPosition((width - ownState.width) / 2 - 74, (height - ownState.height) / 2 - 39)
+        ownState.x = (width - ownState.width) / 2 - 74
+        ownState.y = (height - ownState.height) / 2 - 39
         addDrawableChild(ownState)
 
-        val textWidget = TextWidget(title, client!!.textRenderer)
-        textWidget.setTextColor(0x555555)
-        textWidget.setPosition((width - textWidget.width) / 2, height - textWidget.height)
-        addDrawable(textWidget)
+        titleWidth = textRenderer.getWidth(title.asOrderedText())
     }
 
     override fun render(
-        context: DrawContext?,
+        context: MatrixStack?,
         mouseX: Int,
         mouseY: Int,
-        delta: Float
+        delta: Float,
     ) {
         renderBackground(context)
 
@@ -115,9 +115,9 @@ class TradeScreen(
         this.mouseY = mouseY.toFloat()
 
         if (tradeContext!!.ownState == TraderState.CHECKED) {
-            ownState!!.message = Text.of("√")
+            ownState.message = Text.of("√")
         } else {
-            ownState!!.message = Text.of("⨉")
+            ownState.message = Text.of("⨉")
         }
 
         val otherState = if (tradeContext!!.otherState == TraderState.CHECKED) {
@@ -126,32 +126,43 @@ class TradeScreen(
             Text.of("⨉")
         }
 
-        context!!.drawText(
-            client!!.textRenderer,
+        textRenderer.draw(
+            context,
             otherState,
-            (width - textRenderer.getWidth(otherState.asOrderedText())) / 2 + 73,
-            (height - 9) / 2 - 39,
-            0xFFFFFF,
-            true
+            ((width - textRenderer.getWidth(otherState.asOrderedText())) / 2 + 73).toFloat(),
+            ((height - 9) / 2 - 39).toFloat(),
+            0xFFFFFF
+        )
+
+        textRenderer.draw(
+            context,
+            title,
+            ((width - titleWidth) / 2).toFloat(),
+            (height - 9).toFloat(),
+            0x555555
         )
     }
 
     override fun drawForeground(
-        context: DrawContext?,
+        context: MatrixStack?,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
 
     }
 
     override fun drawBackground(
-        context: DrawContext?,
+        context: MatrixStack?,
         delta: Float,
         mouseX: Int,
-        mouseY: Int
+        mouseY: Int,
     ) {
-        context!!.drawTexture(
-            TRADE_PNG,
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.setShaderTexture(0, TRADE_PNG)
+
+        DrawableHelper.drawTexture(
+            context,
             width / 2 - 50,
             20,
             1F,
@@ -161,8 +172,13 @@ class TradeScreen(
             100,
             30
         )
-        context.drawTexture(
-            TEXTURE,
+
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.setShaderTexture(0, TEXTURE)
+
+        DrawableHelper.drawTexture(
+            context,
             x,
             y,
             0F,
@@ -173,7 +189,6 @@ class TradeScreen(
             BACKGROUND_HEIGHT
         )
         drawEntity(
-            context,
             this.x + 32,
             this.y + 110,
             (this.x + 32).toFloat() - this.mouseX,
@@ -182,7 +197,6 @@ class TradeScreen(
         )
         if (other != null) {
             drawEntity(
-                context,
                 this.x + 32 + 225,
                 this.y + 110,
                 (this.x + 257).toFloat() - this.mouseX,
@@ -193,19 +207,22 @@ class TradeScreen(
     }
 
     // Copy from net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity(net.minecraft.client.gui.DrawContext, int, int, int, float, float, net.minecraft.entity.LivingEntity)
-    private fun drawEntity(
-        context: DrawContext,
-        x: Int,
-        y: Int,
-        mouseX: Float,
-        mouseY: Float,
-        entity: LivingEntity
-    ) {
+    @Suppress("DEPRECATION")
+    private fun drawEntity(x: Int, y: Int, mouseX: Float, mouseY: Float, entity: LivingEntity) {
         val f = atan((mouseX / 40.0f).toDouble()).toFloat()
         val g = atan((mouseY / 40.0f).toDouble()).toFloat()
-        val quaternionf = Quaternionf().rotateZ(3.1415927f)
-        val quaternionf2 = Quaternionf().rotateX(g * 20.0f * 0.017453292f)
-        quaternionf.mul(quaternionf2)
+        val matrixStack = RenderSystem.getModelViewStack()
+        matrixStack.push()
+        matrixStack.translate(x.toDouble(), y.toDouble(), 1050.0)
+        matrixStack.scale(1.0f, 1.0f, -1.0f)
+        RenderSystem.applyModelViewMatrix()
+        val matrixStack2 = MatrixStack()
+        matrixStack2.translate(0.0, 0.0, 1000.0)
+        matrixStack2.scale(30F, 30F, 30F)
+        val quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f)
+        val quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f)
+        quaternion.hamiltonProduct(quaternion2)
+        matrixStack2.multiply(quaternion)
         val h = entity.bodyYaw
         val i = entity.yaw
         val j = entity.pitch
@@ -216,40 +233,12 @@ class TradeScreen(
         entity.pitch = -g * 20.0f
         entity.headYaw = entity.yaw
         entity.prevHeadYaw = entity.yaw
-        drawEntity(context, x, y, quaternionf, quaternionf2, entity)
-        entity.bodyYaw = h
-        entity.yaw = i
-        entity.pitch = j
-        entity.prevHeadYaw = k
-        entity.headYaw = l
-    }
-
-    // Copy from net.minecraft.client.gui.screen.ingame.InventoryScreen.drawEntity(net.minecraft.client.gui.DrawContext, int, int, int, org.joml.Quaternionf, org.joml.Quaternionf, net.minecraft.entity.LivingEntity)
-    @Suppress("DEPRECATION")
-    private fun drawEntity(
-        context: DrawContext,
-        x: Int,
-        y: Int,
-        quaternionf: Quaternionf?,
-        quaternionf2: Quaternionf?,
-        entity: LivingEntity
-    ) {
-        context.matrices.push()
-        context.matrices.translate(x.toDouble(), y.toDouble(), 50.0)
-        context.matrices.multiplyPositionMatrix(Matrix4f().scaling(
-            30F,
-            30F,
-            -30F
-        ))
-        context.matrices.multiply(quaternionf)
         DiffuseLighting.method_34742()
         val entityRenderDispatcher = MinecraftClient.getInstance().entityRenderDispatcher
-        if (quaternionf2 != null) {
-            quaternionf2.conjugate()
-            entityRenderDispatcher.rotation = quaternionf2
-        }
-
+        quaternion2.conjugate()
+        entityRenderDispatcher.rotation = quaternion2
         entityRenderDispatcher.setRenderShadows(false)
+        val immediate = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
         RenderSystem.runAsFancy {
             entityRenderDispatcher.render(
                 entity,
@@ -258,14 +247,20 @@ class TradeScreen(
                 0.0,
                 0.0f,
                 1.0f,
-                context.matrices,
-                context.vertexConsumers,
+                matrixStack2,
+                immediate,
                 15728880
             )
         }
-        context.draw()
+        immediate.draw()
         entityRenderDispatcher.setRenderShadows(true)
-        context.matrices.pop()
+        entity.bodyYaw = h
+        entity.yaw = i
+        entity.pitch = j
+        entity.prevHeadYaw = k
+        entity.headYaw = l
+        matrixStack.pop()
+        RenderSystem.applyModelViewMatrix()
         DiffuseLighting.enableGuiDepthLighting()
     }
 
@@ -274,7 +269,7 @@ class TradeScreen(
     }
 
     override fun close() {
-        client!!.player!!.networkHandler?.sendChatCommand("trade-public end-trade")
+        client!!.player!!.sendCommand("trade-public end-trade")
     }
 
     fun close1() {

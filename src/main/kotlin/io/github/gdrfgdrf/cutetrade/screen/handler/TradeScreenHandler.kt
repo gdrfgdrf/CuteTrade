@@ -78,7 +78,7 @@ class TradeScreenHandler(
         return super.insertItem(stack, startIndex, endIndex, fromLast)
     }
 
-    override fun quickMove(player: PlayerEntity?, slot: Int): ItemStack {
+    override fun transferSlot(player: PlayerEntity?, slot: Int): ItemStack {
         if (slot in 9 .. 17) {
             return ItemStack.EMPTY
         }

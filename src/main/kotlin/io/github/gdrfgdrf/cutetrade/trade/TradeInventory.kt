@@ -16,7 +16,6 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import net.minecraft.inventory.Inventory
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 
@@ -33,10 +32,6 @@ class TradeInventory : SimpleInventory(18) {
             return ItemStack.EMPTY
         }
         return super.removeStack(slot, amount)
-    }
-
-    override fun canTransferTo(hopperInventory: Inventory?, slot: Int, stack: ItemStack?): Boolean {
-        return slot !in 9 .. 17
     }
 }
 

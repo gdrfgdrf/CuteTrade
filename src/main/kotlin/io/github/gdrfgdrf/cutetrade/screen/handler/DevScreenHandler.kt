@@ -97,7 +97,7 @@ class DevScreenHandler(
         return super.insertItem(stack, startIndex, endIndex, fromLast)
     }
 
-    override fun quickMove(player: PlayerEntity?, invSlot: Int): ItemStack {
+    override fun transferSlot(player: PlayerEntity?, invSlot: Int): ItemStack {
 //        return ItemStack.EMPTY
 
         var newStack = ItemStack.EMPTY

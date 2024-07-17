@@ -59,6 +59,10 @@ class PageableScreenHandler(
         }
     }
 
+    override fun transferSlot(player: PlayerEntity?, index: Int): ItemStack {
+        return ItemStack.EMPTY
+    }
+
     override fun onSlotClick(slotIndex: Int, button: Int, actionType: SlotActionType?, player: PlayerEntity?) {
         if (player !is ServerPlayerEntity) {
             return
@@ -78,10 +82,6 @@ class PageableScreenHandler(
 
     override fun insertItem(stack: ItemStack?, startIndex: Int, endIndex: Int, fromLast: Boolean): Boolean {
         return false
-    }
-
-    override fun quickMove(player: PlayerEntity?, slot: Int): ItemStack {
-        return ItemStack.EMPTY
     }
 
     override fun canUse(player: PlayerEntity?): Boolean {

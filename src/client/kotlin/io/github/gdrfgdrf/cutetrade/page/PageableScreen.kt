@@ -16,10 +16,12 @@
 
 package io.github.gdrfgdrf.cutetrade.page
 
+import com.mojang.blaze3d.systems.RenderSystem
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.ingame.HandledScreen
+import net.minecraft.client.render.GameRenderer
+import net.minecraft.client.util.math.MatrixStack
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
@@ -42,21 +44,25 @@ class PageableScreen(
         this.playerInventoryTitleY = this.backgroundHeight - 94
     }
 
-    override fun render(context: DrawContext?, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(context: MatrixStack?, mouseX: Int, mouseY: Int, delta: Float) {
         this.renderBackground(context)
         super.render(context, mouseX, mouseY, delta)
         this.drawMouseoverTooltip(context, mouseX, mouseY)
     }
 
-    override fun drawBackground(context: DrawContext?, delta: Float, mouseX: Int, mouseY: Int) {
+    override fun drawBackground(context: MatrixStack?, delta: Float, mouseX: Int, mouseY: Int) {
         val i = (this.width - this.backgroundWidth) / 2
         val j = (this.height - this.backgroundHeight) / 2
-        context!!.drawTexture(
-            TEXTURE, i, j, 0, 0, this.backgroundWidth,
+
+        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
+        RenderSystem.setShaderTexture(0, TEXTURE)
+
+        this.drawTexture(context, i, j, 0, 0, this.backgroundWidth,
             rows!! * 18 + 17
         )
-        context.drawTexture(
-            TEXTURE,
+        this.drawTexture(
+            context,
             i,
             j + rows!! * 18 + 17,
             0,

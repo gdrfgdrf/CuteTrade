@@ -32,19 +32,19 @@ fun String.toText(): Text {
 }
 
 fun String.toCommandMessage(): String {
-    return Text.translatable("command.cutetrade.$this").string.replace("&", "§")
+    return fixedTranslatable("command.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toScreenMessage(): String {
-    return Text.translatable("screen.cutetrade.$this").string.replace("&", "§")
+    return fixedTranslatable("screen.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toTradeMessage(): String {
-    return Text.translatable("trade.cutetrade.$this").string.replace("&", "§")
+    return fixedTranslatable("trade.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.toInformationMessage(): String {
-    return Text.translatable("information.cutetrade.$this").string.replace("&", "§")
+    return fixedTranslatable("information.cutetrade.$this").string.replace("&", "§")
 }
 
 fun String.send(prefix: String, serverPlayerEntity: ServerPlayerEntity) {
