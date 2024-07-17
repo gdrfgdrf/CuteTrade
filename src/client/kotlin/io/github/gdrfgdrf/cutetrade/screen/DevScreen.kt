@@ -31,7 +31,7 @@ import net.minecraft.screen.slot.Slot
 import net.minecraft.screen.slot.SlotActionType
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.Vec3f
+import org.joml.Quaternionf
 import kotlin.math.atan
 
 class DevScreen(
@@ -75,7 +75,7 @@ class DevScreen(
     }
 
     override fun drawBackground(context: MatrixStack?, delta: Float, mouseX: Int, mouseY: Int) {
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, TEXTURE)
 
@@ -112,16 +112,16 @@ class DevScreen(
         val g = atan((mouseY / 40.0f).toDouble()).toFloat()
         val matrixStack = RenderSystem.getModelViewStack()
         matrixStack.push()
-        matrixStack.translate(x.toDouble(), y.toDouble(), 1050.0)
+        matrixStack.translate(x.toFloat(), y.toFloat(), 1050.0f)
         matrixStack.scale(1.0f, 1.0f, -1.0f)
         RenderSystem.applyModelViewMatrix()
         val matrixStack2 = MatrixStack()
-        matrixStack2.translate(0.0, 0.0, 1000.0)
+        matrixStack2.translate(0.0f, 0.0f, 1000.0f)
         matrixStack2.scale(30F, 30F, 30F)
-        val quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f)
-        val quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f)
-        quaternion.hamiltonProduct(quaternion2)
-        matrixStack2.multiply(quaternion)
+        val quaternionf = Quaternionf().rotateZ(3.1415927f)
+        val quaternionf2 = Quaternionf().rotateX(g * 20.0f * 0.017453292f)
+        quaternionf.mul(quaternionf2)
+        matrixStack2.multiply(quaternionf)
         val h = entity.bodyYaw
         val i = entity.yaw
         val j = entity.pitch
@@ -134,8 +134,8 @@ class DevScreen(
         entity.prevHeadYaw = entity.yaw
         DiffuseLighting.method_34742()
         val entityRenderDispatcher = MinecraftClient.getInstance().entityRenderDispatcher
-        quaternion2.conjugate()
-        entityRenderDispatcher.rotation = quaternion2
+        quaternionf2.conjugate()
+        entityRenderDispatcher.rotation = quaternionf2
         entityRenderDispatcher.setRenderShadows(false)
         val immediate = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
         RenderSystem.runAsFancy {

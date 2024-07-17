@@ -126,13 +126,13 @@ class TradePresenter private constructor(
     }
 
     fun playStatePositiveSound() {
-        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_HARP
+        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_HARP.value()
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
 
     fun playStateNegativeSound() {
-        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_BASS
+        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_BASS.value()
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
@@ -173,7 +173,7 @@ class TradePresenter private constructor(
     }
 
     fun playAddItemSound() {
-        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_BELL
+        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_BELL.value()
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }
@@ -214,7 +214,7 @@ class TradePresenter private constructor(
     }
 
     fun playRemoveItemSound() {
-        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO
+        val soundEvent = SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO.value()
         tradeContext.redPlayer.playSound(soundEvent, 100F, 1F)
         tradeContext.bluePlayer.playSound(soundEvent, 100F, 1F)
     }

@@ -59,7 +59,7 @@ class PageableScreenHandler(
         }
     }
 
-    override fun transferSlot(player: PlayerEntity?, index: Int): ItemStack {
+    override fun quickMove(player: PlayerEntity?, index: Int): ItemStack {
         return ItemStack.EMPTY
     }
 

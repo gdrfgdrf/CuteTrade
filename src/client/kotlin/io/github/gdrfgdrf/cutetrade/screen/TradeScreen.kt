@@ -31,13 +31,15 @@ import net.minecraft.client.network.AbstractClientPlayerEntity
 import net.minecraft.client.render.DiffuseLighting
 import net.minecraft.client.render.GameRenderer
 import net.minecraft.client.util.math.MatrixStack
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerInventory
 import net.minecraft.screen.ScreenHandler
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.minecraft.util.math.Vec3f
+import org.joml.Quaternionf
 import kotlin.math.atan
+
 
 @Environment(EnvType.CLIENT)
 class TradeScreen(
@@ -61,13 +63,13 @@ class TradeScreen(
     private var mouseX = 0f
     private var mouseY = 0f
 
-    private val ownState: ButtonWidget = ButtonWidget(0, 0, 16, 16, Text.of("⨉")) {
+    private val ownState: ButtonWidget = ButtonWidget.builder(Text.of("⨉")) {
         if (it.message.string == "√") {
             tradeContext?.sendTraderStateToServer(TraderState.UNCHECKED)
         } else {
             tradeContext?.sendTraderStateToServer(TraderState.CHECKED)
         }
-    }
+    }.size(16, 16).build()
 
     override fun init() {
         tradeScreenHandler = this.screenHandler as TradeScreenHandler
@@ -157,7 +159,7 @@ class TradeScreen(
         mouseX: Int,
         mouseY: Int,
     ) {
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, TRADE_PNG)
 
@@ -173,7 +175,7 @@ class TradeScreen(
             30
         )
 
-        RenderSystem.setShader { GameRenderer.getPositionTexShader() }
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram)
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, TEXTURE)
 
@@ -213,16 +215,16 @@ class TradeScreen(
         val g = atan((mouseY / 40.0f).toDouble()).toFloat()
         val matrixStack = RenderSystem.getModelViewStack()
         matrixStack.push()
-        matrixStack.translate(x.toDouble(), y.toDouble(), 1050.0)
+        matrixStack.translate(x.toFloat(), y.toFloat(), 1050.0f)
         matrixStack.scale(1.0f, 1.0f, -1.0f)
         RenderSystem.applyModelViewMatrix()
         val matrixStack2 = MatrixStack()
-        matrixStack2.translate(0.0, 0.0, 1000.0)
+        matrixStack2.translate(0.0f, 0.0f, 1000.0f)
         matrixStack2.scale(30F, 30F, 30F)
-        val quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f)
-        val quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f)
-        quaternion.hamiltonProduct(quaternion2)
-        matrixStack2.multiply(quaternion)
+        val quaternionf = Quaternionf().rotateZ(3.1415927f)
+        val quaternionf2 = Quaternionf().rotateX(g * 20.0f * 0.017453292f)
+        quaternionf.mul(quaternionf2)
+        matrixStack2.multiply(quaternionf)
         val h = entity.bodyYaw
         val i = entity.yaw
         val j = entity.pitch
@@ -235,12 +237,12 @@ class TradeScreen(
         entity.prevHeadYaw = entity.yaw
         DiffuseLighting.method_34742()
         val entityRenderDispatcher = MinecraftClient.getInstance().entityRenderDispatcher
-        quaternion2.conjugate()
-        entityRenderDispatcher.rotation = quaternion2
+        quaternionf2.conjugate()
+        entityRenderDispatcher.rotation = quaternionf2
         entityRenderDispatcher.setRenderShadows(false)
         val immediate = MinecraftClient.getInstance().bufferBuilders.entityVertexConsumers
         RenderSystem.runAsFancy {
-            entityRenderDispatcher.render(
+            entityRenderDispatcher.render<Entity>(
                 entity,
                 0.0,
                 0.0,
@@ -269,7 +271,7 @@ class TradeScreen(
     }
 
     override fun close() {
-        client!!.player!!.sendCommand("trade-public end-trade")
+        client!!.player!!.networkHandler?.sendChatCommand("trade-public end-trade")
     }
 
     fun close1() {
