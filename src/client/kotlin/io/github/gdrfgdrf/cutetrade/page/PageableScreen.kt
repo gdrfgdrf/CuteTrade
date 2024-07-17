@@ -58,10 +58,10 @@ class PageableScreen(
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f)
         RenderSystem.setShaderTexture(0, TEXTURE)
 
-        this.drawTexture(context, i, j, 0, 0, this.backgroundWidth,
+        drawTexture(context, i, j, 0, 0, this.backgroundWidth,
             rows!! * 18 + 17
         )
-        this.drawTexture(
+        drawTexture(
             context,
             i,
             j + rows!! * 18 + 17,
