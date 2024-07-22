@@ -16,14 +16,44 @@
 
 package io.github.gdrfgdrf.cutetrade.extension
 
-import io.github.gdrfgdrf.cutetrade.FixedTranslatableTextContent
+import io.github.gdrfgdrf.cutetrade.CuteTrade
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteText
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.ClickEvent
 import net.minecraft.text.MutableText
 import net.minecraft.text.Text
 
-fun fixedTranslatable(key: String): Text {
-    return MutableText.of(FixedTranslatableTextContent(key, FixedTranslatableTextContent.EMPTY_ARGUMENTS))
+fun translatable(key: String): CuteTranslation {
+    if (CuteTrade.TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Translation provider is not loaded normally")
+    }
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
+    return CuteTranslation.of(value)
+}
+
+fun translatable(playerName: String, key: String): CuteTranslation {
+    if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Player translation provider is not loaded normally")
+    }
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
+    return CuteTranslation.of(value)
+}
+
+fun translatableText(key: String): CuteText {
+    if (CuteTrade.TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Translation provider is not loaded normally")
+    }
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
+    return CuteText.of(value)
+}
+
+fun translatableText(playerName: String, key: String): CuteText {
+    if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Player translation provider is not loaded normally")
+    }
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
+    return CuteText.of(value)
 }
 
 fun Text.clickEvent(clickEvent: ClickEvent): Text {
@@ -31,12 +61,6 @@ fun Text.clickEvent(clickEvent: ClickEvent): Text {
         it.withClickEvent(clickEvent)
     }
     return this
-}
-
-fun Text.fillPrefix(): Text {
-    val filled = "prefix".toCommandMessage()
-        .format(this.string)
-    return Text.of(filled)
 }
 
 fun Text.send(serverPlayerEntity: ServerPlayerEntity) {

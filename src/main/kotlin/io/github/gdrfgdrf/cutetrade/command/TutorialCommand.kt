@@ -17,7 +17,7 @@
 package io.github.gdrfgdrf.cutetrade.command
 
 import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
+import io.github.gdrfgdrf.cutetrade.extension.toCommandTranslation
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.ServerCommandSource
 
@@ -36,9 +36,9 @@ object TutorialCommand : AbstractCommand(
     private fun print(source: ServerCommandSource) {
         val commandInvoker = CommandInvoker.of(source)
 
-        "top".toCommandMessage().send("", commandInvoker)
-        "tutorial".toCommandMessage().send("", commandInvoker)
-        "bottom".toCommandMessage().send("", commandInvoker)
+        "top".toCommandTranslation(commandInvoker).send("", commandInvoker)
+        "tutorial".toCommandTranslation(commandInvoker).send("", commandInvoker)
+        "bottom".toCommandTranslation(commandInvoker).send("", commandInvoker)
     }
 
 }

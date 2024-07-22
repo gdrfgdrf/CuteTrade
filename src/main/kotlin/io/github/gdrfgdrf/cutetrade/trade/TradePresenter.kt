@@ -20,6 +20,7 @@ import io.github.gdrfgdrf.cutetrade.common.Operators
 import io.github.gdrfgdrf.cutetrade.common.TraderState
 import io.github.gdrfgdrf.cutetrade.extension.*
 import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 import net.minecraft.item.ItemStack
 import net.minecraft.sound.SoundEvents
 import java.time.Instant
@@ -44,22 +45,22 @@ class TradePresenter private constructor(
     }
 
     fun broadcastRedInitialized() {
-        val message = "player_trade_initialized".toTradeMessage()
-            .format(tradeContext.redPlayer.name.string)
-        broadcastMessage(message)
+        broadcastTradeMessage("player_trade_initialized") {
+            it.format0(tradeContext.redPlayer.name.string)
+        }
     }
 
     fun broadcastBlueInitialized() {
-        val message = "player_trade_initialized".toTradeMessage()
-            .format(tradeContext.bluePlayer.name.string)
-        broadcastMessage(message)
+        broadcastTradeMessage("player_trade_initialized") {
+            it.format0(tradeContext.bluePlayer.name.string)
+        }
     }
 
     fun start() {
         val s2COperationPacket = S2COperationPacket(Operators.CLIENT_TRADE_START)
         broadcastOperation(s2COperationPacket)
-        broadcastMessage("trade_start".toTradeMessage())
-//        broadcastMessage("notice".toTradeMessage())
+
+        broadcastTradeMessage("trade_start")
     }
 
     fun updateState(
@@ -87,13 +88,15 @@ class TradePresenter private constructor(
             "state_unchecked_other"
         }
 
-        val prefix = "presenter_prefix".toTradeMessage()
-        val toRed = rootOneself.toTradeMessage()
-        val toBlue = rootOther.toTradeMessage()
-            .format(tradeContext.redPlayer.name.string)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
 
-        toRed.send(prefix, tradeContext.redPlayer)
-        toBlue.send(prefix, tradeContext.bluePlayer)
+        val toRed = rootOneself.toTradeTranslation(tradeContext.redPlayer)
+        val toBlue = rootOther.toTradeTranslation(tradeContext.bluePlayer)
+            .format0(tradeContext.redPlayer.name.string)
+
+        toRed.send(prefixRed, tradeContext.redPlayer)
+        toBlue.send(prefixBlue, tradeContext.bluePlayer)
     }
 
     fun broadcastBlueStateChange(
@@ -110,13 +113,15 @@ class TradePresenter private constructor(
             "state_unchecked_other"
         }
 
-        val prefix = "presenter_prefix".toTradeMessage()
-        val toBlue = rootOneself.toTradeMessage()
-        val toRed = rootOther.toTradeMessage()
-            .format(tradeContext.bluePlayer.name.string)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
 
-        toRed.send(prefix, tradeContext.redPlayer)
-        toBlue.send(prefix, tradeContext.bluePlayer)
+        val toBlue = rootOneself.toTradeTranslation(tradeContext.bluePlayer)
+        val toRed = rootOther.toTradeTranslation(tradeContext.redPlayer)
+            .format0(tradeContext.bluePlayer.name.string)
+
+        toRed.send(prefixRed, tradeContext.redPlayer)
+        toBlue.send(prefixBlue, tradeContext.bluePlayer)
     }
 
     fun playStartSound() {
@@ -151,25 +156,29 @@ class TradePresenter private constructor(
             }
         }
 
-        val prefix = "presenter_prefix".toTradeMessage()
-        "add_item_oneself".toTradeMessage()
-            .format(itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.redPlayer)
-        "add_item_other".toTradeMessage()
-            .format(tradeContext.redPlayer.name.string, itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.bluePlayer)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
+
+        "add_item_oneself".toTradeTranslation(tradeContext.redPlayer)
+            .format0(itemStack.name.string, itemStack.count)
+            .send(prefixRed, tradeContext.redPlayer)
+        "add_item_other".toTradeTranslation(tradeContext.bluePlayer)
+            .format0(tradeContext.redPlayer.name.string, itemStack.name.string, itemStack.count)
+            .send(prefixBlue, tradeContext.bluePlayer)
     }
 
     fun broadcastRedRemoveItemMessage(
         itemStack: ItemStack
     ) {
-        val prefix = "presenter_prefix".toTradeMessage()
-        "remove_item_oneself".toTradeMessage()
-            .format(itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.redPlayer)
-        "remove_item_other".toTradeMessage()
-            .format(tradeContext.redPlayer.name.string)
-            .send(prefix, tradeContext.bluePlayer)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
+
+        "remove_item_oneself".toTradeTranslation(tradeContext.redPlayer)
+            .format0(itemStack.name.string, itemStack.count)
+            .send(prefixRed, tradeContext.redPlayer)
+        "remove_item_other".toTradeTranslation(tradeContext.bluePlayer)
+            .format0(tradeContext.redPlayer.name.string)
+            .send(prefixBlue, tradeContext.bluePlayer)
     }
 
     fun playAddItemSound() {
@@ -192,25 +201,29 @@ class TradePresenter private constructor(
             }
         }
 
-        val prefix = "presenter_prefix".toTradeMessage()
-        "add_item_oneself".toTradeMessage()
-            .format(itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.bluePlayer)
-        "add_item_other".toTradeMessage()
-            .format(tradeContext.bluePlayer.name.string, itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.redPlayer)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
+
+        "add_item_oneself".toTradeTranslation(tradeContext.bluePlayer)
+            .format0(itemStack.name.string, itemStack.count)
+            .send(prefixBlue, tradeContext.bluePlayer)
+        "add_item_other".toTradeTranslation(tradeContext.redPlayer)
+            .format0(tradeContext.bluePlayer.name.string, itemStack.name.string, itemStack.count)
+            .send(prefixRed, tradeContext.redPlayer)
     }
 
     fun broadcastBlueRemoveItemMessage(
         itemStack: ItemStack
     ) {
-        val prefix = "presenter_prefix".toTradeMessage()
-        "remove_item_oneself".toTradeMessage()
-            .format(itemStack.name.string, itemStack.count)
-            .send(prefix, tradeContext.bluePlayer)
-        "remove_item_other".toTradeMessage()
-            .format(tradeContext.bluePlayer.name.string)
-            .send(prefix, tradeContext.redPlayer)
+        val prefixRed = "presenter_prefix".toTradeText(tradeContext.redPlayer)
+        val prefixBlue = "presenter_prefix".toTradeText(tradeContext.bluePlayer)
+
+        "remove_item_oneself".toTradeTranslation(tradeContext.bluePlayer)
+            .format0(itemStack.name.string, itemStack.count)
+            .send(prefixBlue, tradeContext.bluePlayer)
+        "remove_item_other".toTradeTranslation(tradeContext.redPlayer)
+            .format0(tradeContext.bluePlayer.name.string)
+            .send(prefixRed, tradeContext.redPlayer)
     }
 
     fun playRemoveItemSound() {
@@ -232,11 +245,11 @@ class TradePresenter private constructor(
     }
 
     fun broadcastFinishMessage() {
-        broadcastMessage("trade_end".toTradeMessage())
+        broadcastTradeMessage("trade_end")
     }
 
     fun broadcastTerminateMessage() {
-        broadcastMessage("trade_terminate".toTradeMessage())
+        broadcastTradeMessage("trade_terminate")
     }
 
     fun end() {
@@ -244,9 +257,14 @@ class TradePresenter private constructor(
         broadcastOperation(s2COperationPacket)
     }
 
-    private fun broadcastMessage(message: String) {
-        message.send(tradeContext.redPlayer)
-        message.send(tradeContext.bluePlayer)
+    private fun broadcastTradeMessage(key: String, processor: (CuteTranslation) -> Unit = {}) {
+        val redTranslation = key.toTradeTranslation(tradeContext.redPlayer)
+        processor(redTranslation)
+        redTranslation.sendTo(tradeContext.redPlayer)
+
+        val blueTranslation = key.toTradeTranslation(tradeContext.bluePlayer)
+        processor(blueTranslation)
+        blueTranslation.sendTo(tradeContext.bluePlayer)
     }
 
     private fun broadcastOperation(

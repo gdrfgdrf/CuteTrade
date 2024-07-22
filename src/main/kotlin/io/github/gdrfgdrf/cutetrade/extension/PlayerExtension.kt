@@ -61,8 +61,8 @@ fun ServerPlayerEntity.currentTrade(): TradeContext? {
 fun ServerPlayerEntity.checkInTrade(): Boolean {
     val currentTrade = currentTrade()
     if (currentTrade == null) {
-        "no_transaction_in_progress".toCommandMessage()
-            .send(this)
+        "no_transaction_in_progress".toCommandTranslation(this)
+            .sendTo(this)
         return false
     }
     return true

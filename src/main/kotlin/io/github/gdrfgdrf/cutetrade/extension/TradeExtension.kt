@@ -25,7 +25,7 @@ import net.minecraft.nbt.NbtString
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
-fun Trade.toItemStack(): ItemStack {
+fun Trade.toItemStack(playerEntity: ServerPlayerEntity): ItemStack {
     val item = if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
         Items.GOLD_BLOCK
     } else {
@@ -33,47 +33,51 @@ fun Trade.toItemStack(): ItemStack {
     }
 
     val itemStack = ItemStack(item)
-    itemStack.setCustomName(Text.of(this.startTime.toInstant().formattedDate() + " | " + "click_view".toScreenMessage()))
+    itemStack.setCustomName(Text.of(
+        this.startTime.toInstant().formattedDate() +
+                " | " +
+                "click_view".toScreenTranslation(playerEntity).build().string))
 
     val nbtList = NbtList()
-    nbtList.add(NbtString.of("click_view".toScreenMessage()))
+    nbtList.add(NbtString.of("click_view".toScreenText(playerEntity).build().string))
 
     return itemStack
 }
 
 fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
-    "top".toCommandMessage()
-        .send("", serverPlayerEntity)
+    val emptyPrefix = "".toCuteText()
 
-    val finishedMessage = "finished_result".toTradeMessage()
-    val terminatedMessage = "terminated_result".toTradeMessage()
+    "top".toCommandTranslation(serverPlayerEntity)
+        .send(emptyPrefix, serverPlayerEntity)
+
+    val finishedMessage = "finished_result".toTradeTranslation(serverPlayerEntity)
+    val terminatedMessage = "terminated_result".toTradeTranslation(serverPlayerEntity)
     val resultMessage = if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
         finishedMessage
     } else {
         terminatedMessage
     }
 
-    "red_player_is".toInformationMessage()
-        .format(this.redName)
-        .send("", serverPlayerEntity)
-    "blue_player_is".toInformationMessage()
-        .format(this.blueName)
-        .send("", serverPlayerEntity)
-    "trade_result".toInformationMessage()
-        .format(resultMessage)
-        .send("", serverPlayerEntity)
+    "red_player_is".toInformationTranslation(serverPlayerEntity)
+        .format0(this.redName)
+        .send(emptyPrefix, serverPlayerEntity)
+    "blue_player_is".toInformationTranslation(serverPlayerEntity)
+        .format0(this.blueName)
+        .send(emptyPrefix, serverPlayerEntity)
+    "trade_result".toInformationTranslation(serverPlayerEntity)
+        .format0(resultMessage.build().string)
+        .send(emptyPrefix, serverPlayerEntity)
 
-    val divider = "divider".toInformationMessage()
+    val divider = "divider".toInformationTranslation(serverPlayerEntity)
 
     if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
-        val message = "final_trade_item".toInformationMessage()
-        val nothing = "nothing".toInformationMessage()
+        val nothing = "nothing".toInformationTranslation(serverPlayerEntity)
 
-        divider.send("", serverPlayerEntity)
+        divider.send(emptyPrefix, serverPlayerEntity)
 
-        "red_player_final_trade_item".toInformationMessage()
-            .format(this.redName)
-            .send("", serverPlayerEntity)
+        "red_player_final_trade_item".toInformationTranslation(serverPlayerEntity)
+            .format0(this.redName)
+            .send(emptyPrefix, serverPlayerEntity)
 
         val redItemResultList = this.redItemResultList
         var allEmpty = redItemResultList.stream().filter {
@@ -83,22 +87,23 @@ fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
 
         if (redItemResultList == null || redItemResultList.isEmpty() || allEmpty == null) {
             nothing
-                .send("", serverPlayerEntity)
+                .send(emptyPrefix, serverPlayerEntity)
         } else {
             redItemResultList.forEach { tradeItem ->
+                val message = "final_trade_item".toInformationTranslation(serverPlayerEntity)
                 val itemStack = tradeItem.toItemStack()
 
                 message
-                    .format(itemStack.name.string, itemStack.count)
-                    .send("", serverPlayerEntity)
+                    .format0(itemStack.name.string, itemStack.count)
+                    .send(emptyPrefix, serverPlayerEntity)
             }
         }
 
-        divider.send("", serverPlayerEntity)
+        divider.send(emptyPrefix, serverPlayerEntity)
 
-        "blue_player_final_trade_item".toInformationMessage()
-            .format(this.blueName)
-            .send("", serverPlayerEntity)
+        "blue_player_final_trade_item".toInformationTranslation(serverPlayerEntity)
+            .format0(this.blueName)
+            .send(emptyPrefix, serverPlayerEntity)
 
         val blueItemResultList = this.blueItemResultList
 
@@ -107,25 +112,26 @@ fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
         }.findAny()
             .orElse(null)
         if (blueItemResultList == null || blueItemResultList.isEmpty() || allEmpty == null) {
-            nothing.send("", serverPlayerEntity)
+            nothing.send(emptyPrefix, serverPlayerEntity)
         } else {
             blueItemResultList.forEach { tradeItem ->
+                val message = "final_trade_item".toInformationTranslation(serverPlayerEntity)
                 val itemStack = tradeItem.toItemStack()
 
                 message
-                    .format(itemStack.name.string, itemStack.count)
-                    .send("", serverPlayerEntity)
+                    .format0(itemStack.name.string, itemStack.count)
+                    .send(emptyPrefix, serverPlayerEntity)
             }
         }
 
-        divider.send("", serverPlayerEntity)
+        divider.send(emptyPrefix, serverPlayerEntity)
 
-        "trade_id".toInformationMessage()
-            .format(this.id)
-            .send("", serverPlayerEntity)
+        "trade_id".toInformationTranslation(serverPlayerEntity)
+            .format0(this.id)
+            .send(emptyPrefix, serverPlayerEntity)
     }
 
 
-    "bottom".toCommandMessage()
-        .send("", serverPlayerEntity)
+    "bottom".toCommandTranslation(serverPlayerEntity)
+        .send(emptyPrefix, serverPlayerEntity)
 }

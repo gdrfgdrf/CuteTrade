@@ -1,5 +1,5 @@
 {
-  "command.cutetrade.prefix": "&9▌ &l&6CuteTrade &8>> %s",
+  "command.cutetrade.prefix": "&9▌ &l&6CuteTrade &8>> ",
 
   "command.cutetrade.only_player": "&c只有玩家才能执行该指令",
   "command.cutetrade.no_permission": "&c您没有权限执行该指令",
@@ -7,13 +7,13 @@
   "command.cutetrade.argument_error": "&c参数错误",
 
   "command.cutetrade.request_sent_for_red": "&a交易请求已发送至玩家 %s，&c对方有 30 秒的时间来对此作出回应",
-  "command.cutetrade.request_received_for_blue": "&a玩家 %s 想要和您交易，&c您有 30 秒的时间来对此作出回应",
+  "command.cutetrade.request_received_for_blue": "&a玩家 %s 想要和您交易，&c您有 30 秒的时间来对此作出回应 ",
   "command.cutetrade.request_timeout_for_red": "&c您发送至玩家 %s 的交易请求已过期",
   "command.cutetrade.request_timeout_for_blue": "&c玩家 %s 发送至您的交易请求已过期",
   "command.cutetrade.request_exist": "&c您和玩家 %s 之间的交易请求已经存在",
   "command.cutetrade.player_is_trading": "&c玩家 %s 正在交易，无法进行操作",
   "command.cutetrade.player_is_trading_oneself": "&c您正在交易，无法进行操作",
-  "command.cutetrade.click_to_accept": "&a&l[同意]",
+  "command.cutetrade.click_to_accept": "&a&l[同意] ",
   "command.cutetrade.click_to_decline": "&c&l[拒绝]",
 
   "command.cutetrade.not_found_request": "&c玩家 %s 没有向您发送过交易请求",
@@ -35,7 +35,7 @@
   "trade.cutetrade.trade_start": "&a&l交易开始",
   "trade.cutetrade.trade_terminate": "&c&l终止交易",
   "trade.cutetrade.trade_end": "&a&l交易已结束",
-  "trade.cutetrade.presenter_prefix": "&c▌ &a&l主持人 &8>> %s",
+  "trade.cutetrade.presenter_prefix": "&c▌ &a&l主持人 &8>> ",
 
   "trade.cutetrade.state_checked_oneself": "&a您确认了交易内容",
   "trade.cutetrade.state_checked_other": "&a玩家 %s 确认了交易内容",

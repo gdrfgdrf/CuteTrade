@@ -1,5 +1,5 @@
 {
-  "command.cutetrade.prefix": "&9▌ &6CuteTrade &8>> %s",
+  "command.cutetrade.prefix": "&9▌ &6CuteTrade &8>> ",
 
   "command.cutetrade.only_player": "&cOnly the player can execute",
   "command.cutetrade.no_permission": "&cYou do not have permission to execute this command",
@@ -7,13 +7,13 @@
   "command.cutetrade.argument_error": "&cArgument error",
 
   "command.cutetrade.request_sent_for_red": "&aThe trade request has been sent to player %s, &cwho has 30 seconds to respond",
-  "command.cutetrade.request_received_for_blue": "&aPlayer %s wants to trade with you, &cyou have 30 seconds to respond",
+  "command.cutetrade.request_received_for_blue": "&aPlayer %s wants to trade with you, &cyou have 30 seconds to respond ",
   "command.cutetrade.request_timeout_for_red": "&cThe trade request you sent to player %s has expired",
   "command.cutetrade.request_timeout_for_blue": "&cThe trade request sent to you by player %s has expired",
   "command.cutetrade.request_exist": "&cThe trade request between you and player %s already exists",
   "command.cutetrade.player_is_trading": "&cPlayer %s is trading and cannot complete the operation",
   "command.cutetrade.player_is_trading_oneself": "&cYou are trading and cannot complete the operation",
-  "command.cutetrade.click_to_accept": "&a&l[Accept]",
+  "command.cutetrade.click_to_accept": "&a&l[Accept] ",
   "command.cutetrade.click_to_decline": "&c&l[Decline]",
 
   "command.cutetrade.not_found_request": "&cThere is no trade request between you and player %s",
@@ -35,7 +35,7 @@
   "trade.cutetrade.trade_start": "&a&lStart trading",
   "trade.cutetrade.trade_terminate": "&c&lTerminated transaction",
   "trade.cutetrade.trade_end": "&a&lTransaction completed",
-  "trade.cutetrade.presenter_prefix": "&c▌ &a&lPresenter &8>> %s",
+  "trade.cutetrade.presenter_prefix": "&c▌ &a&lPresenter &8>> ",
 
   "trade.cutetrade.state_checked_oneself": "&aYou confirm the transaction",
   "trade.cutetrade.state_checked_other": "&aPlayer %s confirmed the transaction",

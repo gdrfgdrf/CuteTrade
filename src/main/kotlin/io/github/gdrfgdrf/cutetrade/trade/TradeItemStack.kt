@@ -16,8 +16,8 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
+import io.github.gdrfgdrf.cutetrade.extension.sendTo
+import io.github.gdrfgdrf.cutetrade.extension.toScreenTranslation
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 
@@ -38,8 +38,8 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         itemStack: ItemStack
     ) {
         if (index >= 9 || index < 0) {
-            "trade_item_limited".toScreenMessage()
-                .send(playerEntity)
+            "trade_item_limited".toScreenTranslation(playerEntity)
+                .sendTo(playerEntity)
             return
         }
 

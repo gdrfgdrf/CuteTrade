@@ -51,30 +51,30 @@ object RequestTradeCommand : AbstractCommand(
     private fun start(source: ServerCommandSource, providedBlueName: String) {
         val commandInvoker = CommandInvoker.of(source)
         if (providedBlueName == source.player?.name?.string) {
-            "trade_with_oneself".toCommandMessage()
+            "trade_with_oneself".toCommandTranslation(commandInvoker)
                 .send(commandInvoker)
             return
         }
 
         val bluePlayer = PlayerManager.findPlayer(providedBlueName)
         if (bluePlayer == null) {
-            "not_found_player".toCommandMessage()
-                .format(providedBlueName)
+            "not_found_player".toCommandTranslation(commandInvoker)
+                .format0(providedBlueName)
                 .send(commandInvoker)
             return
         }
 
         val bluePlayerEntity = bluePlayer.findServerEntity(source.server)
         if (bluePlayerEntity == null) {
-            "player_offline".toCommandMessage()
-                .format(providedBlueName)
+            "player_offline".toCommandTranslation(commandInvoker)
+                .format0(providedBlueName)
                 .send(commandInvoker)
             return
         }
 
         if (bluePlayerEntity.isTrading()) {
-            "player_is_trading_oneself".toCommandMessage()
-                .format(providedBlueName)
+            "player_is_trading_oneself".toCommandTranslation(commandInvoker)
+                .format0(providedBlueName)
                 .send(commandInvoker)
             return
         }

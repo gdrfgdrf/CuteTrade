@@ -28,58 +28,43 @@ class TradeRequest private constructor(
     val bluePlayerEntity: ServerPlayerEntity
 ) {
     private val task = CountdownWorker.CountdownTask(30000L, TimeUnit.MILLISECONDS) {
-        "request_timeout_for_red".toCommandMessage()
-            .format(bluePlayerEntity.name.string)
-            .send(redPlayerEntity)
-        "request_timeout_for_blue".toCommandMessage()
-            .format(redPlayerEntity.name.string)
-            .send(bluePlayerEntity)
+        "request_timeout_for_red".toCommandTranslation(redPlayerEntity)
+            .format0(bluePlayerEntity.name.string)
+            .sendTo(redPlayerEntity)
+        "request_timeout_for_blue".toCommandTranslation(bluePlayerEntity)
+            .format0(redPlayerEntity.name.string)
+            .sendTo(bluePlayerEntity)
 
         timeout()
     }
 
     fun send() {
-        val acceptMessage = buildRunCommandText(
-            {
-                "click_to_accept".toCommandMessage()
-            },
-            "/trade-public accept ${redPlayerEntity.name.string}"
-        )
-        val declineMessage = buildRunCommandText(
-            {
-                "click_to_decline".toCommandMessage()
-            },
-            "/trade-public decline ${redPlayerEntity.name.string}"
-        )
+        val acceptMessage = "click_to_accept".toCommandText(bluePlayerEntity)
+            .runCommand("/trade-public accept ${redPlayerEntity.name.string}")
+        val declineMessage = "click_to_decline".toCommandText(bluePlayerEntity)
+            .runCommand("/trade-public decline ${redPlayerEntity.name.string}")
 
-        "request_received_for_blue".toCommandMessage()
-            .format(redPlayerEntity.name.string)
-            .toText()
-            .fillPrefix()
-            .apply {
-                (this as MutableText)
-                    .append(" ")
-                    .append(acceptMessage)
-                    .append(" ")
-                    .append(declineMessage)
-            }
-            .send(bluePlayerEntity)
+        "request_received_for_blue".toCommandTranslation(bluePlayerEntity)
+            .format0(redPlayerEntity.name.string)
+            .append(acceptMessage)
+            .append(declineMessage)
+            .sendTo(bluePlayerEntity)
 
-        "request_sent_for_red".toCommandMessage()
-            .format(bluePlayerEntity.name.string)
-            .send(redPlayerEntity)
+        "request_sent_for_red".toCommandTranslation(redPlayerEntity)
+            .format0(bluePlayerEntity.name.string)
+            .sendTo(redPlayerEntity)
         CountdownWorker.add(task)
     }
 
     fun accept() {
         end()
 
-        "accept_request_for_red".toCommandMessage()
-            .format(bluePlayerEntity.name.string)
-            .send(redPlayerEntity)
-        "accept_request_for_blue".toCommandMessage()
-            .format(redPlayerEntity.name.string)
-            .send(bluePlayerEntity)
+        "accept_request_for_red".toCommandTranslation(redPlayerEntity)
+            .format0(bluePlayerEntity.name.string)
+            .sendTo(redPlayerEntity)
+        "accept_request_for_blue".toCommandTranslation(bluePlayerEntity)
+            .format0(redPlayerEntity.name.string)
+            .sendTo(bluePlayerEntity)
 
         TradeManager.createTrade(redPlayerEntity, bluePlayerEntity)
     }
@@ -87,12 +72,12 @@ class TradeRequest private constructor(
     fun decline() {
         end()
 
-        "decline_request_for_red".toCommandMessage()
-            .format(bluePlayerEntity.name.string)
-            .send(redPlayerEntity)
-        "decline_request_for_blue".toCommandMessage()
-            .format(redPlayerEntity.name.string)
-            .send(bluePlayerEntity)
+        "decline_request_for_red".toCommandTranslation(redPlayerEntity)
+            .format0(bluePlayerEntity.name.string)
+            .sendTo(redPlayerEntity)
+        "decline_request_for_blue".toCommandTranslation(bluePlayerEntity)
+            .format0(redPlayerEntity.name.string)
+            .sendTo(bluePlayerEntity)
     }
 
     fun timeout() {

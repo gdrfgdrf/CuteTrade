@@ -50,31 +50,31 @@ object DeclineTradeResultCommand : AbstractCommand(
     private fun decline(source: ServerCommandSource, providedRedName: String) {
         val commandInvoker = CommandInvoker.of(source)
         if (providedRedName == source.player?.name?.string) {
-            "decline_request_from_oneself".toCommandMessage()
+            "decline_request_from_oneself".toCommandTranslation(commandInvoker)
                 .send(commandInvoker)
             return
         }
 
         val redPlayer = PlayerManager.findPlayer(providedRedName)
         if (redPlayer == null) {
-            "not_found_player".toCommandMessage()
-                .format(providedRedName)
+            "not_found_player".toCommandTranslation(commandInvoker)
+                .format0(providedRedName)
                 .send(commandInvoker)
             return
         }
 
         val redPlayerEntity = redPlayer.findServerEntity(source.server)
         if (redPlayerEntity == null) {
-            "player_offline".toCommandMessage()
-                .format(providedRedName)
+            "player_offline".toCommandTranslation(commandInvoker)
+                .format0(providedRedName)
                 .send(commandInvoker)
             return
         }
 
         val tradeRequest = source.player?.getTradeRequest(redPlayerEntity)
         if (tradeRequest == null) {
-            "not_found_request".toCommandMessage()
-                .format(providedRedName)
+            "not_found_request".toCommandTranslation(commandInvoker)
+                .format0(providedRedName)
                 .send(commandInvoker)
             return
         }

@@ -16,10 +16,12 @@
 
 package io.github.gdrfgdrf.cutetrade.page
 
-import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
+import io.github.gdrfgdrf.cutetrade.extension.toScreenText
+import io.github.gdrfgdrf.cutetrade.extension.toScreenTranslation
 import net.minecraft.inventory.SimpleInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.text.Text
 
 class PageableInventory(val rows: Int) : SimpleInventory(rows * 9) {
@@ -31,17 +33,17 @@ class PageableInventory(val rows: Int) : SimpleInventory(rows * 9) {
         navigator?.pages?.add(page)
     }
 
-    fun fullNavigationBar() {
+    fun fullNavigationBar(serverPlayerEntity: ServerPlayerEntity) {
         val pages = navigator?.pages
         val first = pages?.get(0)
         val last = pages?.get(navigator?.pages?.size!! - 1)
 
         if (first == last) {
-            addNavigationBar(first!!, left = false, right = false)
+            addNavigationBar(first!!, left = false, right = false, serverPlayerEntity)
             return
         } else {
-            addNavigationBar(first!!, left = false, right = true)
-            addNavigationBar(last!!, left = true, right = false)
+            addNavigationBar(first!!, left = false, right = true, serverPlayerEntity)
+            addNavigationBar(last!!, left = true, right = false, serverPlayerEntity)
         }
 
         pages.forEach {
@@ -49,19 +51,19 @@ class PageableInventory(val rows: Int) : SimpleInventory(rows * 9) {
                 return@forEach
             }
 
-            addNavigationBar(it, left = true, right = true)
+            addNavigationBar(it, left = true, right = true, serverPlayerEntity)
         }
     }
 
-    private fun addNavigationBar(page: Page, left: Boolean, right: Boolean) {
+    private fun addNavigationBar(page: Page, left: Boolean, right: Boolean, serverPlayerEntity: ServerPlayerEntity) {
         val previous = ItemStack(Items.LIME_WOOL)
-        previous.setCustomName(Text.of("previous_page".toScreenMessage()))
+        previous.setCustomName("previous_page".toScreenText(serverPlayerEntity).build())
 
         val next = ItemStack(Items.LIME_WOOL)
-        next.setCustomName(Text.of("next_page".toScreenMessage()))
+        next.setCustomName("next_page".toScreenText(serverPlayerEntity).build())
 
         val redPane = ItemStack(Items.RED_STAINED_GLASS_PANE)
-        redPane.setCustomName(Text.of("close".toScreenMessage()))
+        redPane.setCustomName("close".toScreenText(serverPlayerEntity).build())
 
         val whilePane = ItemStack(Items.WHITE_STAINED_GLASS_PANE)
         whilePane.setCustomName(Text.of(""))
