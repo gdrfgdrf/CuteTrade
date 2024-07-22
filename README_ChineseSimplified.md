@@ -31,7 +31,8 @@ CuteTrade
 
 依赖
 ------------------------
-运行时您需要将 [Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin) 作为 mod 添加
+[Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin)  
+[Cute Translation API](https://github.com/gdrfgdrf/CuteTranslationAPI)
 
 以下为项目所使用的依赖
 

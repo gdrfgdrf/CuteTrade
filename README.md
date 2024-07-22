@@ -31,7 +31,8 @@ Root: /trade-admin
 
 Dependencies
 ------------------------
-In runtime, you need to [Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin) as the mod adds
+[Fabric Language Kotlin](https://github.com/FabricMC/fabric-language-kotlin)  
+[Cute Translation API](https://github.com/gdrfgdrf/CuteTranslationAPI)
 
 | Dependency                                                      | Use                                      |
 |-----------------------------------------------------------------|------------------------------------------|
