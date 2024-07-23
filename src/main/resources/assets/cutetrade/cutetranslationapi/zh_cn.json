@@ -43,10 +43,11 @@
   "trade.cutetrade.state_unchecked_other": "&c玩家 %s 取消确认了交易内容",
   "trade.cutetrade.notice": "&6&l为了交易的安全性，进入交易界面后，您的快速移动物品的功能将会失效",
 
-  "trade.cutetrade.add_item_oneself": "&a您加入了物品 [%s] x%d",
-  "trade.cutetrade.add_item_other": "&a玩家 %s 加入了物品 [%s] x%d",
+  "trade.cutetrade.add_item_oneself": "&a您加入了物品",
+  "trade.cutetrade.add_item_other": "&a玩家 %s 加入了物品",
   "trade.cutetrade.remove_item_oneself": "&c您移除了物品",
   "trade.cutetrade.remove_item_other": "&c玩家 %s 移除了物品",
+  "trade.cutetrade.item": "&a[%s] x%d",
 
   "screen.cutetrade.trade_screen_title": "交易中",
   "screen.cutetrade.trade_inventory_empty": "&c当前没有要交易的物品",

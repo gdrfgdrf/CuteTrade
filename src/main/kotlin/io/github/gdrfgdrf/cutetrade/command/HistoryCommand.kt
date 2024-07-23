@@ -37,54 +37,54 @@ object HistoryCommand : AbstractCommand(
      fun print(source: ServerCommandSource, playerName: String) {
         val commandInvoker = CommandInvoker.of(source)
 
-        val protobufPlayer = playerName.findProtobufPlayer()
-        if (protobufPlayer == null) {
-            "not_found_player".toCommandTranslation(commandInvoker)
-                .format0(playerName)
-                .send(commandInvoker)
-            return
-        }
-        val tradeIdsList = protobufPlayer.tradeIdsList
-        if (tradeIdsList == null || (tradeIdsList as List<String>).isEmpty()) {
-            if (protobufPlayer.name != source.player!!.name.string) {
-                "no_transaction_history_other".toCommandTranslation(commandInvoker)
-                    .format0(playerName)
-                    .send(commandInvoker)
-                return
-            }
+         commandInvoker.translationScope {
+             val protobufPlayer = playerName.findProtobufPlayer()
+             if (protobufPlayer == null) {
+                 toCommandTranslation("not_found_player")
+                     .format0(playerName)
+                     .send()
+                 return@translationScope
+             }
+             val tradeIdsList = protobufPlayer.tradeIdsList
+             if (tradeIdsList == null || (tradeIdsList as List<String>).isEmpty()) {
+                 if (protobufPlayer.name != source.player!!.name.string) {
+                     toCommandTranslation("no_transaction_history_other")
+                         .format0(playerName)
+                         .send()
+                     return@translationScope
+                 }
 
-            "no_transaction_history".toCommandTranslation(commandInvoker)
-                .send(commandInvoker)
-            return
-        }
+                 toCommandTranslation("no_transaction_history")
+                     .send()
+                 return@translationScope
+             }
 
-        val pageable = Pageable()
-        pageable.openScreen("history_title".toScreenTranslation(commandInvoker)
-            .format0(playerName)
-            .build(), source.player!!)
+             val pageable = Pageable()
+             pageable.openScreen(toScreenTranslation("history_title")
+                 .format0(playerName)
+                 .build(), source.player!!)
 
-        val tradeMap = TradeManager.tradeProtobuf?.message?.tradeIdToTradeMap
-        tradeIdsList.forEach { tradeId ->
-            val trade = tradeMap?.get(tradeId) ?: return@forEach
-            val itemStack = trade.toItemStack(commandInvoker.source.player!!)
+             val tradeMap = TradeManager.tradeProtobuf?.message?.tradeIdToTradeMap
+             tradeIdsList.forEach { tradeId ->
+                 val trade = tradeMap?.get(tradeId) ?: return@forEach
+                 val itemStack = trade.toItemStack(commandInvoker.source.player!!)
 
-            pageable.addItemStack(itemStack)
-        }
-        pageable.inventory!!.fullNavigationBar(source.player!!)
+                 pageable.addItemStack(itemStack)
+             }
+             pageable.inventory!!.fullNavigationBar(source.player!!)
 
-        pageable.inventory!!.navigator?.show(0)
+             pageable.inventory!!.navigator?.show(0)
 
-        pageable.pageableScreenHandler?.onItemClick = onItemClick@ { index ->
-            if (index >= tradeIdsList.size || index < 0) {
-                return@onItemClick
-            }
-            val tradeId = tradeIdsList[index]
-            val trade = tradeMap!![tradeId] ?: return@onItemClick
+             pageable.pageableScreenHandler?.onItemClick = onItemClick@ { index ->
+                 if (index >= tradeIdsList.size || index < 0) {
+                     return@onItemClick
+                 }
+                 val tradeId = tradeIdsList[index]
+                 val trade = tradeMap!![tradeId] ?: return@onItemClick
 
-            trade.printInformation(source.player!!)
-        }
-
-
+                 trade.printInformation(source.player!!)
+             }
+         }
     }
 
 }

@@ -28,43 +28,55 @@ class TradeRequest private constructor(
     val bluePlayerEntity: ServerPlayerEntity
 ) {
     private val task = CountdownWorker.CountdownTask(30000L, TimeUnit.MILLISECONDS) {
-        "request_timeout_for_red".toCommandTranslation(redPlayerEntity)
-            .format0(bluePlayerEntity.name.string)
-            .sendTo(redPlayerEntity)
-        "request_timeout_for_blue".toCommandTranslation(bluePlayerEntity)
-            .format0(redPlayerEntity.name.string)
-            .sendTo(bluePlayerEntity)
+        redPlayerEntity.translationScope {
+            toCommandTranslation("request_timeout_for_red")
+                .format0(bluePlayerEntity.name.string)
+                .send()
+        }
+        bluePlayerEntity.translationScope {
+            toCommandTranslation("request_timeout_for_blue")
+                .format0(redPlayerEntity.name.string)
+                .send()
+        }
 
         timeout()
     }
 
     fun send() {
-        val acceptMessage = "click_to_accept".toCommandText(bluePlayerEntity)
-            .runCommand("/trade-public accept ${redPlayerEntity.name.string}")
-        val declineMessage = "click_to_decline".toCommandText(bluePlayerEntity)
-            .runCommand("/trade-public decline ${redPlayerEntity.name.string}")
+        redPlayerEntity.translationScope {
+            toCommandTranslation("request_sent_for_red")
+                .format0(bluePlayerEntity.name.string)
+                .send()
+        }
+        bluePlayerEntity.translationScope {
+            val acceptMessage = toCommandText("click_to_accept")
+                .runCommand("/trade-public accept ${redPlayerEntity.name.string}")
+            val declineMessage = toCommandText("click_to_decline")
+                .runCommand("/trade-public decline ${redPlayerEntity.name.string}")
 
-        "request_received_for_blue".toCommandTranslation(bluePlayerEntity)
-            .format0(redPlayerEntity.name.string)
-            .append(acceptMessage)
-            .append(declineMessage)
-            .sendTo(bluePlayerEntity)
+            toCommandTranslation("request_received_for_blue")
+                .format0(redPlayerEntity.name.string)
+                .append(acceptMessage)
+                .append(declineMessage)
+                .send()
+        }
 
-        "request_sent_for_red".toCommandTranslation(redPlayerEntity)
-            .format0(bluePlayerEntity.name.string)
-            .sendTo(redPlayerEntity)
         CountdownWorker.add(task)
     }
 
     fun accept() {
         end()
 
-        "accept_request_for_red".toCommandTranslation(redPlayerEntity)
-            .format0(bluePlayerEntity.name.string)
-            .sendTo(redPlayerEntity)
-        "accept_request_for_blue".toCommandTranslation(bluePlayerEntity)
-            .format0(redPlayerEntity.name.string)
-            .sendTo(bluePlayerEntity)
+        redPlayerEntity.translationScope {
+            toCommandTranslation("accept_request_for_red")
+                .format0(bluePlayerEntity.name.string)
+                .send()
+        }
+        bluePlayerEntity.translationScope {
+            toCommandTranslation("accept_request_for_blue")
+                .format0(redPlayerEntity.name.string)
+                .send()
+        }
 
         TradeManager.createTrade(redPlayerEntity, bluePlayerEntity)
     }
@@ -72,12 +84,16 @@ class TradeRequest private constructor(
     fun decline() {
         end()
 
-        "decline_request_for_red".toCommandTranslation(redPlayerEntity)
-            .format0(bluePlayerEntity.name.string)
-            .sendTo(redPlayerEntity)
-        "decline_request_for_blue".toCommandTranslation(bluePlayerEntity)
-            .format0(redPlayerEntity.name.string)
-            .sendTo(bluePlayerEntity)
+        redPlayerEntity.translationScope {
+            toCommandTranslation("decline_request_for_red")
+                .format0(bluePlayerEntity.name.string)
+                .send()
+        }
+        bluePlayerEntity.translationScope {
+            toCommandTranslation("decline_request_for_blue")
+                .format0(redPlayerEntity.name.string)
+                .send()
+        }
     }
 
     fun timeout() {

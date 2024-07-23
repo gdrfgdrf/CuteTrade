@@ -92,58 +92,11 @@ fun String.toInformationTranslation(serverPlayerEntity: ServerPlayerEntity? = nu
     return translatable("information.cutetrade.$this")
 }
 
-fun CuteTranslation.send(prefix: CuteText, serverPlayerEntity: ServerPlayerEntity) {
-    if (serverPlayerEntity.isDisconnected) {
-        return
+fun String.toInformationText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
+    if (serverPlayerEntity != null) {
+        return translatableText(serverPlayerEntity.name.string, "information.cutetrade.$this")
     }
-    val text = prefix.build()
-
-    if (notBlank(text.string)) {
-        this.insert(0, prefix)
-        send(serverPlayerEntity)
-        return
-    }
-    send(serverPlayerEntity)
-}
-
-fun CuteTranslation.sendTo(serverPlayerEntity: ServerPlayerEntity) {
-    if (!serverPlayerEntity.isDisconnected) {
-        val prefix = "prefix".toCommandText(serverPlayerEntity)
-        send(prefix, serverPlayerEntity)
-    }
-}
-
-fun CuteTranslation.send(prefix: String, commandInvoker: CommandInvoker) {
-    if (commandInvoker.source.player == null || commandInvoker.source.player!!.isDisconnected) {
-        return
-    }
-
-    if (notBlank(prefix)) {
-        val prefixText = CuteText.of(prefix)
-        this.insert(0, prefixText)
-        send(commandInvoker.source.player!!)
-        return
-    }
-    send(commandInvoker.source.player!!)
-}
-
-fun CuteTranslation.send(commandInvoker: CommandInvoker) {
-    if (commandInvoker.source.player == null || commandInvoker.source.player!!.isDisconnected) {
-        return
-    }
-    val prefix = "prefix".toCommandText(commandInvoker.source.player)
-
-    send(prefix, commandInvoker.source.player!!)
-}
-
-fun CuteTranslation.format0(vararg any: Any): CuteTranslation {
-    this.get(0).format(*any)
-    return this
-}
-
-fun CuteTranslation.format(index: Int, vararg any: Any): CuteTranslation {
-    this.get(index).format(*any)
-    return this
+    return translatableText("information.cutetrade.$this")
 }
 
 fun String.toCuteText(): CuteText {

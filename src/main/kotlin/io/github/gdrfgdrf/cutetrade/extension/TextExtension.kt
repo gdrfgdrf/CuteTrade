@@ -55,22 +55,3 @@ fun translatableText(playerName: String, key: String): CuteText {
     val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
     return CuteText.of(value)
 }
-
-fun Text.clickEvent(clickEvent: ClickEvent): Text {
-    (this as MutableText).styled {
-        it.withClickEvent(clickEvent)
-    }
-    return this
-}
-
-fun Text.send(serverPlayerEntity: ServerPlayerEntity) {
-    serverPlayerEntity.sendMessage(this)
-}
-
-fun buildRunCommandClickEvent(command: String): ClickEvent {
-    return ClickEvent(ClickEvent.Action.RUN_COMMAND, command)
-}
-
-fun buildRunCommandText(textGetter: () -> String, command: String): Text {
-    return Text.of(textGetter()).clickEvent(buildRunCommandClickEvent(command))
-}

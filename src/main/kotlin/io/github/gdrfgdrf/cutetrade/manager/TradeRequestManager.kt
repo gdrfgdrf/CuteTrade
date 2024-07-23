@@ -33,9 +33,11 @@ object TradeRequestManager {
         val blueSentToRed = bluePlayerEntity.getTradeRequest(redPlayerEntity)
 
         if (redSentToBlue != null || blueSentToRed != null) {
-            "request_exist".toCommandTranslation(redPlayerEntity)
-                .format0(bluePlayerEntity.name.string)
-                .sendTo(redPlayerEntity)
+            redPlayerEntity.translationScope {
+                toCommandTranslation("request_exist")
+                    .format0(bluePlayerEntity.name.string)
+                    .send()
+            }
             return
         }
 

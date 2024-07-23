@@ -49,43 +49,46 @@ object AcceptTradeResultCommand : AbstractCommand(
 ) {
     private fun accept(source: ServerCommandSource, providedRedName: String) {
         val commandInvoker = CommandInvoker.of(source)
-        if (providedRedName == source.player?.name?.string) {
-            "accept_request_from_oneself".toCommandTranslation(commandInvoker)
-                .send(commandInvoker)
-            return
-        }
 
-        val redPlayer = PlayerManager.findPlayer(providedRedName)
-        if (redPlayer == null) {
-            "not_found_player".toCommandTranslation(commandInvoker)
-                .format0(0, providedRedName)
-                .send(commandInvoker)
-            return
-        }
+        commandInvoker.translationScope {
+            if (providedRedName == source.player?.name?.string) {
+                toCommandTranslation("accept_request_from_oneself")
+                    .send()
+                return@translationScope
+            }
 
-        val redPlayerEntity = redPlayer.findServerEntity(source.server)
-        if (redPlayerEntity == null) {
-            "player_offline".toCommandTranslation(commandInvoker)
-                .format0(providedRedName)
-                .send(commandInvoker)
-            return
-        }
+            val redPlayer = PlayerManager.findPlayer(providedRedName)
+            if (redPlayer == null) {
+                toCommandTranslation("not_found_player")
+                    .format0(providedRedName)
+                    .send()
+                return@translationScope
+            }
 
-        val tradeRequest = source.player?.getTradeRequest(redPlayerEntity)
-        if (tradeRequest == null) {
-            "not_found_request".toCommandTranslation(commandInvoker)
-                .format0(providedRedName)
-                .send(commandInvoker)
-            return
-        }
+            val redPlayerEntity = redPlayer.findServerEntity(source.server)
+            if (redPlayerEntity == null) {
+                toCommandTranslation("player_offline")
+                    .format0(providedRedName)
+                    .send()
+                return@translationScope
+            }
 
-        if (redPlayerEntity.isTrading()) {
-            "player_is_trading".toCommandTranslation(commandInvoker)
-                .format0(providedRedName)
-                .send(commandInvoker)
-            return
-        }
+            val tradeRequest = source.player?.getTradeRequest(redPlayerEntity)
+            if (tradeRequest == null) {
+                toCommandTranslation("not_found_request")
+                    .format0(providedRedName)
+                    .send()
+                return@translationScope
+            }
 
-        tradeRequest.accept()
+            if (redPlayerEntity.isTrading()) {
+                toCommandTranslation("player_is_trading")
+                    .format0(providedRedName)
+                    .send()
+                return@translationScope
+            }
+
+            tradeRequest.accept()
+        }
     }
 }

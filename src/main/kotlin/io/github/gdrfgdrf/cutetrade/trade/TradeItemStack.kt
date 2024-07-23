@@ -16,8 +16,7 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import io.github.gdrfgdrf.cutetrade.extension.sendTo
-import io.github.gdrfgdrf.cutetrade.extension.toScreenTranslation
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 
@@ -38,12 +37,12 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         itemStack: ItemStack
     ) {
         if (index >= 9 || index < 0) {
-            "trade_item_limited".toScreenTranslation(playerEntity)
-                .sendTo(playerEntity)
+            playerEntity.translationScope {
+                toScreenTranslation("trade_item_limited")
+                    .send()
+            }
             return
         }
-
-//        "set trade item $itemStack to index $index".logInfo()
         itemArray[index] = TradeItem(itemStack)
     }
 
@@ -51,11 +50,6 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         index: Int
     ) {
         itemArray[index] = null
-//        val tradeItem = itemArray[index]
-//        if (tradeItem != null) {
-////            "remove trade item ${tradeItem.itemStack} from index $index".logInfo()
-//            tradeItem.itemStack = ItemStack.EMPTY
-//        }
     }
 
     fun removeAll() {
@@ -72,9 +66,8 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
     }
 
     fun moveTo(serverPlayerEntity: ServerPlayerEntity) {
-        itemArray.forEachIndexed { index, it ->
+        itemArray.forEachIndexed { _, it ->
             it?.let {
-//                "offer ${it.itemStack}(index $index) to ${serverPlayerEntity.name.string}".logInfo()
                 it.itemStack.getOrCreateNbt().remove("cutetrade-add-by")
                 serverPlayerEntity.inventory.offerOrDrop(it.itemStack)
             }
@@ -93,9 +86,7 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         return tradeItemStack
     }
 
-    class TradeItem(var itemStack: ItemStack) {
-    }
-
+    class TradeItem(var itemStack: ItemStack)
 
     companion object {
         fun create(playerEntity: ServerPlayerEntity) = TradeItemStack(playerEntity)

@@ -50,35 +50,41 @@ object RequestTradeCommand : AbstractCommand(
 ) {
     private fun start(source: ServerCommandSource, providedBlueName: String) {
         val commandInvoker = CommandInvoker.of(source)
-        if (providedBlueName == source.player?.name?.string) {
-            "trade_with_oneself".toCommandTranslation(commandInvoker)
-                .send(commandInvoker)
-            return
-        }
+        commandInvoker.translationScope {
+            runCatching {
+                if (providedBlueName == source.player?.name?.string) {
+                    toCommandTranslation("trade_with_oneself")
+                        .send()
+                    return@translationScope
+                }
 
-        val bluePlayer = PlayerManager.findPlayer(providedBlueName)
-        if (bluePlayer == null) {
-            "not_found_player".toCommandTranslation(commandInvoker)
-                .format0(providedBlueName)
-                .send(commandInvoker)
-            return
-        }
+                val bluePlayer = PlayerManager.findPlayer(providedBlueName)
+                if (bluePlayer == null) {
+                    toCommandTranslation("not_found_player")
+                        .format0(providedBlueName)
+                        .send()
+                    return@translationScope
+                }
 
-        val bluePlayerEntity = bluePlayer.findServerEntity(source.server)
-        if (bluePlayerEntity == null) {
-            "player_offline".toCommandTranslation(commandInvoker)
-                .format0(providedBlueName)
-                .send(commandInvoker)
-            return
-        }
+                val bluePlayerEntity = bluePlayer.findServerEntity(source.server)
+                if (bluePlayerEntity == null) {
+                    toCommandTranslation("player_offline")
+                        .format0(providedBlueName)
+                        .send()
+                    return@translationScope
+                }
 
-        if (bluePlayerEntity.isTrading()) {
-            "player_is_trading_oneself".toCommandTranslation(commandInvoker)
-                .format0(providedBlueName)
-                .send(commandInvoker)
-            return
-        }
+                if (bluePlayerEntity.isTrading()) {
+                    toCommandTranslation("player_is_trading_oneself")
+                        .format0(providedBlueName)
+                        .send()
+                    return@translationScope
+                }
 
-        TradeRequestManager.request(source.player!!, bluePlayerEntity)
+                TradeRequestManager.request(source.player!!, bluePlayerEntity)
+            }.onFailure {
+                it.printStackTrace()
+            }
+        }
     }
 }
