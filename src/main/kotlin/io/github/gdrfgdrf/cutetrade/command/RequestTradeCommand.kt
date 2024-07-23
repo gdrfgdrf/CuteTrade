@@ -51,40 +51,36 @@ object RequestTradeCommand : AbstractCommand(
     private fun start(source: ServerCommandSource, providedBlueName: String) {
         val commandInvoker = CommandInvoker.of(source)
         commandInvoker.translationScope {
-            runCatching {
-                if (providedBlueName == source.player?.name?.string) {
-                    toCommandTranslation("trade_with_oneself")
-                        .send()
-                    return@translationScope
-                }
-
-                val bluePlayer = PlayerManager.findPlayer(providedBlueName)
-                if (bluePlayer == null) {
-                    toCommandTranslation("not_found_player")
-                        .format0(providedBlueName)
-                        .send()
-                    return@translationScope
-                }
-
-                val bluePlayerEntity = bluePlayer.findServerEntity(source.server)
-                if (bluePlayerEntity == null) {
-                    toCommandTranslation("player_offline")
-                        .format0(providedBlueName)
-                        .send()
-                    return@translationScope
-                }
-
-                if (bluePlayerEntity.isTrading()) {
-                    toCommandTranslation("player_is_trading_oneself")
-                        .format0(providedBlueName)
-                        .send()
-                    return@translationScope
-                }
-
-                TradeRequestManager.request(source.player!!, bluePlayerEntity)
-            }.onFailure {
-                it.printStackTrace()
+            if (providedBlueName == source.player?.name?.string) {
+                toCommandTranslation("trade_with_oneself")
+                    .send()
+                return@translationScope
             }
+
+            val bluePlayer = PlayerManager.findPlayer(providedBlueName)
+            if (bluePlayer == null) {
+                toCommandTranslation("not_found_player")
+                    .format0(providedBlueName)
+                    .send()
+                return@translationScope
+            }
+
+            val bluePlayerEntity = bluePlayer.findServerEntity(source.server)
+            if (bluePlayerEntity == null) {
+                toCommandTranslation("player_offline")
+                    .format0(providedBlueName)
+                    .send()
+                return@translationScope
+            }
+
+            if (bluePlayerEntity.isTrading()) {
+                toCommandTranslation("player_is_trading_oneself")
+                    .format0(providedBlueName)
+                    .send()
+                return@translationScope
+            }
+
+            TradeRequestManager.request(source.player!!, bluePlayerEntity)
         }
     }
 }
