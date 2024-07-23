@@ -17,8 +17,7 @@
 package io.github.gdrfgdrf.cutetrade.command
 
 import io.github.gdrfgdrf.cutetrade.command.HelpCommand.help
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.ServerCommandSource
 
@@ -36,10 +35,14 @@ object HelpCommand : AbstractCommand(
 
     private fun help(source: ServerCommandSource) {
         val commandInvoker = CommandInvoker.of(source)
-
-        "top".toCommandMessage().send("", commandInvoker)
-        "help".toCommandMessage().send("", commandInvoker)
-        "bottom".toCommandMessage().send("", commandInvoker)
+        commandInvoker.translationScope {
+            toCommandTranslation("top")
+                .send("")
+            toCommandTranslation("help")
+                .send("")
+            toCommandTranslation("bottom")
+                .send("")
+        }
     }
 
 }
