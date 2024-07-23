@@ -19,7 +19,7 @@ package io.github.gdrfgdrf.cutetrade.manager
 import io.github.gdrfgdrf.cutetrade.common.TradeRequest
 import io.github.gdrfgdrf.cutetrade.extension.getTradeRequest
 import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import net.minecraft.server.network.ServerPlayerEntity
 import java.util.concurrent.ConcurrentHashMap
 
@@ -35,9 +35,11 @@ object TradeRequestManager {
         val blueSentToRed = bluePlayerEntity.getTradeRequest(redPlayerEntity)
 
         if (redSentToBlue != null || blueSentToRed != null) {
-            "request_exist".toCommandMessage()
-                .format(bluePlayerEntity.name.string)
-                .send(redPlayerEntity)
+            redPlayerEntity.translationScope {
+                toCommandTranslation("request_exist")
+                    .format0(bluePlayerEntity.name.string)
+                    .send()
+            }
             return
         }
 

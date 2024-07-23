@@ -23,109 +23,119 @@ import net.minecraft.item.Items
 import net.minecraft.nbt.NbtList
 import net.minecraft.nbt.NbtString
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.HoverEvent
 import net.minecraft.text.Text
 
-fun Trade.toItemStack(): ItemStack {
+fun Trade.toItemStack(serverPlayerEntity: ServerPlayerEntity): ItemStack {
     val item = if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
         Items.GOLD_BLOCK
     } else {
         Items.REDSTONE_BLOCK
     }
 
-    val itemStack = ItemStack(item)
-    itemStack.setCustomName(Text.of(this.startTime.toInstant().formattedDate() + " | " + "click_view".toScreenMessage()))
+    return serverPlayerEntity.translationScope {
+        val itemStack = ItemStack(item)
+        itemStack.setCustomName(Text.of(
+            startTime.toInstant().formattedDate() +
+                    " | " +
+                    toScreenTranslation("click_view").build().string))
 
-    val nbtList = NbtList()
-    nbtList.add(NbtString.of("click_view".toScreenMessage()))
-
-    return itemStack
+        itemStack
+    }
 }
 
 fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
-    "top".toCommandMessage()
-        .send("", serverPlayerEntity)
+    serverPlayerEntity.translationScope {
+        toCommandTranslation("top")
+            .send("")
 
-    val finishedMessage = "finished_result".toTradeMessage()
-    val terminatedMessage = "terminated_result".toTradeMessage()
-    val resultMessage = if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
-        finishedMessage
-    } else {
-        terminatedMessage
-    }
-
-    "red_player_is".toInformationMessage()
-        .format(this.redName)
-        .send("", serverPlayerEntity)
-    "blue_player_is".toInformationMessage()
-        .format(this.blueName)
-        .send("", serverPlayerEntity)
-    "trade_result".toInformationMessage()
-        .format(resultMessage)
-        .send("", serverPlayerEntity)
-
-    val divider = "divider".toInformationMessage()
-
-    if (this.tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
-        val message = "final_trade_item".toInformationMessage()
-        val nothing = "nothing".toInformationMessage()
-
-        divider.send("", serverPlayerEntity)
-
-        "red_player_final_trade_item".toInformationMessage()
-            .format(this.redName)
-            .send("", serverPlayerEntity)
-
-        val redItemResultList = this.redItemResultList
-        var allEmpty = redItemResultList.stream().filter {
-            it.nbt != "{}"
-        }.findAny()
-            .orElse(null)
-
-        if (redItemResultList == null || redItemResultList.isEmpty() || allEmpty == null) {
-            nothing
-                .send("", serverPlayerEntity)
+        val finishedMessage = toTradeTranslation("finished_result")
+        val terminatedMessage = toTradeTranslation("terminated_result")
+        val resultMessage = if (tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
+            finishedMessage
         } else {
-            redItemResultList.forEach { tradeItem ->
-                val itemStack = tradeItem.toItemStack()
-
-                message
-                    .format(itemStack.name.string, itemStack.count)
-                    .send("", serverPlayerEntity)
-            }
+            terminatedMessage
         }
 
-        divider.send("", serverPlayerEntity)
+        toInformationTranslation("red_player_is")
+            .format0(redName)
+            .send("")
+        toInformationTranslation("blue_player_is")
+            .format0(blueName)
+            .send("")
+        toInformationTranslation("trade_result")
+            .format0(resultMessage.build().string)
+            .send("")
 
-        "blue_player_final_trade_item".toInformationMessage()
-            .format(this.blueName)
-            .send("", serverPlayerEntity)
+        val divider = toInformationTranslation("divider")
 
-        val blueItemResultList = this.blueItemResultList
+        if (tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
+            val nothing = toInformationTranslation("nothing")
 
-        allEmpty = blueItemResultList.stream().filter {
-            it.nbt != "{}"
-        }.findAny()
-            .orElse(null)
-        if (blueItemResultList == null || blueItemResultList.isEmpty() || allEmpty == null) {
-            nothing.send("", serverPlayerEntity)
-        } else {
-            blueItemResultList.forEach { tradeItem ->
-                val itemStack = tradeItem.toItemStack()
+            divider.send("")
 
-                message
-                    .format(itemStack.name.string, itemStack.count)
-                    .send("", serverPlayerEntity)
+            toInformationTranslation("red_player_final_trade_item")
+                .format0(redName)
+                .send("")
+
+            val redItemResultList = redItemResultList
+            var allEmpty = redItemResultList.stream().filter {
+                it.nbt != "{}"
+            }.findAny()
+                .orElse(null)
+
+            if (redItemResultList == null || redItemResultList.isEmpty() || allEmpty == null) {
+                nothing.send("")
+            } else {
+                redItemResultList.forEach { tradeItem ->
+                    val itemStack = tradeItem.toItemStack()
+                    val itemStackContent = HoverEvent.ItemStackContent(itemStack)
+                    val message = toInformationTranslation("final_trade_item")
+
+                    message.get0()
+                        .showItem(itemStackContent)
+
+                    message.format0(itemStack.name.string, itemStack.count)
+                        .send("")
+                }
             }
+
+            divider.send("")
+
+            toInformationTranslation("blue_player_final_trade_item")
+                .format0(blueName)
+                .send("")
+
+            val blueItemResultList = blueItemResultList
+
+            allEmpty = blueItemResultList.stream().filter {
+                it.nbt != "{}"
+            }.findAny()
+                .orElse(null)
+            if (blueItemResultList == null || blueItemResultList.isEmpty() || allEmpty == null) {
+                nothing.send("")
+            } else {
+                blueItemResultList.forEach { tradeItem ->
+                    val itemStack = tradeItem.toItemStack()
+                    val itemStackContent = HoverEvent.ItemStackContent(itemStack)
+                    val message = toInformationTranslation("final_trade_item")
+
+                    message.get0()
+                        .showItem(itemStackContent)
+
+                    message.format0(itemStack.name.string, itemStack.count)
+                        .send("")
+                }
+            }
+
+            divider.send("")
+
+            toInformationTranslation("trade_id")
+                .format0(id)
+                .send("")
         }
 
-        divider.send("", serverPlayerEntity)
-
-        "trade_id".toInformationMessage()
-            .format(this.id)
-            .send("", serverPlayerEntity)
+        toCommandTranslation("bottom")
+            .send("")
     }
-
-
-    "bottom".toCommandMessage()
-        .send("", serverPlayerEntity)
 }
