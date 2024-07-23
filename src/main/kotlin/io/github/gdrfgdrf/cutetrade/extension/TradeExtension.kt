@@ -71,7 +71,6 @@ fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
 
         if (tradeResult == CommonProto.TradeResult.TRADE_RESULT_FINISHED) {
             val nothing = toInformationTranslation("nothing")
-            val message = toInformationTranslation("final_trade_item")
 
             divider.send("")
 
@@ -91,8 +90,7 @@ fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
                 redItemResultList.forEach { tradeItem ->
                     val itemStack = tradeItem.toItemStack()
                     val itemStackContent = ItemStackContent(itemStack)
-
-                    message.reset()
+                    val message = toInformationTranslation("final_trade_item")
 
                     message.get0()
                         .showItem(itemStackContent)
@@ -120,8 +118,7 @@ fun Trade.printInformation(serverPlayerEntity: ServerPlayerEntity) {
                 blueItemResultList.forEach { tradeItem ->
                     val itemStack = tradeItem.toItemStack()
                     val itemStackContent = ItemStackContent(itemStack)
-
-                    message.reset()
+                    val message = toInformationTranslation("final_trade_item")
 
                     message.get0()
                         .showItem(itemStackContent)
