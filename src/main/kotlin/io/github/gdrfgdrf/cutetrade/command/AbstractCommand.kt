@@ -20,7 +20,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
+import io.github.gdrfgdrf.cutetrade.extension.toCommandTranslation
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
@@ -57,12 +58,15 @@ abstract class AbstractCommand(
             val commandInvoker = CommandInvoker.of(source)
 
             if (abstractCommand.onlyPlayer && commandInvoker.isConsole()) {
-                "only_player".toCommandMessage().send(commandInvoker)
+                "only_player".toCommandTranslation().send(commandInvoker)
                 return
             }
 
             if (abstractCommand.needOp && !source.hasPermissionLevel(3)) {
-                "no_permission".toCommandMessage().send(commandInvoker)
+                commandInvoker.translationScope {
+                    toCommandTranslation("no_permission")
+                        .send()
+                }
                 return
             }
 
@@ -80,7 +84,10 @@ abstract class AbstractCommand(
                 return
             }
             val commandInvoker = CommandInvoker.of(commandContext.source)
-            "argument_error".toCommandMessage().send(commandInvoker)
+            commandInvoker.translationScope {
+                toCommandTranslation("argument_error")
+                    .send()
+            }
         }
     }
 }
