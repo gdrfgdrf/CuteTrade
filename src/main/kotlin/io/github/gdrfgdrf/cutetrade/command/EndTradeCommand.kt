@@ -18,8 +18,7 @@ package io.github.gdrfgdrf.cutetrade.command
 
 import io.github.gdrfgdrf.cutetrade.command.EndTradeCommand.start
 import io.github.gdrfgdrf.cutetrade.extension.currentTrade
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.ServerCommandSource
 
@@ -39,14 +38,16 @@ object EndTradeCommand : AbstractCommand(
     private fun start(source: ServerCommandSource) {
         val commandInvoker = CommandInvoker.of(source)
 
-        val currentTrade = source.player?.currentTrade()
-        if (currentTrade == null) {
-            "no_transaction_in_progress".toCommandMessage()
-                .send(commandInvoker)
-            return
-        }
+        commandInvoker.translationScope {
+            val currentTrade = source.player?.currentTrade()
+            if (currentTrade == null) {
+                toCommandTranslation("no_transaction_in_progress")
+                    .send()
+                return@translationScope
+            }
 
-        currentTrade.terminate()
+            currentTrade.terminate()
+        }
     }
 
 }

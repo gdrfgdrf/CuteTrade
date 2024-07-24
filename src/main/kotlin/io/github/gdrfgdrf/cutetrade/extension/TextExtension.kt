@@ -16,32 +16,38 @@
 
 package io.github.gdrfgdrf.cutetrade.extension
 
-import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.ClickEvent
-import net.minecraft.text.MutableText
-import net.minecraft.text.Text
+import io.github.gdrfgdrf.cutetrade.CuteTrade
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteText
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 
-fun Text.clickEvent(clickEvent: ClickEvent): Text {
-    (this as MutableText).styled {
-        it.withClickEvent(clickEvent)
+fun translatable(key: String): CuteTranslation {
+    if (CuteTrade.TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Translation provider is not loaded normally")
     }
-    return this
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
+    return CuteTranslation.of(value)
 }
 
-fun Text.fillPrefix(): Text {
-    val filled = "prefix".toCommandMessage()
-        .format(this.string)
-    return Text.of(filled)
+fun translatable(playerName: String, key: String): CuteTranslation {
+    if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Player translation provider is not loaded normally")
+    }
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
+    return CuteTranslation.of(value)
 }
 
-fun Text.send(serverPlayerEntity: ServerPlayerEntity) {
-    serverPlayerEntity.sendMessage(this)
+fun translatableText(key: String): CuteText {
+    if (CuteTrade.TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Translation provider is not loaded normally")
+    }
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
+    return CuteText.of(value)
 }
 
-fun buildRunCommandClickEvent(command: String): ClickEvent {
-    return ClickEvent(ClickEvent.Action.RUN_COMMAND, command)
-}
-
-fun buildRunCommandText(textGetter: () -> String, command: String): Text {
-    return Text.of(textGetter()).clickEvent(buildRunCommandClickEvent(command))
+fun translatableText(playerName: String, key: String): CuteText {
+    if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
+        throw IllegalStateException("Player translation provider is not loaded normally")
+    }
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
+    return CuteText.of(value)
 }

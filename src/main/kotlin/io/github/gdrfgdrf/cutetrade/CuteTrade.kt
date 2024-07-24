@@ -27,7 +27,6 @@ import io.github.gdrfgdrf.cutetrade.common.Constants
 import io.github.gdrfgdrf.cutetrade.extension.currentTrade
 import io.github.gdrfgdrf.cutetrade.extension.logError
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
-import io.github.gdrfgdrf.cutetrade.extension.toCommandMessage
 import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
 import io.github.gdrfgdrf.cutetrade.manager.TradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
@@ -37,11 +36,14 @@ import io.github.gdrfgdrf.cutetrade.operation.server.ClientInitializedOperator
 import io.github.gdrfgdrf.cutetrade.operation.server.UpdateTraderStateOperator
 import io.github.gdrfgdrf.cutetrade.page.PageableRegistry
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
-import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
 import io.github.gdrfgdrf.cutetrade.utils.Protobuf
 import io.github.gdrfgdrf.cutetrade.utils.task.TaskManager
 import io.github.gdrfgdrf.cutetrade.utils.thread.ThreadPoolService
 import io.github.gdrfgdrf.cutetrade.worker.CountdownWorker
+import io.github.gdrfgdrf.cutetranslationapi.external.ExternalPlayerTranslationProvider
+import io.github.gdrfgdrf.cutetranslationapi.external.ExternalTranslationProvider
+import io.github.gdrfgdrf.cutetranslationapi.provider.PlayerTranslationProviderManager
+import io.github.gdrfgdrf.cutetranslationapi.provider.TranslationProviderManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
@@ -62,6 +64,9 @@ object CuteTrade : ModInitializer {
 		ScreenHandlerType.register("cutetrade:cutetrade_trade_screen", ::TradeScreenHandler)
 	val DEV_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
+
+	var TRANSLATION_PROVIDER: ExternalTranslationProvider? = null
+	var PLAYER_TRANSLATION_PROVIDER: ExternalPlayerTranslationProvider? = null
 
 	init {
 		PageableRegistry
@@ -93,8 +98,6 @@ object CuteTrade : ModInitializer {
 			}
 
 			prepareCommands()
-
-			FriendlyText.prefix = "prefix".toCommandMessage()
 
 			val operators = arrayOf(
 				ClientInitializedOperator,
@@ -139,6 +142,9 @@ object CuteTrade : ModInitializer {
 		}
 
 		ServerLifecycleEvents.SERVER_STARTING.register { _ ->
+			TRANSLATION_PROVIDER = TranslationProviderManager.getOrCreate("cutetrade")
+			PLAYER_TRANSLATION_PROVIDER = PlayerTranslationProviderManager.getOrCreate("cutetrade")
+
 			CountdownWorker.start()
 			TaskManager.start()
 		}
