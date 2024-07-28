@@ -17,7 +17,6 @@
 package io.github.gdrfgdrf.cutetrade.command.admin
 
 import io.github.gdrfgdrf.cutetrade.command.AbstractCommand
-import io.github.gdrfgdrf.cutetrade.extension.send
 import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.ServerCommandSource
@@ -29,7 +28,9 @@ object HelpAdminCommand : AbstractCommand(
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
-            HelpAdminCommand.help(it.source)
+            playerCheck(HelpAdminCommand, it) {
+                HelpAdminCommand.help(it.source)
+            }
             0
         }
     }

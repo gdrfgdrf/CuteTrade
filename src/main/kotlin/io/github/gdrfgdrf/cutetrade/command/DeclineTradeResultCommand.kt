@@ -26,7 +26,7 @@ import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 
 object DeclineTradeResultCommand : AbstractCommand(
-  command = "decline",
+    command = "decline",
     onlyPlayer = true,
     tree = {
         CommandManager.argument("player-name", StringArgumentType.string())

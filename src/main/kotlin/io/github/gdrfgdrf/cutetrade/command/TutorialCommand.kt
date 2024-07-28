@@ -22,7 +22,7 @@ import net.minecraft.server.command.ServerCommandSource
 
 object TutorialCommand : AbstractCommand(
     command = "tutorial",
-    onlyPlayer = true,
+    onlyPlayer = false,
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
