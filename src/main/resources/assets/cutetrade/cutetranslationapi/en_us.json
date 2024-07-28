@@ -77,6 +77,6 @@
   "information.cutetrade.blue_player_final_trade_item": "&a%s's final offer:",
   "information.cutetrade.final_trade_item": "&8- &a[%s] x%d",
   "information.cutetrade.nothing": "&8- &cNothing",
-  "information.cutetrade.trade_id": "&8Trade id: %s",
+  "information.cutetrade.trade_id": "&8Transaction id: %s",
   "information.cutetrade.divider": "&8-------------------------"
 }
