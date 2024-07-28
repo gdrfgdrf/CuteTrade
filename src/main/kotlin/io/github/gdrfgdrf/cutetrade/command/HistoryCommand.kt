@@ -28,7 +28,9 @@ object HistoryCommand : AbstractCommand(
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
-            HistoryCommand.print(it.source, it.source.player!!.name.string)
+            playerCheck(HistoryCommand, it) {
+                HistoryCommand.print(it.source, it.source.player!!.name.string)
+            }
             0
         }
     }
