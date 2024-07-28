@@ -23,12 +23,14 @@ import net.minecraft.server.command.ServerCommandSource
 
 object HelpAdminCommand : AbstractCommand(
     command = "help",
-    onlyPlayer = true,
+    onlyPlayer = false,
     needOp = true,
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
-            HelpAdminCommand.help(it.source)
+            playerCheck(HelpAdminCommand, it) {
+                HelpAdminCommand.help(it.source)
+            }
             0
         }
     }
