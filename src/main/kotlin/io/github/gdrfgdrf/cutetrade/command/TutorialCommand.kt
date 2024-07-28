@@ -16,15 +16,13 @@
 
 package io.github.gdrfgdrf.cutetrade.command
 
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandTranslation
 import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.ServerCommandSource
 
 object TutorialCommand : AbstractCommand(
     command = "tutorial",
-    onlyPlayer = true,
+    onlyPlayer = false,
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
