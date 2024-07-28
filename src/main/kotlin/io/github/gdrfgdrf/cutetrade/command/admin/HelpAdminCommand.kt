@@ -28,7 +28,9 @@ object HelpAdminCommand : AbstractCommand(
     noArgument = true,
     tree = { literalArgumentBuilder ->
         literalArgumentBuilder.executes {
-            HelpAdminCommand.help(it.source)
+            playerCheck(HelpAdminCommand, it) {
+                HelpAdminCommand.help(it.source)
+            }
             0
         }
     }
