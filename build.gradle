@@ -68,6 +68,8 @@ dependencies {
 
 	implementation 'org.xerial.snappy:snappy-java:1.1.10.5'
 	compileJar 'org.xerial.snappy:snappy-java:1.1.10.5'
+
+	modImplementation "io.github.gdrfgdrf.cutetranslationapi:cute-translation-api:1.1.0+1.20.5+patch.1"
 }
 
 processResources {
