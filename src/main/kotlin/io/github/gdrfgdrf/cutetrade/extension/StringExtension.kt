@@ -20,61 +20,87 @@ import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import cutetrade.protobuf.CommonProto.Player
 import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
 import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteText
+import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
 import java.util.*
 
-fun String.toText(): Text {
-    return Text.of(this)
+fun String.toCommandTranslation(commandInvoker: CommandInvoker): CuteTranslation {
+    return toCommandTranslation(commandInvoker.source.player)
 }
 
-fun String.toCommandMessage(): String {
-    return Text.translatable("command.cutetrade.$this").string.replace("&", "§")
-}
-
-fun String.toScreenMessage(): String {
-    return Text.translatable("screen.cutetrade.$this").string.replace("&", "§")
-}
-
-fun String.toTradeMessage(): String {
-    return Text.translatable("trade.cutetrade.$this").string.replace("&", "§")
-}
-
-fun String.toInformationMessage(): String {
-    return Text.translatable("information.cutetrade.$this").string.replace("&", "§")
-}
-
-fun String.send(prefix: String, serverPlayerEntity: ServerPlayerEntity) {
-    if (notBlank(prefix)) {
-        toFriendlyText().send(prefix, serverPlayerEntity)
-        return
+fun String.toCommandTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
+    if (serverPlayerEntity != null) {
+        return translatable(serverPlayerEntity.name.string, "command.cutetrade.$this")
     }
-    toFriendlyText().send("$prefix%s", serverPlayerEntity)
+    return translatable("command.cutetrade.$this")
 }
 
-fun String.send(serverPlayerEntity: ServerPlayerEntity) {
-    if (!serverPlayerEntity.isDisconnected) {
-        toFriendlyText().send(serverPlayerEntity)
+fun String.toCommandText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
+    if (serverPlayerEntity != null) {
+        return translatableText(serverPlayerEntity.name.string, "command.cutetrade.$this")
     }
+    return translatableText("command.cutetrade.$this")
 }
 
-fun String.send(prefix: String, commandInvoker: CommandInvoker) {
-    if (notBlank(prefix)) {
-        toFriendlyText().send(prefix, commandInvoker)
-        return
+fun String.toScreenTranslation(commandInvoker: CommandInvoker): CuteTranslation {
+    return toScreenTranslation(commandInvoker.source.player)
+}
+
+fun String.toScreenTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
+    if (serverPlayerEntity != null) {
+        return translatable(serverPlayerEntity.name.string, "screen.cutetrade.$this")
     }
-    toFriendlyText().send("$prefix%s", commandInvoker)
+    return translatable("screen.cutetrade.$this")
 }
 
-fun String.send(commandInvoker: CommandInvoker) {
-    toFriendlyText().send(commandInvoker)
+fun String.toScreenText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
+    if (serverPlayerEntity != null) {
+        return translatableText(serverPlayerEntity.name.string, "screen.cutetrade.$this")
+    }
+    return translatableText("screen.cutetrade.$this")
 }
 
-fun String.toFriendlyText(): FriendlyText {
-    return FriendlyText.of(this)
+fun String.toTradeTranslation(commandInvoker: CommandInvoker): CuteTranslation {
+    return toTradeTranslation(commandInvoker.source.player)
+}
+
+fun String.toTradeTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
+    if (serverPlayerEntity != null) {
+        return translatable(serverPlayerEntity.name.string, "trade.cutetrade.$this")
+    }
+    return translatable("trade.cutetrade.$this")
+}
+
+fun String.toTradeText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
+    if (serverPlayerEntity != null) {
+        return translatableText(serverPlayerEntity.name.string, "trade.cutetrade.$this")
+    }
+    return translatableText("trade.cutetrade.$this")
+}
+
+fun String.toInformationTranslation(commandInvoker: CommandInvoker): CuteTranslation {
+    return toInformationTranslation(commandInvoker.source.player)
+}
+
+fun String.toInformationTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
+    if (serverPlayerEntity != null) {
+        return translatable(serverPlayerEntity.name.string, "information.cutetrade.$this")
+    }
+    return translatable("information.cutetrade.$this")
+}
+
+fun String.toInformationText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
+    if (serverPlayerEntity != null) {
+        return translatableText(serverPlayerEntity.name.string, "information.cutetrade.$this")
+    }
+    return translatableText("information.cutetrade.$this")
+}
+
+fun String.toCuteText(): CuteText {
+    return CuteText.of(this)
 }
 
 fun String.getContent(commandContext: CommandContext<ServerCommandSource>): String {

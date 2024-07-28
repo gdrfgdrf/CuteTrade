@@ -1,0 +1,12 @@
+{
+  "display-name": "CuteTrade",
+  "default-language": "en_us",
+  "languages": [
+    {
+      "name": "en_us"
+    },
+    {
+      "name": "zh_cn"
+    }
+  ]
+}

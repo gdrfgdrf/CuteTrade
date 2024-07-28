@@ -19,7 +19,7 @@ package io.github.gdrfgdrf.cutetrade.utils.command
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 
-class CommandInvoker private constructor(private val source: ServerCommandSource) {
+class CommandInvoker private constructor(val source: ServerCommandSource) {
     fun sendMessage(text: Text) {
         if (!isConsole()) {
             source.entity?.sendMessage(text)
