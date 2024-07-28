@@ -16,8 +16,7 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toScreenMessage
+import io.github.gdrfgdrf.cutetrade.extension.translationScope
 import net.minecraft.item.ItemStack
 import net.minecraft.server.network.ServerPlayerEntity
 
@@ -38,12 +37,12 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         itemStack: ItemStack
     ) {
         if (index >= 9 || index < 0) {
-            "trade_item_limited".toScreenMessage()
-                .send(playerEntity)
+            playerEntity.translationScope {
+                toScreenTranslation("trade_item_limited")
+                    .send()
+            }
             return
         }
-
-//        "set trade item $itemStack to index $index".logInfo()
         itemArray[index] = TradeItem(itemStack)
     }
 
@@ -51,11 +50,6 @@ class TradeItemStack private constructor(val playerEntity: ServerPlayerEntity) {
         index: Int
     ) {
         itemArray[index] = null
-//        val tradeItem = itemArray[index]
-//        if (tradeItem != null) {
-////            "remove trade item ${tradeItem.itemStack} from index $index".logInfo()
-//            tradeItem.itemStack = ItemStack.EMPTY
-//        }
     }
 
     fun removeAll() {
