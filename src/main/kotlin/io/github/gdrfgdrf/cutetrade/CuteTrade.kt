@@ -66,8 +66,8 @@ object CuteTrade : ModInitializer {
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
 	var SERVER: MinecraftServer? = null
 
-	var TRANSLATION_PROVIDER: Any? = null
-	var PLAYER_TRANSLATION_PROVIDER: Any? = null
+	var TRANSLATION_PROVIDER: ExternalTranslationProvider? = null
+	var PLAYER_TRANSLATION_PROVIDER: ExternalPlayerTranslationProvider? = null
 
 	init {
 		PageableRegistry
