@@ -143,6 +143,9 @@ object CuteTrade : ModInitializer {
 				TradeStore.newBuilder()::build,
 				TradeStore::parseFrom
 			)
+
+			CountdownWorker.start()
+			TaskManager.start()
 		}
 		ServerLifecycleEvents.SERVER_STOPPING.register { _ ->
 			ThreadPoolService.terminate()
