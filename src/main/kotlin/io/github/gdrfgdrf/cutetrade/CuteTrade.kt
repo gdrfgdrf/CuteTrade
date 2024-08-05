@@ -80,7 +80,7 @@ object CuteTrade : ModInitializer {
 		"Start loading CuteTrade".logInfo()
 
 		runCatching {
-			if (FabricLoader.getInstance().environmentType == SERVER) {
+			if (FabricLoader.getInstance().environmentType == EnvType.SERVER) {
 				preparePacketReceiver()
 			}
 
