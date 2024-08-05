@@ -67,8 +67,8 @@ object CuteTrade : ModInitializer {
 	val DEV_SCREEN_HANDLER: ScreenHandlerType<TradeScreenHandler> =
 		ScreenHandlerType.register("cutetrade:cutetrade_dev_screen", ::TradeScreenHandler)
 
-	var TRANSLATION_PROVIDER: Any? = null
-	var PLAYER_TRANSLATION_PROVIDER: Any? = null
+	var TRANSLATION_PROVIDER: ExternalTranslationProvider? = null
+	var PLAYER_TRANSLATION_PROVIDER: ExternalPlayerTranslationProvider? = null
 
 	init {
 		PageableRegistry
