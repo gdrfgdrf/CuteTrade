@@ -17,9 +17,6 @@
 package io.github.gdrfgdrf.cutetrade.extension
 
 import io.github.gdrfgdrf.cutetrade.CuteTrade
-import io.github.gdrfgdrf.cutetranslationapi.external.ExternalPlayerTranslationProvider
-import io.github.gdrfgdrf.cutetranslationapi.external.ExternalTranslationProvider
-import io.github.gdrfgdrf.cutetranslationapi.provider.TranslationProviderManager
 import io.github.gdrfgdrf.cutetranslationapi.text.CuteText
 import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 
@@ -27,7 +24,7 @@ fun translatable(key: String): CuteTranslation {
     if (CuteTrade.TRANSLATION_PROVIDER == null) {
         throw IllegalStateException("Translation provider is not loaded normally")
     }
-    val value = (CuteTrade.TRANSLATION_PROVIDER!! as ExternalTranslationProvider).get(key)
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
     return CuteTranslation.of(value)
 }
 
@@ -35,7 +32,7 @@ fun translatable(playerName: String, key: String): CuteTranslation {
     if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
         throw IllegalStateException("Player translation provider is not loaded normally")
     }
-    val value = (CuteTrade.PLAYER_TRANSLATION_PROVIDER!! as ExternalPlayerTranslationProvider).get(playerName, key)
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
     return CuteTranslation.of(value)
 }
 
@@ -43,7 +40,7 @@ fun translatableText(key: String): CuteText {
     if (CuteTrade.TRANSLATION_PROVIDER == null) {
         throw IllegalStateException("Translation provider is not loaded normally")
     }
-    val value = (CuteTrade.TRANSLATION_PROVIDER!! as ExternalTranslationProvider).get(key)
+    val value = CuteTrade.TRANSLATION_PROVIDER!!.get(key)
     return CuteText.of(value)
 }
 
@@ -51,6 +48,6 @@ fun translatableText(playerName: String, key: String): CuteText {
     if (CuteTrade.PLAYER_TRANSLATION_PROVIDER == null) {
         throw IllegalStateException("Player translation provider is not loaded normally")
     }
-    val value = (CuteTrade.PLAYER_TRANSLATION_PROVIDER!! as ExternalPlayerTranslationProvider).get(playerName, key)
+    val value = CuteTrade.PLAYER_TRANSLATION_PROVIDER!!.get(playerName, key)
     return CuteText.of(value)
 }
