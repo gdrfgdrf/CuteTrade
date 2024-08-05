@@ -40,3 +40,5 @@ replay_*.log
 *.jfr
 /gradlew
 /gradlew.bat
+gradle/
+logs/
