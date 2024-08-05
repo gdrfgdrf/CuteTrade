@@ -80,25 +80,11 @@ object CuteTrade : ModInitializer {
 		"Start loading CuteTrade".logInfo()
 
 		runCatching {
-			val envType = FabricLoader.getInstance().environmentType
-			if (envType == EnvType.SERVER) {
-				"Server loading phase".logInfo()
-
+			if (FabricLoader.getInstance().environmentType == SERVER) {
 				preparePacketReceiver()
-				prepareEventListener()
-
-				PlayerManager.playerProtobuf = prepareProtobufFile(
-					File(Constants.PLAYER_STORE_FILE_NAME),
-					PlayerStore.newBuilder()::build,
-					PlayerStore::parseFrom
-				)
-				TradeManager.tradeProtobuf = prepareProtobufFile(
-					File(Constants.TRADE_STORE_FILE_NAME),
-					TradeStore.newBuilder()::build,
-					TradeStore::parseFrom
-				)
 			}
 
+			prepareEventListener()
 			prepareCommands()
 
 			val operators = arrayOf(
@@ -144,11 +130,19 @@ object CuteTrade : ModInitializer {
 		}
 
 		ServerLifecycleEvents.SERVER_STARTING.register { _ ->
-			CountdownWorker.start()
-			TaskManager.start()
+			TRANSLATION_PROVIDER = TranslationProviderManager.getOrCreate("cutetrade")
+			PLAYER_TRANSLATION_PROVIDER = PlayerTranslationProviderManager.getOrCreate("cutetrade")
 
-			this.TRANSLATION_PROVIDER = TranslationProviderManager.getOrCreate("cutetrade")
-			this.PLAYER_TRANSLATION_PROVIDER = PlayerTranslationProviderManager.getOrCreate("cutetrade")
+			PlayerManager.playerProtobuf = prepareProtobufFile(
+				File(Constants.PLAYER_STORE_FILE_NAME),
+				PlayerStore.newBuilder()::build,
+				PlayerStore::parseFrom
+			)
+			TradeManager.tradeProtobuf = prepareProtobufFile(
+				File(Constants.TRADE_STORE_FILE_NAME),
+				TradeStore.newBuilder()::build,
+				TradeStore::parseFrom
+			)
 		}
 		ServerLifecycleEvents.SERVER_STOPPING.register { _ ->
 			ThreadPoolService.terminate()
