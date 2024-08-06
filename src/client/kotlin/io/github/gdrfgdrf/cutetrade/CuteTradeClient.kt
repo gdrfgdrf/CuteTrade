@@ -16,10 +16,12 @@
 
 package io.github.gdrfgdrf.cutetrade
 
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
+import io.github.gdrfgdrf.cutetrade.common.operation.base.Operator
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
 import io.github.gdrfgdrf.cutetrade.operation.*
 import io.github.gdrfgdrf.cutetrade.page.PageableClientRegistry
@@ -72,7 +74,7 @@ object CuteTradeClient : ClientModInitializer {
 			DevOperator
 		)
 		operators.forEach {
-			"Add ${it.getName()} to operator list".logInfo()
+			"Add ${(it as Operator).getName()} to operator list".logInfo()
 			OperationDispatcher.add(it)
 		}
 	}
