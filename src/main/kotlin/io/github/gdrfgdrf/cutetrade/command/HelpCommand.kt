@@ -34,9 +34,8 @@ object HelpCommand : AbstractCommand(
 ) {
 
     private fun help(source: ServerCommandSource) {
-        source.findPlayerProxy()?.let {
-            HelpCommandExecutor.execute(it)
-        }
+        val playerProxy = source.findPlayerProxy()
+        HelpCommandExecutor.execute(playerProxy)
     }
 
 }
