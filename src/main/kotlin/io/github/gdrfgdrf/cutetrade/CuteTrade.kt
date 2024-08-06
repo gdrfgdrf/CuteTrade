@@ -38,6 +38,7 @@ import io.github.gdrfgdrf.cutetrade.common.utils.CountdownWorker
 import io.github.gdrfgdrf.cutetrade.common.utils.Protobuf
 import io.github.gdrfgdrf.cutetrade.common.utils.task.TaskManager
 import io.github.gdrfgdrf.cutetrade.common.utils.thread.ThreadPoolService
+import io.github.gdrfgdrf.cutetrade.extension.isConsole
 import io.github.gdrfgdrf.cutetrade.extension.logError
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
@@ -179,6 +180,9 @@ object CuteTrade : ModInitializer {
 			val common = LiteralArgumentBuilder.literal<ServerCommandSource>("trade-public")
 			val admin = LiteralArgumentBuilder.literal<ServerCommandSource>("trade-admin")
 				.requires {
+					if (it.isConsole()) {
+						return@requires true
+					}
 					it.player?.hasPermissionLevel(3) == true
 				}
 

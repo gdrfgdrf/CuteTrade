@@ -19,8 +19,8 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
+import io.github.gdrfgdrf.cutetrade.common.extension.isTrading
 import io.github.gdrfgdrf.cutetrade.common.pool.PlayerProxyPool
-import io.github.gdrfgdrf.cutetrade.extension.isTrading
 import net.minecraft.server.command.ServerCommandSource
 import java.util.concurrent.CompletableFuture
 

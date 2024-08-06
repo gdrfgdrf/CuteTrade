@@ -33,9 +33,8 @@ object TutorialCommand : AbstractCommand(
 ) {
 
     private fun print(source: ServerCommandSource) {
-        source.findPlayerProxy()?.let {
-            TutorialCommandExecutor.execute(it)
-        }
+        val playerProxy = source.findPlayerProxy()
+        TutorialCommandExecutor.execute(playerProxy)
     }
 
 }

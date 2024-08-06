@@ -37,6 +37,6 @@ fun ServerCommandSource.findPlayerProxy(): PlayerProxy? {
     return PlayerProxyPool.getPlayerProxy(this.player!!.name.string)
 }
 
-fun PlayerProxy.isTrading(): Boolean {
-    return TradeManager.trades.contains(this)
+fun ServerCommandSource.isConsole(): Boolean {
+    return this.player == null && this.hasPermissionLevel(3)
 }
