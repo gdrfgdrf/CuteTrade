@@ -22,24 +22,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.StringNbtReader
 import net.minecraft.text.Text
 
-fun ItemStack.toProtobufTradeItem(addByName: String): TradeItem {
-    val nbtCompound = this.encode(registryManager())
-
-    return TradeItem.newBuilder()
-        .setNbt(nbtCompound.asString())
-        .setAddByName(addByName)
-        .build()
-}
-
 fun ItemStack.setCustomName(name: Text) {
     this.set(DataComponentTypes.CUSTOM_NAME, name)
-}
-
-fun TradeItem.toItemStack(): ItemStack {
-    if ("{}" == this.nbt) {
-        return ItemStack.EMPTY
-    }
-
-    val nbtCompound = StringNbtReader.parse(this.nbt)
-    return ItemStack.fromNbtOrEmpty(registryManager(), nbtCompound)
 }

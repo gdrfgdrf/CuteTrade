@@ -16,8 +16,8 @@
 
 package io.github.gdrfgdrf.cutetrade.trade
 
-import io.github.gdrfgdrf.cutetrade.common.Operators
-import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.common.enums.TraderState
+import io.github.gdrfgdrf.cutetrade.common.operation.server.Operators
 import io.github.gdrfgdrf.cutetrade.extension.sendPacket
 import io.github.gdrfgdrf.cutetrade.network.packet.C2SOperationPacket
 import net.minecraft.client.MinecraftClient

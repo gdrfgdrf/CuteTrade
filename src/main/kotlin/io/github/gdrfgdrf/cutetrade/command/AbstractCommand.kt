@@ -19,10 +19,8 @@ package io.github.gdrfgdrf.cutetrade.command
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
-import io.github.gdrfgdrf.cutetrade.extension.send
-import io.github.gdrfgdrf.cutetrade.extension.toCommandTranslation
-import io.github.gdrfgdrf.cutetrade.extension.translationScope
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.common.extension.translationScope
+import io.github.gdrfgdrf.cutetrade.extension.findPlayerProxy
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 
@@ -55,19 +53,20 @@ abstract class AbstractCommand(
             success: () -> Unit
         ) {
             val source = commandContext.source
-            val commandInvoker = CommandInvoker.of(source)
 
-            if (abstractCommand.onlyPlayer && commandInvoker.isConsole()) {
-                "only_player".toCommandTranslation().send(commandInvoker)
-                return
-            }
+//            if (abstractCommand.onlyPlayer && commandInvoker.isConsole()) {
+//                "only_player".toCommandTranslation().send(commandInvoker)
+//                return
+//            }
 
-            if (abstractCommand.needOp && !source.hasPermissionLevel(3)) {
-                commandInvoker.translationScope {
-                    toCommandTranslation("no_permission")
-                        .send()
+            source.findPlayerProxy()?.let {
+                if (abstractCommand.needOp && !source.hasPermissionLevel(3)) {
+                    it.translationScope {
+                        toCommandTranslation("no_permission")
+                            .send()
+                    }
+                    return
                 }
-                return
             }
 
             success()
@@ -83,10 +82,11 @@ abstract class AbstractCommand(
                 success()
                 return
             }
-            val commandInvoker = CommandInvoker.of(commandContext.source)
-            commandInvoker.translationScope {
-                toCommandTranslation("argument_error")
-                    .send()
+            commandContext.source.findPlayerProxy()?.let {
+                it.translationScope {
+                    toCommandTranslation("argument_error")
+                        .send()
+                }
             }
         }
     }

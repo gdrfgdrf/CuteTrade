@@ -22,9 +22,10 @@ import io.github.gdrfgdrf.cutetrade.common.network.interfaces.PacketAdapter
 import io.github.gdrfgdrf.cutetrade.common.proxy.ItemStackProxy
 import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
 import io.github.gdrfgdrf.cutetrade.common.Constants
+import io.github.gdrfgdrf.cutetrade.common.impl.PacketByteBufProxyImpl
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
 import io.github.gdrfgdrf.cutetrade.extension.registryManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
-import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.item.ItemStack
@@ -83,6 +84,11 @@ class C2SOperationPacket : CustomPayload, PacketAdapter {
                 itemStackArgs!![i] = ItemStack.fromNbtOrEmpty(registryManager(), nbtCompound)
             }
         }
+    }
+
+    fun write(byteBuf: PacketByteBuf) {
+        val packetByteBufProxy = PacketByteBufProxyImpl.create(byteBuf)
+        write(packetByteBufProxy)
     }
 
     override fun write(byteBuf: PacketByteBufProxy) {
@@ -167,21 +173,21 @@ class C2SOperationPacket : CustomPayload, PacketAdapter {
         }
     }
 
-    override fun getOperatorName(): String = operatorName
+    override fun getOperatorName_(): String = operatorName
 
-    override fun getStringArgs(): Array<String?>? = stringArgs
+    override fun getStringArgs_(): Array<String?>? = stringArgs
 
-    override fun setStringArgs(args: Array<String?>?) {
+    override fun setStringArgs_(args: Array<String?>?) {
         this.stringArgs = args
     }
 
-    override fun getIntArgs(): Array<Int?>? = intArgs
+    override fun getIntArgs_(): Array<Int?>? = intArgs
 
-    override fun setIntArgs(args: Array<Int?>?) {
+    override fun setIntArgs_(args: Array<Int?>?) {
         this.intArgs = args
     }
 
-    override fun getItemStackArgs(): Array<ItemStackProxy?>? {
+    override fun getItemStackArgs_(): Array<ItemStackProxy?>? {
         if (itemStackArgs == null) {
             return null
         }
@@ -196,7 +202,7 @@ class C2SOperationPacket : CustomPayload, PacketAdapter {
         return result
     }
 
-    override fun setItemStackArgs(args: Array<ItemStackProxy?>?) {
+    override fun setItemStackArgs_(args: Array<ItemStackProxy?>?) {
         if (args == null) {
             return
         }

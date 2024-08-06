@@ -17,60 +17,26 @@
 package io.github.gdrfgdrf.cutetrade.extension
 
 import cutetrade.protobuf.CommonProto.Player
-import io.github.gdrfgdrf.cutetrade.common.TradeRequest
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.manager.TradeManager
-import io.github.gdrfgdrf.cutetrade.manager.TradeRequestManager
-import io.github.gdrfgdrf.cutetrade.trade.TradeContext
+import io.github.gdrfgdrf.cutetrade.common.extension.currentTrade
+import io.github.gdrfgdrf.cutetrade.common.extension.translationScope
+import io.github.gdrfgdrf.cutetrade.common.manager.ProtobufPlayerManager
+import io.github.gdrfgdrf.cutetrade.common.manager.TradeManager
+import io.github.gdrfgdrf.cutetrade.common.manager.TradeRequestManager
+import io.github.gdrfgdrf.cutetrade.common.pool.PlayerProxyPool
+import io.github.gdrfgdrf.cutetrade.common.proxy.PlayerProxy
+import io.github.gdrfgdrf.cutetrade.common.trade.TradeContext
+import io.github.gdrfgdrf.cutetrade.common.trade.TradeRequest
 import net.minecraft.server.MinecraftServer
+import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.network.ServerPlayerEntity
 
-fun Player.findServerEntity(server: MinecraftServer): ServerPlayerEntity? {
-    return server.playerManager.getPlayer(this.name)
-}
-
-fun ServerPlayerEntity.findProtobufPlayer(): Player? {
-    return PlayerManager.findPlayer(this.name.string)
-}
-
-fun ServerPlayerEntity.getTradeRequest(redPlayerEntity: ServerPlayerEntity): TradeRequest? {
-    val requests = TradeRequestManager.getRequests(redPlayerEntity)
-    return requests?.stream()
-        ?.filter { tradeRequest ->
-            tradeRequest.bluePlayerEntity == this@getTradeRequest
-        }
-        ?.findAny()
-        ?.orElse(null)
-}
-
-fun ServerPlayerEntity.removeTradeRequest(redPlayerEntity: ServerPlayerEntity) {
-    val tradeRequest = getTradeRequest(redPlayerEntity)
-    tradeRequest?.let {
-        TradeRequestManager.removeRequest(redPlayerEntity, tradeRequest)
+fun ServerCommandSource.findPlayerProxy(): PlayerProxy? {
+    if (this.player == null) {
+        return null
     }
+    return PlayerProxyPool.getPlayerProxy(this.player!!.name.string)
 }
 
-fun ServerPlayerEntity.isTrading(): Boolean {
+fun PlayerProxy.isTrading(): Boolean {
     return TradeManager.trades.contains(this)
-}
-
-fun ServerPlayerEntity.currentTrade(): TradeContext? {
-    return TradeManager.trades[this]
-}
-
-fun ServerPlayerEntity.checkInTrade(): Boolean {
-    val currentTrade = currentTrade()
-    if (currentTrade == null) {
-        this.translationScope {
-            toCommandTranslation("no_transaction_in_progress")
-                .send()
-        }
-        return false
-    }
-    return true
-}
-
-fun ServerPlayerEntity.isRed(): Boolean {
-    val currentTrade = currentTrade()
-    return currentTrade?.redPlayer?.name?.string == this.name.string
 }

@@ -16,11 +16,11 @@
 
 package io.github.gdrfgdrf.cutetrade.operation
 
-import io.github.gdrfgdrf.cutetrade.common.Operators
-import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.common.enums.TraderState
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.operation.base.Operator
+import io.github.gdrfgdrf.cutetrade.common.operation.server.Operators
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
-import io.github.gdrfgdrf.cutetrade.operation.base.Operator
 
 object UpdateTraderStateOperator : Operator {
     override fun run(context: PacketContext<*>, args: Array<*>?) {
