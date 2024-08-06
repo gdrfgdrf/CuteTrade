@@ -16,6 +16,11 @@
 
 package io.github.gdrfgdrf.cutetrade.network.packet
 
+import io.github.gdrfgdrf.cutetrade.common.extension.getProxyFactory
+import io.github.gdrfgdrf.cutetrade.common.impl.ItemStackProxyImpl
+import io.github.gdrfgdrf.cutetrade.common.network.interfaces.PacketAdapter
+import io.github.gdrfgdrf.cutetrade.common.proxy.ItemStackProxy
+import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
 import io.github.gdrfgdrf.cutetrade.common.Constants
 import io.github.gdrfgdrf.cutetrade.extension.registryManager
 import io.github.gdrfgdrf.cutetrade.network.PacketContext
@@ -26,7 +31,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.PacketByteBuf
 import net.minecraft.network.packet.CustomPayload
 
-class S2COperationPacket : CustomPayload {
+class S2COperationPacket : CustomPayload, PacketAdapter {
     val operatorName: String
     var stringArgsLength: Int = -1
     var stringArgs: Array<String?>? = null
@@ -80,7 +85,7 @@ class S2COperationPacket : CustomPayload {
         }
     }
 
-    fun write(byteBuf: PacketByteBuf) {
+    override fun write(byteBuf: PacketByteBufProxy) {
         byteBuf.writeString(operatorName)
         byteBuf.writeInt(stringArgsLength)
         byteBuf.writeInt(intArgsLength)
@@ -88,20 +93,26 @@ class S2COperationPacket : CustomPayload {
 
         if (stringArgsLength > 0) {
             stringArgs!!.forEach {
+                it ?: return@forEach
                 byteBuf.writeString(it)
             }
         }
         if (intArgsLength > 0) {
             intArgs!!.forEach {
-                it?.let {
-                    byteBuf.writeInt(it)
-                }
+                it ?: return@forEach
+                byteBuf.writeInt(it)
             }
         }
         if (itemStackArgsLength > 0) {
+            val factory = getProxyFactory()
+
             itemStackArgs!!.forEach {
-                val nbtCompound = it?.encode(registryManager())
-                byteBuf.writeNbt(nbtCompound)
+                val nbtCompound = it?.encode(registryManager()) ?: return@forEach
+
+                val nbtProxy = factory.newNbt()
+                nbtProxy.nbt = nbtCompound
+
+                byteBuf.writeNbt(nbtProxy)
             }
         }
     }
@@ -153,5 +164,48 @@ class S2COperationPacket : CustomPayload {
                 OperationDispatcher.dispatch(operatorName, context, null)
             }
         }
+    }
+
+    override fun getOperatorName(): String = operatorName
+
+    override fun getStringArgs(): Array<String?>? = stringArgs
+
+    override fun setStringArgs(args: Array<String?>?) {
+        this.stringArgs = args
+    }
+
+    override fun getIntArgs(): Array<Int?>? = intArgs
+
+    override fun setIntArgs(args: Array<Int?>?) {
+        this.intArgs = args
+    }
+
+    override fun getItemStackArgs(): Array<ItemStackProxy?>? {
+        if (itemStackArgs == null) {
+            return null
+        }
+
+        val result = arrayOfNulls<ItemStackProxy>(itemStackArgsLength)
+        itemStackArgs!!.forEachIndexed { index, itemStack ->
+            itemStack ?: return@forEachIndexed
+            val impl = ItemStackProxyImpl.create(itemStack)
+            result[index] = impl
+        }
+
+        return result
+    }
+
+    override fun setItemStackArgs(args: Array<ItemStackProxy?>?) {
+        if (args == null) {
+            return
+        }
+
+        val result = arrayOfNulls<ItemStack>(args.size)
+        args.forEachIndexed { index, itemStackProxy ->
+            itemStackProxy ?: return@forEachIndexed
+            result[index] = itemStackProxy.itemStack as ItemStack
+        }
+
+        this.itemStackArgs = result
     }
 }

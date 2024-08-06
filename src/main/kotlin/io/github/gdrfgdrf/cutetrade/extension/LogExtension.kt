@@ -22,6 +22,14 @@ fun String.logInfo() {
     CuteTrade.log.info(this)
 }
 
+fun String.logInfo(vararg any: Any) {
+    CuteTrade.log.info(this, *any)
+}
+
+fun String.logError() {
+    CuteTrade.log.error(this)
+}
+
 fun String.logError(throwable: Throwable) {
     CuteTrade.log.error(this, throwable)
 }
