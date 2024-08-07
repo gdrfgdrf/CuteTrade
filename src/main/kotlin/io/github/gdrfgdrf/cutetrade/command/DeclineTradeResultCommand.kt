@@ -19,14 +19,13 @@ package io.github.gdrfgdrf.cutetrade.command
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.gdrfgdrf.cutetrade.command.DeclineTradeResultCommand.decline
 import io.github.gdrfgdrf.cutetrade.command.suggest.TradeRequestBindSuggestProvider
+import io.github.gdrfgdrf.cutetrade.common.command.DeclineTradeResultCommandExecutor
 import io.github.gdrfgdrf.cutetrade.extension.*
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 
 object DeclineTradeResultCommand : AbstractCommand(
-    command = "decline",
+  command = "decline",
     onlyPlayer = true,
     tree = {
         CommandManager.argument("player-name", StringArgumentType.string())
@@ -48,39 +47,8 @@ object DeclineTradeResultCommand : AbstractCommand(
     }
 ) {
     private fun decline(source: ServerCommandSource, providedRedName: String) {
-        val commandInvoker = CommandInvoker.of(source)
-        commandInvoker.translationScope {
-            if (providedRedName == source.player?.name?.string) {
-                toCommandTranslation("decline_request_from_oneself")
-                    .send()
-                return@translationScope
-            }
-
-            val redPlayer = PlayerManager.findPlayer(providedRedName)
-            if (redPlayer == null) {
-                toCommandTranslation("not_found_player")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            val redPlayerEntity = redPlayer.findServerEntity(source.server)
-            if (redPlayerEntity == null) {
-                toCommandTranslation("player_offline")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            val tradeRequest = source.player?.getTradeRequest(redPlayerEntity)
-            if (tradeRequest == null) {
-                toCommandTranslation("not_found_request")
-                    .format0()
-                    .send()
-                return@translationScope
-            }
-
-            tradeRequest.decline()
+        source.findPlayerProxy()?.let {
+            DeclineTradeResultCommandExecutor.execute(it, providedRedName)
         }
     }
 }

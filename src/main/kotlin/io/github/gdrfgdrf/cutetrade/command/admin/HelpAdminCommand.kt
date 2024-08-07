@@ -17,13 +17,13 @@
 package io.github.gdrfgdrf.cutetrade.command.admin
 
 import io.github.gdrfgdrf.cutetrade.command.AbstractCommand
-import io.github.gdrfgdrf.cutetrade.extension.translationScope
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.common.command.admin.HelpAdminCommandExecutor
+import io.github.gdrfgdrf.cutetrade.extension.findPlayerProxy
 import net.minecraft.server.command.ServerCommandSource
 
 object HelpAdminCommand : AbstractCommand(
     command = "help",
-    onlyPlayer = true,
+    onlyPlayer = false,
     needOp = true,
     noArgument = true,
     tree = { literalArgumentBuilder ->
@@ -35,18 +35,8 @@ object HelpAdminCommand : AbstractCommand(
         }
     }
 ){
-
     private fun help(source: ServerCommandSource) {
-        val commandInvoker = CommandInvoker.of(source)
-
-        commandInvoker.translationScope {
-            toCommandTranslation("top")
-                .send("")
-            toCommandTranslation("admin_help")
-                .send("")
-            toCommandTranslation("bottom")
-                .send("")
-        }
+        val playerProxy = source.findPlayerProxy()
+        HelpAdminCommandExecutor.execute(playerProxy)
     }
-
 }

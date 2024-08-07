@@ -20,7 +20,8 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import io.github.gdrfgdrf.cutetrade.manager.TradeRequestManager
+import io.github.gdrfgdrf.cutetrade.common.manager.TradeRequestManager
+import io.github.gdrfgdrf.cutetrade.common.pool.PlayerProxyPool
 import net.minecraft.server.command.ServerCommandSource
 import java.util.concurrent.CompletableFuture
 
@@ -29,13 +30,16 @@ object TradeRequestBindSuggestProvider : SuggestionProvider<ServerCommandSource>
         context: CommandContext<ServerCommandSource>,
         builder: SuggestionsBuilder,
     ): CompletableFuture<Suggestions> {
-        val redPlayers = TradeRequestManager.getRedPlayersByBluePlayer(context.source.player!!)
+        val serverPlayerEntity = context.source.player!!
+        val playerProxy = PlayerProxyPool.getPlayerProxy(serverPlayerEntity.name.string) ?: return builder.buildFuture()
+
+        val redPlayers = TradeRequestManager.getRedPlayersByBluePlayer(playerProxy)
         if (redPlayers.isNullOrEmpty()) {
             return builder.buildFuture()
         }
 
         redPlayers.forEach {
-            builder.suggest(it.name.string)
+            builder.suggest(it.playerName)
         }
 
         return builder.buildFuture()

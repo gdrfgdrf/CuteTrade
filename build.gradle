@@ -133,7 +133,10 @@ publishing {
 sourceSets {
 	main {
 		proto {
-			srcDir 'src/main/proto'
+			srcDir 'common/src/main/proto'
+		}
+		kotlin {
+			srcDirs("src/main/kotlin", "common/src/main/kotlin", "common-impl/src/main/kotlin")
 		}
 	}
 }
