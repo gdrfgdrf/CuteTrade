@@ -37,7 +37,6 @@ class PageableScreenHandler(
 
     init {
         inventory = PageableInventory(rows)
-        inventory!!.navigator = Navigator(inventory!!)
         inventory!!.onOpen(playerInventory.player)
 
         for (row in 0 until rows) {
@@ -74,9 +73,9 @@ class PageableScreenHandler(
             return
         }
         when (slotIndex) {
-            45 -> inventory?.navigator?.previous()
+            45 -> inventory?.pageable?.navigator?.previous()
             49 -> player.closeHandledScreen()
-            53 -> inventory?.navigator?.next()
+            53 -> inventory?.pageable?.navigator?.next()
         }
     }
 

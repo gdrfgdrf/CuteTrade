@@ -16,10 +16,8 @@
 
 package io.github.gdrfgdrf.cutetrade.command
 
-import io.github.gdrfgdrf.cutetrade.extension.*
-import io.github.gdrfgdrf.cutetrade.manager.TradeManager
-import io.github.gdrfgdrf.cutetrade.page.Pageable
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.common.command.HistoryCommandExecutor
+import io.github.gdrfgdrf.cutetrade.extension.findPlayerProxy
 import net.minecraft.server.command.ServerCommandSource
 
 object HistoryCommand : AbstractCommand(
@@ -36,57 +34,10 @@ object HistoryCommand : AbstractCommand(
     }
 ) {
 
-     fun print(source: ServerCommandSource, playerName: String) {
-        val commandInvoker = CommandInvoker.of(source)
-
-         commandInvoker.translationScope {
-             val protobufPlayer = playerName.findProtobufPlayer()
-             if (protobufPlayer == null) {
-                 toCommandTranslation("not_found_player")
-                     .format0(playerName)
-                     .send()
-                 return@translationScope
-             }
-             val tradeIdsList = protobufPlayer.tradeIdsList
-             if (tradeIdsList == null || (tradeIdsList as List<String>).isEmpty()) {
-                 if (protobufPlayer.name != source.player!!.name.string) {
-                     toCommandTranslation("no_transaction_history_other")
-                         .format0(playerName)
-                         .send()
-                     return@translationScope
-                 }
-
-                 toCommandTranslation("no_transaction_history")
-                     .send()
-                 return@translationScope
-             }
-
-             val pageable = Pageable()
-             pageable.openScreen(toScreenTranslation("history_title")
-                 .format0(playerName)
-                 .build(), source.player!!)
-
-             val tradeMap = TradeManager.tradeProtobuf?.message?.tradeIdToTradeMap
-             tradeIdsList.forEach { tradeId ->
-                 val trade = tradeMap?.get(tradeId) ?: return@forEach
-                 val itemStack = trade.toItemStack(commandInvoker.source.player!!)
-
-                 pageable.addItemStack(itemStack)
-             }
-             pageable.inventory!!.fullNavigationBar(source.player!!)
-
-             pageable.inventory!!.navigator?.show(0)
-
-             pageable.pageableScreenHandler?.onItemClick = onItemClick@ { index ->
-                 if (index >= tradeIdsList.size || index < 0) {
-                     return@onItemClick
-                 }
-                 val tradeId = tradeIdsList[index]
-                 val trade = tradeMap!![tradeId] ?: return@onItemClick
-
-                 trade.printInformation(source.player!!)
-             }
-         }
+    fun print(source: ServerCommandSource, playerName: String) {
+        source.findPlayerProxy()?.let {
+            HistoryCommandExecutor.execute(it, playerName)
+        }
     }
 
 }

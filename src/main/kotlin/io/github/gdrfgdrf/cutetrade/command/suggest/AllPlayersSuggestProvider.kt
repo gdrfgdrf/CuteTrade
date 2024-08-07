@@ -20,7 +20,7 @@ import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
+import io.github.gdrfgdrf.cutetrade.common.manager.ProtobufPlayerManager
 import net.minecraft.server.command.ServerCommandSource
 import java.util.concurrent.CompletableFuture
 
@@ -31,7 +31,7 @@ object AllPlayersSuggestProvider : SuggestionProvider<ServerCommandSource> {
     ): CompletableFuture<Suggestions> {
         context ?: return builder.buildFuture()
 
-        val nameToPlayerMap = PlayerManager.playerProtobuf?.message?.nameToPlayerMap
+        val nameToPlayerMap = ProtobufPlayerManager.playerProtobuf?.message?.nameToPlayerMap
             ?: return builder.buildFuture()
 
         nameToPlayerMap.forEach { (name, _) ->

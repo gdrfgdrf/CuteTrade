@@ -17,8 +17,8 @@
 package io.github.gdrfgdrf.cutetrade.command
 
 import io.github.gdrfgdrf.cutetrade.command.HelpCommand.help
-import io.github.gdrfgdrf.cutetrade.extension.translationScope
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.common.command.HelpCommandExecutor
+import io.github.gdrfgdrf.cutetrade.extension.findPlayerProxy
 import net.minecraft.server.command.ServerCommandSource
 
 object HelpCommand : AbstractCommand(
@@ -34,15 +34,8 @@ object HelpCommand : AbstractCommand(
 ) {
 
     private fun help(source: ServerCommandSource) {
-        val commandInvoker = CommandInvoker.of(source)
-        commandInvoker.translationScope {
-            toCommandTranslation("top")
-                .send("")
-            toCommandTranslation("help")
-                .send("")
-            toCommandTranslation("bottom")
-                .send("")
-        }
+        val playerProxy = source.findPlayerProxy()
+        HelpCommandExecutor.execute(playerProxy)
     }
 
 }
