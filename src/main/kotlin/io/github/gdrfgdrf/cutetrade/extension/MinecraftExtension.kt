@@ -4,6 +4,7 @@ import io.github.gdrfgdrf.cutetrade.CuteTrade
 import net.fabricmc.api.EnvType
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.registry.DynamicRegistryManager
+import net.minecraft.util.Identifier
 
 fun registryManager(): DynamicRegistryManager? {
     val envType = FabricLoader.getInstance().environmentType
@@ -11,4 +12,8 @@ fun registryManager(): DynamicRegistryManager? {
         return CuteTrade.SERVER?.registryManager
     }
     return null
+}
+
+fun createIdentifier(str: String): Identifier {
+    return Identifier(str)
 }
