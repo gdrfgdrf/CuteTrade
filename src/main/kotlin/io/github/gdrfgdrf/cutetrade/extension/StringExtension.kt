@@ -26,10 +26,6 @@ fun String.getContent(commandContext: CommandContext<ServerCommandSource>): Stri
     return StringArgumentType.getString(commandContext, this)
 }
 
-fun String.findProtobufPlayer(): Player? {
-    return ProtobufPlayerManager.findPlayer(this)
-}
-
 fun length(string: String?): Int {
     if (string == null) {
         return 0
