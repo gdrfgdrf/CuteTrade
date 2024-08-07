@@ -16,9 +16,9 @@
 
 package io.github.gdrfgdrf.cutetrade.operation
 
-import io.github.gdrfgdrf.cutetrade.common.Operators
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
-import io.github.gdrfgdrf.cutetrade.operation.base.Operator
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.operation.base.Operator
+import io.github.gdrfgdrf.cutetrade.common.operation.server.Operators
 
 object TradeStartOperator : Operator {
     override fun run(context: PacketContext<*>, args: Array<*>?) {
