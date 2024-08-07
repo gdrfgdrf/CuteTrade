@@ -17,7 +17,7 @@
 package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
-import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.common.enums.TraderState
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
 import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext

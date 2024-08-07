@@ -16,8 +16,8 @@
 
 package io.github.gdrfgdrf.cutetrade.command
 
-import io.github.gdrfgdrf.cutetrade.extension.translationScope
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
+import io.github.gdrfgdrf.cutetrade.common.command.TutorialCommandExecutor
+import io.github.gdrfgdrf.cutetrade.extension.findPlayerProxy
 import net.minecraft.server.command.ServerCommandSource
 
 object TutorialCommand : AbstractCommand(
@@ -33,16 +33,8 @@ object TutorialCommand : AbstractCommand(
 ) {
 
     private fun print(source: ServerCommandSource) {
-        val commandInvoker = CommandInvoker.of(source)
-
-        commandInvoker.translationScope {
-            toCommandTranslation("top")
-                .send("")
-            toCommandTranslation("tutorial")
-                .send("")
-            toCommandTranslation("bottom")
-                .send("")
-        }
+        val playerProxy = source.findPlayerProxy()
+        TutorialCommandExecutor.execute(playerProxy)
     }
 
 }

@@ -17,10 +17,10 @@
 package io.github.gdrfgdrf.cutetrade.trade
 
 import io.github.gdrfgdrf.cutetrade.common.Constants
-import io.github.gdrfgdrf.cutetrade.common.Operators
-import io.github.gdrfgdrf.cutetrade.common.TraderState
+import io.github.gdrfgdrf.cutetrade.common.enums.TraderState
+import io.github.gdrfgdrf.cutetrade.common.network.packet.C2SOperationPacketCommon
+import io.github.gdrfgdrf.cutetrade.common.operation.server.Operators
 import io.github.gdrfgdrf.cutetrade.extension.sendPacket
-import io.github.gdrfgdrf.cutetrade.network.packet.C2SOperationPacket
 import net.minecraft.client.MinecraftClient
 
 class ClientTradeContext private constructor(
@@ -41,19 +41,17 @@ class ClientTradeContext private constructor(
 
         initialized = true
 
-        val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_CLIENT_INITIALIZED)
+        val c2SOperationPacket = C2SOperationPacketCommon(Operators.SERVER_CLIENT_INITIALIZED)
         Constants.C2S_OPERATION.sendPacket(c2SOperationPacket::write)
     }
 
     fun sendTraderStateToServer(
         targetState: TraderState
     ) {
-        val c2SOperationPacket = C2SOperationPacket(Operators.SERVER_UPDATE_TRADER_STATE)
+        val c2SOperationPacket = C2SOperationPacketCommon(Operators.SERVER_UPDATE_TRADER_STATE)
         c2SOperationPacket.stringArgs = arrayOf(targetState.name)
 
-        Constants.C2S_OPERATION.sendPacket {
-            c2SOperationPacket.write(it)
-        }
+        Constants.C2S_OPERATION.sendPacket(c2SOperationPacket::write)
     }
 
     fun updateTraderStateFromServer(

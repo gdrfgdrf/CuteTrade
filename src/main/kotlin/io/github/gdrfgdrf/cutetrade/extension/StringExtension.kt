@@ -18,97 +18,10 @@ package io.github.gdrfgdrf.cutetrade.extension
 
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
-import cutetrade.protobuf.CommonProto.Player
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
-import io.github.gdrfgdrf.cutetranslationapi.text.CuteText
-import io.github.gdrfgdrf.cutetranslationapi.text.CuteTranslation
 import net.minecraft.server.command.ServerCommandSource
-import net.minecraft.server.network.ServerPlayerEntity
-import java.util.*
-
-fun String.toCommandTranslation(commandInvoker: CommandInvoker): CuteTranslation {
-    return toCommandTranslation(commandInvoker.source.player)
-}
-
-fun String.toCommandTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
-    if (serverPlayerEntity != null) {
-        return translatable(serverPlayerEntity.name.string, "command.cutetrade.$this")
-    }
-    return translatable("command.cutetrade.$this")
-}
-
-fun String.toCommandText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
-    if (serverPlayerEntity != null) {
-        return translatableText(serverPlayerEntity.name.string, "command.cutetrade.$this")
-    }
-    return translatableText("command.cutetrade.$this")
-}
-
-fun String.toScreenTranslation(commandInvoker: CommandInvoker): CuteTranslation {
-    return toScreenTranslation(commandInvoker.source.player)
-}
-
-fun String.toScreenTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
-    if (serverPlayerEntity != null) {
-        return translatable(serverPlayerEntity.name.string, "screen.cutetrade.$this")
-    }
-    return translatable("screen.cutetrade.$this")
-}
-
-fun String.toScreenText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
-    if (serverPlayerEntity != null) {
-        return translatableText(serverPlayerEntity.name.string, "screen.cutetrade.$this")
-    }
-    return translatableText("screen.cutetrade.$this")
-}
-
-fun String.toTradeTranslation(commandInvoker: CommandInvoker): CuteTranslation {
-    return toTradeTranslation(commandInvoker.source.player)
-}
-
-fun String.toTradeTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
-    if (serverPlayerEntity != null) {
-        return translatable(serverPlayerEntity.name.string, "trade.cutetrade.$this")
-    }
-    return translatable("trade.cutetrade.$this")
-}
-
-fun String.toTradeText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
-    if (serverPlayerEntity != null) {
-        return translatableText(serverPlayerEntity.name.string, "trade.cutetrade.$this")
-    }
-    return translatableText("trade.cutetrade.$this")
-}
-
-fun String.toInformationTranslation(commandInvoker: CommandInvoker): CuteTranslation {
-    return toInformationTranslation(commandInvoker.source.player)
-}
-
-fun String.toInformationTranslation(serverPlayerEntity: ServerPlayerEntity? = null): CuteTranslation {
-    if (serverPlayerEntity != null) {
-        return translatable(serverPlayerEntity.name.string, "information.cutetrade.$this")
-    }
-    return translatable("information.cutetrade.$this")
-}
-
-fun String.toInformationText(serverPlayerEntity: ServerPlayerEntity? = null): CuteText {
-    if (serverPlayerEntity != null) {
-        return translatableText(serverPlayerEntity.name.string, "information.cutetrade.$this")
-    }
-    return translatableText("information.cutetrade.$this")
-}
-
-fun String.toCuteText(): CuteText {
-    return CuteText.of(this)
-}
 
 fun String.getContent(commandContext: CommandContext<ServerCommandSource>): String {
     return StringArgumentType.getString(commandContext, this)
-}
-
-fun String.findProtobufPlayer(): Player? {
-    return PlayerManager.findPlayer(this)
 }
 
 fun length(string: String?): Int {
@@ -129,13 +42,4 @@ fun notBlank(string: String?): Boolean {
         }
     }
     return false
-}
-
-fun generateTradeId(): String {
-    var randomId = UUID.randomUUID().toString()
-        .lowercase()
-        .replace("-", "")
-    randomId += Math.random().toString()
-        .replace(".", "")
-    return randomId
 }

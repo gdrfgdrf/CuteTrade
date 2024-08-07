@@ -19,9 +19,8 @@ package io.github.gdrfgdrf.cutetrade.command
 import com.mojang.brigadier.arguments.StringArgumentType
 import io.github.gdrfgdrf.cutetrade.command.AcceptTradeResultCommand.accept
 import io.github.gdrfgdrf.cutetrade.command.suggest.TradeRequestBindSuggestProvider
+import io.github.gdrfgdrf.cutetrade.common.command.AcceptTradeResultCommandExecutor
 import io.github.gdrfgdrf.cutetrade.extension.*
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.utils.command.CommandInvoker
 import net.minecraft.server.command.CommandManager
 import net.minecraft.server.command.ServerCommandSource
 
@@ -48,46 +47,8 @@ object AcceptTradeResultCommand : AbstractCommand(
     }
 ) {
     private fun accept(source: ServerCommandSource, providedRedName: String) {
-        val commandInvoker = CommandInvoker.of(source)
-        commandInvoker.translationScope {
-            if (providedRedName == source.player?.name?.string) {
-                toCommandTranslation("accept_request_from_oneself")
-                    .send()
-                return@translationScope
-            }
-
-            val redPlayer = PlayerManager.findPlayer(providedRedName)
-            if (redPlayer == null) {
-                toCommandTranslation("not_found_player")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            val redPlayerEntity = redPlayer.findServerEntity(source.server)
-            if (redPlayerEntity == null) {
-                toCommandTranslation("player_offline")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            val tradeRequest = source.player?.getTradeRequest(redPlayerEntity)
-            if (tradeRequest == null) {
-                toCommandTranslation("not_found_request")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            if (redPlayerEntity.isTrading()) {
-                toCommandTranslation("player_is_trading")
-                    .format0(providedRedName)
-                    .send()
-                return@translationScope
-            }
-
-            tradeRequest.accept()
+        source.findPlayerProxy()?.let {
+            AcceptTradeResultCommandExecutor.execute(it, providedRedName)
         }
     }
 }
