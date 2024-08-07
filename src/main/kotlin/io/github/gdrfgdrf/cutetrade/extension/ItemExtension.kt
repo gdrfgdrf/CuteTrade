@@ -21,16 +21,6 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.StringNbtReader
 
-fun ItemStack.toProtobufTradeItem(addByName: String): TradeItem {
-    val nbtCompound = NbtCompound()
-    this.writeNbt(nbtCompound)
-
-    return TradeItem.newBuilder()
-        .setNbt(nbtCompound.asString())
-        .setAddByName(addByName)
-        .build()
-}
-
 fun TradeItem.toItemStack(): ItemStack {
     if ("{}" == this.nbt) {
         return ItemStack.EMPTY

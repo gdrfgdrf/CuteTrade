@@ -24,24 +24,28 @@ import io.github.gdrfgdrf.cutetrade.command.*
 import io.github.gdrfgdrf.cutetrade.command.admin.HelpAdminCommand
 import io.github.gdrfgdrf.cutetrade.command.admin.HistoryAdminCommand
 import io.github.gdrfgdrf.cutetrade.common.Constants
-import io.github.gdrfgdrf.cutetrade.extension.currentTrade
+import io.github.gdrfgdrf.cutetrade.common.extension.currentTrade
+import io.github.gdrfgdrf.cutetrade.common.impl.Functions
+import io.github.gdrfgdrf.cutetrade.common.impl.PacketByteBufProxyImpl
+import io.github.gdrfgdrf.cutetrade.common.impl.PlayerProxyImpl
+import io.github.gdrfgdrf.cutetrade.common.manager.ProtobufPlayerManager
+import io.github.gdrfgdrf.cutetrade.common.manager.TradeManager
+import io.github.gdrfgdrf.cutetrade.common.network.NetworkManager
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.network.interfaces.Writeable
+import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
+import io.github.gdrfgdrf.cutetrade.common.operation.server.ClientInitializedOperator
+import io.github.gdrfgdrf.cutetrade.common.operation.server.UpdateTraderStateOperator
+import io.github.gdrfgdrf.cutetrade.common.pool.PlayerProxyPool
+import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
+import io.github.gdrfgdrf.cutetrade.common.utils.CountdownWorker
+import io.github.gdrfgdrf.cutetrade.common.utils.Protobuf
+import io.github.gdrfgdrf.cutetrade.common.utils.task.TaskManager
+import io.github.gdrfgdrf.cutetrade.common.utils.thread.ThreadPoolService
 import io.github.gdrfgdrf.cutetrade.extension.logError
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
-import io.github.gdrfgdrf.cutetrade.extension.toCommandTranslation
-import io.github.gdrfgdrf.cutetrade.manager.PlayerManager
-import io.github.gdrfgdrf.cutetrade.manager.TradeManager
-import io.github.gdrfgdrf.cutetrade.network.NetworkManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
-import io.github.gdrfgdrf.cutetrade.operation.OperationDispatcher
-import io.github.gdrfgdrf.cutetrade.operation.server.ClientInitializedOperator
-import io.github.gdrfgdrf.cutetrade.operation.server.UpdateTraderStateOperator
 import io.github.gdrfgdrf.cutetrade.page.PageableRegistry
 import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
-import io.github.gdrfgdrf.cutetrade.utils.FriendlyText
-import io.github.gdrfgdrf.cutetrade.utils.Protobuf
-import io.github.gdrfgdrf.cutetrade.utils.task.TaskManager
-import io.github.gdrfgdrf.cutetrade.utils.thread.ThreadPoolService
-import io.github.gdrfgdrf.cutetrade.worker.CountdownWorker
 import io.github.gdrfgdrf.cutetranslationapi.external.ExternalPlayerTranslationProvider
 import io.github.gdrfgdrf.cutetranslationapi.external.ExternalTranslationProvider
 import io.github.gdrfgdrf.cutetranslationapi.provider.PlayerTranslationProviderManager
@@ -80,6 +84,8 @@ object CuteTrade : ModInitializer {
 		"Start loading CuteTrade".logInfo()
 
 		runCatching {
+			Functions.initialize()
+
 			if (FabricLoader.getInstance().environmentType == EnvType.SERVER) {
 				preparePacketReceiver()
 			}
@@ -105,16 +111,19 @@ object CuteTrade : ModInitializer {
 
 		NetworkManager.initialize(object : NetworkManager.RegisterPacketInterface {
 			override fun <T> register(
-				packetIdentifier: Identifier,
-				messageType: Class<T>,
-				encoder: (T, PacketByteBuf) -> Unit,
-				decoder: (PacketByteBuf) -> T,
+				packetIdentifier: Any,
+				messageType: Class<out Writeable>,
+				encoder: (T, PacketByteBufProxy) -> Unit,
+				decoder: (PacketByteBufProxy) -> T,
 				handler: (PacketContext<T>) -> Unit,
 			) {
-				ServerPlayNetworking.registerGlobalReceiver(packetIdentifier) { server, player, _, buf, _ ->
-					val message: T = decoder(buf)
+				ServerPlayNetworking.registerGlobalReceiver(packetIdentifier as Identifier) { server, player, _, buf, _ ->
+					val playerProxy = PlayerProxyPool.getPlayerProxy(player.name.string) ?: return@registerGlobalReceiver
+					val packetByteBufProxy = PacketByteBufProxyImpl.create(buf)
+
+					val message: T = decoder(packetByteBufProxy)
 					server.execute {
-						handler(PacketContext(player, message))
+						handler(PacketContext(playerProxy, message))
 					}
 				}
 			}
@@ -123,17 +132,23 @@ object CuteTrade : ModInitializer {
 
 	private fun prepareEventListener() {
 		ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
-			PlayerManager.recordPlayer(handler.player.name.string)
+			val playerProxyImpl = PlayerProxyImpl(handler.player.name.string, handler.player)
+			PlayerProxyPool.addPlayerProxy(playerProxyImpl)
+
+			ProtobufPlayerManager.recordPlayer(handler.player.name.string)
 		}
 		ServerPlayConnectionEvents.DISCONNECT.register { handler, _ ->
-			handler.player.currentTrade()?.terminate()
+			val playerProxy = PlayerProxyPool.getPlayerProxy(handler.player.name.string)
+			playerProxy?.currentTrade()?.terminate()
+
+			PlayerProxyPool.removePlayerProxy(handler.player.name.string)
 		}
 
 		ServerLifecycleEvents.SERVER_STARTING.register { _ ->
 			TRANSLATION_PROVIDER = TranslationProviderManager.getOrCreate("cutetrade")
 			PLAYER_TRANSLATION_PROVIDER = PlayerTranslationProviderManager.getOrCreate("cutetrade")
 
-			PlayerManager.playerProtobuf = prepareProtobufFile(
+			ProtobufPlayerManager.playerProtobuf = prepareProtobufFile(
 				File(Constants.PLAYER_STORE_FILE_NAME),
 				PlayerStore.newBuilder()::build,
 				PlayerStore::parseFrom

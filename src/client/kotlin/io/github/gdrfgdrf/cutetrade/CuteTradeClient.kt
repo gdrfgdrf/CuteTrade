@@ -16,10 +16,14 @@
 
 package io.github.gdrfgdrf.cutetrade
 
+import io.github.gdrfgdrf.cutetrade.common.impl.PacketByteBufProxyImpl
+import io.github.gdrfgdrf.cutetrade.common.network.NetworkManager
+import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
+import io.github.gdrfgdrf.cutetrade.common.network.interfaces.Writeable
+import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
+import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
 import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
-import io.github.gdrfgdrf.cutetrade.network.NetworkManager
-import io.github.gdrfgdrf.cutetrade.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.operation.*
 import io.github.gdrfgdrf.cutetrade.page.PageableClientRegistry
 import io.github.gdrfgdrf.cutetrade.screen.DevScreen
@@ -55,14 +59,15 @@ object CuteTradeClient : ClientModInitializer {
 
 		NetworkManager.initialize(object : NetworkManager.RegisterPacketInterface {
 			override fun <T> register(
-				packetIdentifier: Identifier,
-				messageType: Class<T>,
-				encoder: (T, PacketByteBuf) -> Unit,
-				decoder: (PacketByteBuf) -> T,
+				packetIdentifier: Any,
+				messageType: Class<out Writeable>,
+				encoder: (T, PacketByteBufProxy) -> Unit,
+				decoder: (PacketByteBufProxy) -> T,
 				handler: (PacketContext<T>) -> Unit
 			) {
-				ClientPlayNetworking.registerGlobalReceiver(packetIdentifier) { client, _, buf, _ ->
-					val message: T = decoder(buf)
+				ClientPlayNetworking.registerGlobalReceiver(packetIdentifier as Identifier) { client, _, buf, _ ->
+					val packetByteBufProxy = PacketByteBufProxyImpl.create(buf)
+					val message: T = decoder(packetByteBufProxy)
 					client.execute {
 						handler(PacketContext(message))
 					}
