@@ -54,7 +54,6 @@ import io.github.gdrfgdrf.cutetranslationapi.provider.TranslationProviderManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
@@ -135,12 +134,9 @@ object CuteTrade : ModInitializer {
 	}
 
 	private fun prepareEventListener() {
-		ServerLivingEntityEvents.ALLOW_DEATH.register { entity, _, _ ->
-			if (entity is ServerPlayerEntity) {
-				val playerProxy = PlayerProxyPool.getPlayerProxy(entity.name.string)
-				playerProxy?.currentTrade()?.terminate()
-			}
-
+		ServerPlayerEvents.ALLOW_DEATH.register { entity, _, _ ->
+			val playerProxy = PlayerProxyPool.getPlayerProxy(entity.name.string)
+			playerProxy?.currentTrade()?.terminate()
 			true
 		}
 		ServerPlayerEvents.AFTER_RESPAWN.register { oldPlayerEntity, newPlayerEntity, _ ->
