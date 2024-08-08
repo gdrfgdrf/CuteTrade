@@ -52,6 +52,8 @@ import io.github.gdrfgdrf.cutetranslationapi.provider.TranslationProviderManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking
@@ -59,6 +61,7 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.screen.ScreenHandlerType
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.server.network.ServerPlayerEntity
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -120,6 +123,29 @@ object CuteTrade : ModInitializer {
 	}
 
 	private fun prepareEventListener() {
+		ServerLivingEntityEvents.ALLOW_DEATH.register { entity, _, _ ->
+			if (entity is ServerPlayerEntity) {
+				val playerProxy = PlayerProxyPool.getPlayerProxy(entity.name.string)
+				playerProxy?.currentTrade()?.terminate()
+			}
+
+			true
+		}
+		ServerPlayerEvents.AFTER_RESPAWN.register { oldPlayerEntity, newPlayerEntity, _ ->
+			val playerProxy = PlayerProxyPool.getPlayerProxy(oldPlayerEntity.name.string)
+			if (playerProxy == null) {
+				val playerProxyImpl = PlayerProxyImpl(newPlayerEntity.name.string, newPlayerEntity)
+				PlayerProxyPool.addPlayerProxy(playerProxyImpl)
+				return@register
+			}
+
+			playerProxy.serverPlayerEntity = newPlayerEntity
+			playerProxy.playerName = newPlayerEntity.name.string
+
+			(playerProxy as PlayerProxyImpl).player = newPlayerEntity
+			playerProxy.name = newPlayerEntity.name.string
+		}
+
 		ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
 			val playerProxy = PlayerProxyImpl(handler.player.name.string, handler.player)
 			PlayerProxyPool.addPlayerProxy(playerProxy)
