@@ -14,8 +14,9 @@
  *    limitations under the License.
  */
 
-package io.github.gdrfgdrf.cutetrade.page
+package io.github.gdrfgdrf.cutetrade.pageable
 
+import io.github.gdrfgdrf.cutetrade.base.pageable.PageableScreenHandler
 import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment

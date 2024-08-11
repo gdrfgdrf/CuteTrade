@@ -4,3 +4,6 @@
 [submodule "common-impl"]
 	path = common-impl
 	url = https://github.com/gdrfgdrf/CuteTrade-Common-Impl
+[submodule "base"]
+	path = base
+	url = https://github.com/gdrfgdrf/CuteTrade-Base.git

@@ -21,11 +21,10 @@ import io.github.gdrfgdrf.cutetrade.common.impl.ItemStackProxyImpl
 import io.github.gdrfgdrf.cutetrade.common.network.interfaces.PacketAdapter
 import io.github.gdrfgdrf.cutetrade.common.proxy.ItemStackProxy
 import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
-import io.github.gdrfgdrf.cutetrade.common.Constants
+import io.github.gdrfgdrf.cutetrade.base.common.Constants
 import io.github.gdrfgdrf.cutetrade.common.impl.PacketByteBufProxyImpl
 import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.extension.registryManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment

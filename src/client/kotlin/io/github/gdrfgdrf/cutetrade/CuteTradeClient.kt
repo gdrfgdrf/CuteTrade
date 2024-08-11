@@ -16,15 +16,13 @@
 
 package io.github.gdrfgdrf.cutetrade
 
+import io.github.gdrfgdrf.cutetrade.base.executor.ClientListeners
+import io.github.gdrfgdrf.cutetrade.base.executor.ClientRegistry
 import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
-import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher
-import io.github.gdrfgdrf.cutetrade.common.operation.base.Operator
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
-import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
+import io.github.gdrfgdrf.cutetrade.base.extension.logInfo
 import io.github.gdrfgdrf.cutetrade.network.NetworkManager
 import io.github.gdrfgdrf.cutetrade.network.packet.S2COperationPacket
-import io.github.gdrfgdrf.cutetrade.operation.*
-import io.github.gdrfgdrf.cutetrade.page.PageableClientRegistry
+import io.github.gdrfgdrf.cutetrade.base.pageable.PageableClientRegistry
 import io.github.gdrfgdrf.cutetrade.screen.DevScreen
 import io.github.gdrfgdrf.cutetrade.screen.TradeScreen
 import net.fabricmc.api.ClientModInitializer
@@ -38,16 +36,15 @@ object CuteTradeClient : ClientModInitializer {
 
 		prepareEventListeners()
 		preparePacketReceiver()
-		prepareOperators()
+		ClientRegistry.registerOperators()
 
-		HandledScreens.register(CuteTrade.TRADE_SCREEN_HANDLER, ::TradeScreen)
-		HandledScreens.register(CuteTrade.DEV_SCREEN_HANDLER, ::DevScreen)
+		ClientRegistry.registerHandledScreens()
 		PageableClientRegistry.register()
 	}
 
 	private fun prepareEventListeners() {
 		ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-			ClientTradeManager.endTrade()
+			ClientListeners.disconnect()
 		}
 	}
 
@@ -60,22 +57,6 @@ object CuteTradeClient : ClientModInitializer {
 			client.execute {
 				S2COperationPacket.handle(PacketContext(payload))
 			}
-		}
-	}
-
-	private fun prepareOperators() {
-		val operators = listOf(
-			InitializeTradeOperator,
-			OpenTradeScreenOperator,
-			CloseTradeScreenOperator,
-			UpdateTraderStateOperator,
-			TradeStartOperator,
-			TradeEndOperator,
-			DevOperator
-		)
-		operators.forEach {
-			"Add ${(it as Operator).getName()} to operator list".logInfo()
-			OperationDispatcher.add(it)
 		}
 	}
 }

@@ -136,7 +136,12 @@ sourceSets {
 			srcDir 'common/src/main/proto'
 		}
 		kotlin {
-			srcDirs("src/main/kotlin", "common/src/main/kotlin", "common-impl/src/main/kotlin")
+			srcDirs("src/main/kotlin", "common/src/main/kotlin", "common-impl/src/main/kotlin", "base/src/main/kotlin")
+		}
+	}
+	client {
+		kotlin {
+			srcDirs("base/src/client/kotlin")
 		}
 	}
 }

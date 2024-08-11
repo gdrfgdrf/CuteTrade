@@ -18,7 +18,7 @@ package io.github.gdrfgdrf.cutetrade.screen
 
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
-import io.github.gdrfgdrf.cutetrade.extension.logInfo
+import io.github.gdrfgdrf.cutetrade.base.extension.logInfo
 import net.minecraft.client.MinecraftClient
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.ingame.HandledScreen

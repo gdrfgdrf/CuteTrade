@@ -21,7 +21,7 @@ import io.github.gdrfgdrf.cutetrade.common.impl.ItemStackProxyImpl
 import io.github.gdrfgdrf.cutetrade.common.network.interfaces.PacketAdapter
 import io.github.gdrfgdrf.cutetrade.common.proxy.ItemStackProxy
 import io.github.gdrfgdrf.cutetrade.common.proxy.PacketByteBufProxy
-import io.github.gdrfgdrf.cutetrade.common.Constants
+import io.github.gdrfgdrf.cutetrade.base.common.Constants
 import io.github.gdrfgdrf.cutetrade.common.impl.PacketByteBufProxyImpl
 import io.github.gdrfgdrf.cutetrade.common.network.PacketContext
 import io.github.gdrfgdrf.cutetrade.common.operation.OperationDispatcher

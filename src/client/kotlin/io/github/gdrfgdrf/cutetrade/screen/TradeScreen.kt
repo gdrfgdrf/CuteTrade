@@ -19,9 +19,9 @@ package io.github.gdrfgdrf.cutetrade.screen
 import com.mojang.blaze3d.systems.RenderSystem
 import io.github.gdrfgdrf.cutetrade.common.enums.TraderState
 import io.github.gdrfgdrf.cutetrade.extension.createIdentifier
-import io.github.gdrfgdrf.cutetrade.manager.ClientTradeManager
-import io.github.gdrfgdrf.cutetrade.screen.handler.TradeScreenHandler
-import io.github.gdrfgdrf.cutetrade.trade.ClientTradeContext
+import io.github.gdrfgdrf.cutetrade.base.manager.ClientTradeManager
+import io.github.gdrfgdrf.cutetrade.base.screen.handler.TradeScreenHandler
+import io.github.gdrfgdrf.cutetrade.base.trade.ClientTradeContext
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.MinecraftClient
@@ -73,8 +73,6 @@ class TradeScreen(
         tradeContext = ClientTradeManager.currentTrade
         client = MinecraftClient.getInstance()
         own = client!!.player
-
-        tradeContext?.clientTradeScreenContext?.tradeScreen = this
 
         val ownName = client!!.player!!.name.string
         val otherSideName = if (ownName.equals(tradeContext!!.redName)) {
@@ -275,10 +273,6 @@ class TradeScreen(
 
     override fun close() {
         client!!.player!!.networkHandler?.sendChatCommand("trade-public end-trade")
-    }
-
-    fun close1() {
-        super.close()
     }
 
     companion object {
